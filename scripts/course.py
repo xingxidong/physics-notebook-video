@@ -38,6 +38,7 @@ def font_path(lesson,project):
 def compile_lesson(project,lesson=None):
     import ink
     from mathparse import parse
+    from layout import page_spec,expand_actions,place_action,focus_spec,audit_page
     from speech_plan import apply as apply_speech_plan
     project=Path(project).resolve()
     lesson=json.loads((project/'lesson.json').read_text()) if lesson is None else copy.deepcopy(lesson)
@@ -53,7 +54,10 @@ def compile_lesson(project,lesson=None):
         if pid in seen:raise ValueError(f'Duplicate page id {pid}')
         seen.add(pid)
         if not page.get('cues'):raise ValueError(f'Page {pid} needs cues')
+        layout_spec=page_spec(page.get('layout'));layout_state={}
         cooked={'id':pid,'title':page.get('title',lesson['title']),'show_title':page.get('show_title',lesson.get('show_titles',True)),'cues':[],'index':pi}
+        if layout_spec:cooked['layout']=layout_spec
+        if page.get('problem_id'):cooked['problem_id']=str(page['problem_id'])
         if page.get('native_scenes'):cooked['native_scenes']=copy.deepcopy(page['native_scenes'])
         if page.get('image'):
             spec=copy.deepcopy(page['image']);source=(project/spec.pop('file')).resolve();spec['data']='data:image/png;base64,'+base64.b64encode(source.read_bytes()).decode();cooked['image']=spec
@@ -67,7 +71,9 @@ def compile_lesson(project,lesson=None):
             if not cue['tts'].strip():raise ValueError(f'{cue["id"]}: missing speakable narration')
             if cue['id'] in seen:raise ValueError(f'Duplicate cue id {cue["id"]}')
             seen.add(cue['id']);cue['blocks']=[]
-            for ai,a in enumerate(cue.get('actions',[])):
+            if cue.get('focus'):cue['focus']=focus_spec(cue['focus'],layout_spec)
+            for ai,raw_action in enumerate(expand_actions(cue.get('actions',[]),layout_spec)):
+                a=place_action(raw_action,layout_spec,layout_state)
                 at=a.get('at')
                 if isinstance(at,(int,float)) and not 0<=at<=1:raise ValueError(f'{cue["id"]}: numeric anchors must be 0..1')
                 if isinstance(at,dict):
@@ -103,14 +109,14 @@ def compile_lesson(project,lesson=None):
                 else:raise ValueError(f'Unknown action type {kind}')
                 for e in ink.groups[gi]:
                     if not e['points'] or any(not(120<=x<=1200 and 95<=y<=655) for x,y in e['points']):raise ValueError(f'{cue["id"]}, action {ai}: ink leaves the writing area x=120..1200, y=95..655')
-                cue['blocks'].append({'strokes':ink.groups[gi],'at':a.get('at'),'action':ai})
+                cue['blocks'].append({'strokes':ink.groups[gi],'at':a.get('at'),'action':ai,'kind':kind,'zone':a.get('zone'),'allow_overlap':bool(a.get('allow_overlap',False)),'transform_group':a.get('transform_group'),'transform_step':a.get('transform_step')})
             cooked['cues'].append(cue)
         if page.get('demonstration'):
             import models
             cooked['demonstration']=models.setup(page['demonstration'])
             cue_ids={c['id'] for c in cooked['cues']}
             if any(cooked['demonstration'].get(k) not in cue_ids for k in ('start_cue','end_cue')):raise ValueError('Demonstration cue ids must belong to this page')
-        pages.append(cooked)
+        cooked['layout_report']=audit_page(cooked);pages.append(cooked)
     return lesson,pages
 
 def anchor(at,cue,audio):
@@ -164,7 +170,7 @@ def prepare(project,lesson,pages,args):
     cfg.setdefault('audio_mastering',True)
     fps=args.fps;global_t=0;all_pcm=bytearray();timeline=[];voice_hits=voice_new=0
     for p in pages:
-        local=.35;pcm=bytearray(b'\0'*round(local*SR)*2);events=[];cues=[]
+        local=.35;pcm=bytearray(b'\0'*round(local*SR)*2);events=[];cues=[];focuses=[]
         for cue in p['cues']:
             pcm.extend(b'\0'*round(cue['pause_before']*SR)*2)
             if args.draft:
@@ -177,11 +183,17 @@ def prepare(project,lesson,pages,args):
             for e in schedule(cue,audio):e.update(start=e['start']+local,end=e['end']+local);events.append(e)
             delivery={k:cue[k] for k in ('role','speed','pitch','volume','emotion','emphasis') if k in cue}
             cues.append({'id':cue['id'],'text':cue['text'],'tts':cue['tts'],'start':local,'end':local+audio['duration'],'pause_before':cue['pause_before'],'pause':cue['pause'],'timing':'estimated' if args.draft else 'measured','words':audio.get('words',[]),**delivery})
+            if cue.get('focus'):
+                focused=copy.deepcopy(cue['focus']);focused.update(start=local,end=local+audio['duration']);focuses.append(focused)
             if args.draft:pcm.extend(b'\0'*round(audio['duration']*SR)*2)
             else:pcm.extend(clip)
             pcm.extend(b'\0'*round(cue['pause']*SR)*2)
         frames=math.ceil(len(pcm)/(2*SR)*fps);target=round(frames/fps*SR)*2;pcm.extend(b'\0'*max(0,target-len(pcm)))
         seconds=len(pcm)/(2*SR);prepared={'id':p['id'],'title':p['title'],'show_title':p.get('show_title',True),'index':p['index'],'start':global_t,'end':global_t+seconds,'duration':seconds,'frames':frames,'cues':cues,'strokes':events,'audio_sha256':digest(bytes(pcm))}
+        if p.get('layout'):prepared['layout']=p['layout']
+        if p.get('layout_report'):prepared['layout_report']=p['layout_report']
+        if p.get('problem_id'):prepared['problem_id']=p['problem_id']
+        if focuses:prepared['focus']=focuses
         if 'image' in p:prepared['image']=p['image']
         if 'native_scenes' in p:prepared['native_scenes']=p['native_scenes']
         if 'demonstration' in p:
@@ -217,6 +229,13 @@ def paint(im,event,fraction=1,scale=1):
     d.line(p,fill=event['color'],width=width,joint='curve')
     for x,y in (p[0],p[-1]):d.ellipse((x-width/2,y-width/2,x+width/2,y+width/2),fill=event['color'])
     return p[-1]
+def apply_focus(im,page,t,scale=1):
+    from PIL import Image
+    from layout import focus_state
+    state=focus_state(page,t);zoom=state['zoom']
+    if zoom<=1.00001:return im
+    cx,cy=[v*scale for v in state['center']];inv=1/zoom
+    return im.transform(im.size,Image.Transform.AFFINE,(inv,0,cx*(1-inv),0,inv,cy*(1-inv)),resample=Image.Resampling.BICUBIC)
 def frame(page,t,font,scale=1):
     from PIL import ImageDraw
     im=paper(page,font,scale)
@@ -228,7 +247,7 @@ def frame(page,t,font,scale=1):
         f=(t-event['start'])/(event['end']-event['start']);p=paint(im,event,f,scale)
         if f<1:
             d=ImageDraw.Draw(im);r=5*scale;d.ellipse((p[0]-r,p[1]-r,p[0]+r,p[1]+r),fill='#355c49',outline='#fffef9',width=max(1,round(2*scale)))
-    return im
+    return apply_focus(im,page,t,scale)
 
 def export_boards(project,data,font):
     from PIL import Image,JpegImagePlugin
@@ -259,7 +278,7 @@ def export_boards(project,data,font):
 def video(project,data,font,width):
     if data['draft']:raise ValueError('Draft timing cannot be exported as a narrated final video')
     cache=project/'cache/video';cache.mkdir(parents=True,exist_ok=True);keys=[];new=reused=0;scale=width/W
-    engine=digest(Path(__file__).read_bytes()+(ROOT/'scripts/ink.py').read_bytes()+(ROOT/'scripts/models.py').read_bytes()+font.read_bytes())
+    engine=digest(Path(__file__).read_bytes()+(ROOT/'scripts/ink.py').read_bytes()+(ROOT/'scripts/models.py').read_bytes()+(ROOT/'scripts/layout.py').read_bytes()+font.read_bytes())
     for page in data['pages']:
         local={k:v for k,v in page.items() if k not in ('start','end')};key=digest([local,width,data['fps'],engine]);target=cache/(key+'.mp4');keys.append(key)
         if target.exists():reused+=1;continue
@@ -274,7 +293,7 @@ def video(project,data,font,width):
             if done<len(events) and events[done]['start']<=t:
                 from PIL import ImageDraw
                 e=events[done];p=paint(im,e,(t-e['start'])/(e['end']-e['start']),scale);d=ImageDraw.Draw(im);r=5*scale;d.ellipse((p[0]-r,p[1]-r,p[0]+r,p[1]+r),fill='#355c49',outline='#fffef9',width=max(1,round(2*scale)))
-            enc.stdin.write(im.tobytes())
+            enc.stdin.write(apply_focus(im,page,t,scale).tobytes())
         enc.stdin.close()
         if enc.wait():raise RuntimeError(f'Could not render page {page["id"]}')
         part.replace(target);new+=1;print(f'rendered {page["id"]}',flush=True)
@@ -284,6 +303,8 @@ def video(project,data,font,width):
 
 def run_build(project,args):
     project=Path(project).resolve();lesson,pages=compile_lesson(project);font=font_path(lesson,project)
+    from layout import audit_lesson
+    layout_report=audit_lesson(pages);write_json(project/'layout-report.json',layout_report)
     renderer=args.renderer or lesson.get('renderer','notebook')
     if renderer not in ('notebook','motion-canvas','manim'):raise ValueError('Unknown animation renderer')
     if args.video and renderer!='notebook':
@@ -310,7 +331,7 @@ def run_build(project,args):
         else:
             from engine_render import render
             stats.update(render(project,data,font,args.width,renderer,args.runtime))
-    stats['renderer']=renderer
+    stats['renderer']=renderer;stats.update(layout_quality=layout_report['status'],layout_warnings=len(layout_report['warnings']))
     stats.update(duration=data['duration'],draft=args.draft,pages=len(data['pages']),backend=data['speech']['backend']);write_json(project/'build-report.json',stats);print(json.dumps(stats,ensure_ascii=False))
 
 def main():
@@ -318,6 +339,7 @@ def main():
     init=subs.add_parser('init');init.add_argument('project');init.add_argument('--title');init.add_argument('--backend',choices=['glm','doubao','minimax','edge','user'],default='glm');init.add_argument('--example',choices=['starter','gauss'],default='starter')
     build=subs.add_parser('build');build.add_argument('project');build.add_argument('--draft',action='store_true');build.add_argument('--video',action='store_true');build.add_argument('--backend',choices=['glm','doubao','minimax','edge','user']);build.add_argument('--voice');build.add_argument('--fps',type=int,choices=[12,24,30],default=24);build.add_argument('--width',type=int,choices=[1280,1920],default=1280)
     check=subs.add_parser('check');check.add_argument('project')
+    layout_check=subs.add_parser('layout-check',help='Audit semantic zones, overlaps and one-page problem policy');layout_check.add_argument('project');layout_check.add_argument('--strict',action='store_true')
     voice_check=subs.add_parser('voice-check',help='Audit an existing narration.wav and timeline.json');voice_check.add_argument('project');voice_check.add_argument('--strict',action='store_true')
     batch=subs.add_parser('batch');batch.add_argument('manifest');batch.add_argument('--jobs',type=int,choices=[1,2,3,4],default=2);batch.add_argument('--draft',action='store_true');batch.add_argument('--video',action='store_true');batch.add_argument('--backend',choices=['glm','doubao','minimax','edge','user']);batch.add_argument('--voice');batch.add_argument('--fps',type=int,choices=[12,24,30],default=24);batch.add_argument('--width',type=int,choices=[1280,1920],default=1280)
     subs.add_parser('doctor')
@@ -334,6 +356,11 @@ def main():
     if args.command=='voice-check':
         from voice_quality import audit
         report=audit(args.project);print(json.dumps(report,ensure_ascii=False))
+        if args.strict and report['warnings']:sys.exit(1)
+        return
+    if args.command=='layout-check':
+        from layout import audit_lesson
+        lesson,pages=compile_lesson(args.project);report=audit_lesson(pages);write_json(Path(args.project)/'layout-report.json',report);print(json.dumps(report,ensure_ascii=False))
         if args.strict and report['warnings']:sys.exit(1)
         return
     if args.command=='setup-renderers':
@@ -364,15 +391,19 @@ def main():
     if args.command=='init':
         from voice import DEFAULTS
         from speech_plan import externalize
+        from engine_render import local_config
         p=Path(args.project).resolve();p.mkdir(parents=True,exist_ok=True)
         if (p/'lesson.json').exists():raise ValueError('lesson.json already exists; edit it or choose another project')
         data=json.loads((ROOT/'assets'/(args.example+'.json')).read_text())
         if args.title:data['title']=args.title
         data.setdefault('show_titles',False)
-        data['speech']={'backend':args.backend,'voice':DEFAULTS[args.backend],'speed':1.0,'audio_mastering':True}
+        local_speech=(local_config().get('speech_defaults') or {}).get(args.backend,{})
+        data['speech']={'backend':args.backend,'voice':local_speech.get('voice',DEFAULTS[args.backend]),'speed':1.0,'audio_mastering':True}
+        if local_speech.get('model'):data['speech']['model']=local_speech['model']
         data,plan=externalize(data);write_json(p/'lesson.json',data);write_json(p/'speech-plan.json',plan);print(p/'lesson.json');return
     if args.command=='check':
-        l,p=compile_lesson(args.project);print(json.dumps({'title':l['title'],'pages':len(p),'cues':sum(len(x['cues']) for x in p),'geometry':'finite and within writing area'}));return
+        from layout import audit_lesson
+        l,p=compile_lesson(args.project);report=audit_lesson(p);print(json.dumps({'title':l['title'],'pages':len(p),'cues':sum(len(x['cues']) for x in p),'geometry':'finite and within writing area','layout':report['status'],'layout_warnings':len(report['warnings'])}));return
     if args.draft and args.video:raise ValueError('Use --draft for layout, or --video for measured speech and final export')
     run_build(args.project,args)
 if __name__=='__main__':

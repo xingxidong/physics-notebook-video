@@ -51,7 +51,7 @@ def render(project,data,font,width,engine,runtime=None):
     if data['draft']:raise ValueError('Final video requires measured audio')
     project=Path(project).resolve();runtime=runtime_path(runtime);info=versions(engine,runtime)
     root=project/'cache'/'video'/engine;root.mkdir(parents=True,exist_ok=True)
-    sources=[ROOT/'scripts/engine_render.py',ROOT/'scripts/models.py',ROOT/'scripts/course.py']
+    sources=[ROOT/'scripts/engine_render.py',ROOT/'scripts/models.py',ROOT/'scripts/course.py',ROOT/'scripts/layout.py']
     sources += list((ROOT/'scripts/motion_canvas').glob('*')) if engine=='motion-canvas' else [ROOT/'scripts/manim_renderer.py']
     fingerprint=digest(b''.join(p.read_bytes() for p in sorted(sources) if p.is_file())+font.read_bytes())
     keys=[];new=reused=0
@@ -98,7 +98,7 @@ def setup(runtime):
         p=ROOT/'scripts/motion_canvas'/name
         if p.exists():shutil.copy2(p,root/name)
     subprocess.run(['npm','ci' if (root/'package-lock.json').exists() else 'install','--no-audit','--no-fund','--registry=https://registry.npmjs.org'],cwd=root,check=True)
-    config={'motion_canvas_runtime':str(root),'manim_python':os.path.abspath(sys.executable)}
+    config=local_config();config.update(motion_canvas_runtime=str(root),manim_python=os.path.abspath(sys.executable))
     if (root.parent/'tex-tools/dvisvgm').exists():config['tex_bin']=str(root.parent/'tex-tools')
     (ROOT/'runtime-local.json').write_text(json.dumps(config,indent=2)+'\n')
     print(json.dumps({'motion_canvas_runtime':str(root),'versions':versions('motion-canvas',root)},ensure_ascii=False))

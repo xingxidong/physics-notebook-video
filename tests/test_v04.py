@@ -9,6 +9,7 @@ from speech_plan import apply,externalize
 from voice import master
 from voice_quality import audit
 from voice_clone import apply_voice,inspect_audio
+from layout import page_spec,expand_actions,place_action,focus_spec,focus_state,audit_lesson
 
 
 class VoiceV04Tests(unittest.TestCase):
@@ -53,18 +54,27 @@ class VoiceV04Tests(unittest.TestCase):
             (project/'lesson.json').write_text(json.dumps({'title':'x','pages':[]},ensure_ascii=False));apply_voice(project,'PhysicsTeacher01')
             lesson=json.loads((project/'lesson.json').read_text());self.assertEqual(lesson['speech']['voice'],'PhysicsTeacher01')
 
+    def test_semantic_layout_formula_steps_and_focus(self):
+        spec=page_spec('one-page-problem');actions=expand_actions([{'type':'formula_steps','id':'energy','steps':[r'E_k=\frac{1}{2}mv^2',r'E_k+E_p=C']}],spec)
+        self.assertEqual(sum(a['type']=='math' for a in actions),2);self.assertTrue(any(a['type']=='arrow' for a in actions))
+        placed=place_action({'type':'text','text':'方向','zone':'explanation','place':{'line':1}},spec,{})
+        self.assertGreater(placed['x'],140);self.assertGreater(placed['y'],500)
+        focus=focus_spec('diagram',spec);page={'focus':[{**focus,'start':1,'end':3}]}
+        self.assertGreater(focus_state(page,2)['zoom'],1);self.assertEqual(focus_state(page,8)['zoom'],1)
+        report=audit_lesson([{'id':'p1','problem_id':'same','cues':[]},{'id':'p2','problem_id':'same','cues':[]}]);self.assertEqual(report['warnings'][0]['code'],'problem-spans-pages')
+
     @unittest.skipUnless(shutil.which('ffmpeg') and Path('/System/Library/Fonts/Supplemental/Songti.ttc').exists(),'formal build needs ffmpeg and a Chinese font')
     def test_formal_course_build_runs_mastering_and_voice_gate(self):
         with tempfile.TemporaryDirectory() as folder:
             project=Path(folder);rate=24000;duration=2.2;source=project/'input.wav'
             samples=array('h',(round(5000*math.sin(2*math.pi*200*i/rate)) for i in range(round(rate*duration))))
             with wave.open(str(source),'wb') as w:w.setnchannels(1);w.setsampwidth(2);w.setframerate(rate);w.writeframes(samples.tobytes())
-            lesson={'title':'正式构建测试','show_titles':False,'speech':{'backend':'user','audio_mastering':True},'speech_plan':'speech-plan.json','pages':[{'id':'p01','title':'内部页名','cues':[{'id':'c1','text':'速度方向沿斜面向下。','audio':'input.wav','actions':[{'type':'arrow','from':[220,300],'to':[620,300],'color':'blue'}]}]}]}
+            lesson={'title':'正式构建测试','show_titles':False,'speech':{'backend':'user','audio_mastering':True},'speech_plan':'speech-plan.json','pages':[{'id':'p01','title':'内部页名','layout':'one-page-problem','problem_id':'motion-01','cues':[{'id':'c1','text':'速度方向沿斜面向下。','audio':'input.wav','focus':{'zone':'derivation','zoom':1.05},'actions':[{'type':'formula_steps','id':'velocity','zone':'derivation','steps':['v=v_0+at','v^2=v_0^2+2ax'],'color':'blue'}]}]}]}
             plan={'version':1,'cues':{'c1':{'role':'conclusion','tts':'所以，速度方向沿斜面向下。','emphasis':['速度方向']}}}
             (project/'lesson.json').write_text(json.dumps(lesson,ensure_ascii=False));(project/'speech-plan.json').write_text(json.dumps(plan,ensure_ascii=False))
-            run=subprocess.run([sys.executable,str(ROOT/'scripts/course.py'),'build',str(project)],capture_output=True,text=True)
-            self.assertEqual(run.returncode,0,run.stderr);self.assertTrue((project/'voice-report.json').exists());self.assertTrue((project/'prosody.json').exists())
-            report=json.loads((project/'build-report.json').read_text());self.assertTrue(report['audio_mastering']['enabled'])
+            run=subprocess.run([sys.executable,str(ROOT/'scripts/course.py'),'build',str(project),'--video','--fps','12'],capture_output=True,text=True)
+            self.assertEqual(run.returncode,0,run.stderr);self.assertTrue((project/'voice-report.json').exists());self.assertTrue((project/'prosody.json').exists());self.assertTrue((project/'video.mp4').exists())
+            report=json.loads((project/'build-report.json').read_text());self.assertTrue(report['audio_mastering']['enabled']);self.assertEqual(report['layout_quality'],'pass')
 
 
 if __name__=='__main__':unittest.main()

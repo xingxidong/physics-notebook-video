@@ -6,8 +6,28 @@ export default makeScene2D(function* (view) {
   const data = (window as any).courseData;
   const page = data.page;
   const clock = createSignal(0);
+  const focus = () => {
+    for (const event of (page.focus || [])) {
+      const transition = event.transition;
+      if (clock() >= event.start - transition && clock() <= event.end + transition) {
+        const rise = Math.max(0, Math.min(1, (clock() - event.start + transition) / transition));
+        const fall = Math.max(0, Math.min(1, (event.end + transition - clock()) / transition));
+        let amount = Math.min(rise, fall); amount = amount * amount * (3 - 2 * amount);
+        const [x, y, w, h] = event.rect;
+        return {zoom: 1 + (event.zoom - 1) * amount, center: [x + w / 2 - 640, y + h / 2 - 360]};
+      }
+    }
+    return {zoom: 1, center: [0, 0]};
+  };
+  const camera = new Node({
+    scale: () => focus().zoom,
+    position: () => {
+      const state = focus(), delta = state.zoom - 1;
+      return [-state.center[0] * delta, -state.center[1] * delta];
+    },
+  });
   const root = new Node({position: [-640, -360]});
-  view.add(root);
+  view.add(camera);camera.add(root);
   root.add(new Img({src: data.background, position: [640, 360], width: 1280, height: 720}));
   const dynamic = data.dynamic_frames || [];
   const frame = () => dynamic[Math.min(dynamic.length - 1, Math.floor((clock() + 1e-8) * data.fps))] || [];

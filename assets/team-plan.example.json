@@ -4,13 +4,7 @@
     "target_minutes": 100,
     "minimum_minutes": 90,
     "show_titles": false,
-    "renderer": "motion-canvas",
-    "speech": {
-      "backend": "minimax",
-      "voice": "Chinese (Mandarin)_Gentleman",
-      "model": "speech-2.8-hd",
-      "speed": 1.0
-    }
+    "renderer": "motion-canvas"
   },
   "audience": "填写学生基础",
   "teaching_goal": "填写本课结束时学生能够完成的任务",
@@ -24,6 +18,7 @@
   "page_policy": {
     "prefer_complete_unit_per_page": true,
     "show_titles": false,
+    "layout_preset": "one-page-problem",
     "layout": "题图或主图保留，推导在同页完成，结论落在本页"
   },
   "voice_policy": {

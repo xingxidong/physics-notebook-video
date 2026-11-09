@@ -2,8 +2,9 @@
 import argparse,importlib.util,json,math,shutil,sys
 from pathlib import Path
 import numpy as np
-from manim import Scene,ImageMobject,VMobject,VGroup,Dot,tempconfig
+from manim import Scene,MovingCameraScene,ImageMobject,VMobject,VGroup,Dot,tempconfig
 from course import portion
+from layout import focus_state
 
 def render(payload,output):
     data=json.loads(Path(payload).read_text());page=data['page'];native=data.get('native_scene')
@@ -14,7 +15,7 @@ def render(payload,output):
         SceneClass=getattr(module,native.get('class','PhysicsScene'))
     else:
         settings.update(frame_width=1280,frame_height=720)
-        class NotebookScene(Scene):
+        class NotebookScene(MovingCameraScene):
             def construct(self):
                 self.add(ImageMobject(data['background']).set(width=1280,height=720))
                 multiplier=self.camera.cairo_line_width_multiple
@@ -27,6 +28,8 @@ def render(payload,output):
                 layer=VGroup(dynamic_nodes,nodes,cursor);self.add(layer)
                 def update(group,dt=0):
                     t=self.time
+                    focus=focus_state(page,t);zoom=focus['zoom'];cx,cy=focus['center'];point=np.array([cx-640,360-cy,0])
+                    self.camera.frame.set(width=1280/zoom).move_to(point*(1-1/zoom))
                     if dynamic:
                         frame=dynamic[min(len(dynamic)-1,int((t+1e-8)*data['fps']))]
                         for i,mob in enumerate(dynamic_nodes):
@@ -42,7 +45,9 @@ def render(payload,output):
                             if len(pts)<2:pts=[pts[0],[pts[0][0]+.001,pts[0][1]]]
                             mob.set_points_as_corners(points(pts));mob.set_stroke(opacity=0 if state==0 else 1);states[i]=state
                             if state==1:cursor.move_to(points([pts[-1]])[0]).set_opacity(1)
-                layer.add_updater(update);update(layer);self.wait(page['frames']/data['fps'],frozen_frame=False)
+                # Manim samples both ends of the interval; a half-frame offset
+                # produces the exact shared-timeline frame count.
+                layer.add_updater(update);update(layer);self.wait((page['frames']-.5)/data['fps'],frozen_frame=False)
         SceneClass=NotebookScene
     with tempconfig(settings):
         SceneClass.course_payload=data

@@ -31,6 +31,16 @@
 
 本用户的新课在 lesson 顶层设置 `"show_titles":false`：保留内部页面名称，视频、板书 PNG 与 HTML 画布不绘制页标题。个别页面可用 `show_title` 覆盖；未配置时兼容已有课程。
 
+## 一页一题布局
+
+页面设置 `"layout":"one-page-problem"` 和稳定的 `problem_id`。动作可写入 `diagram`、`derivation`、`explanation`、`result` 四个区域；公式链使用 `formula_steps`，cue 使用 `focus` 做轻微页内聚焦。完整字段、相对坐标和示例见 [一页一题语义布局](layout.md)。
+
+```sh
+python3 SKILL/scripts/course.py layout-check PROJECT --strict
+```
+
+构建产生 `layout-report.json`。相同 `problem_id` 出现在多页、文字与公式明显重叠、区域内容过密时写入警告。
+
 ## 图形与公式动作
 
 坐标以 1280×720 为基准，内容区为 x=120..1200、y=95..655；输出 1080p 时整体放大。颜色支持 `ink/blue/red/green/muted` 或六位十六进制值。文字默认32像素，公式分母、上标与下标会伸出基线，给上下方留位置。
@@ -67,7 +77,7 @@ LaTeX 子集：分式、上下标、向量、单位法线、时间导数点号�
 
 `course.py batch batch.json --video --jobs 2` 从批量文件所在目录解析路径，各课独立处理。`batch-report.json` 给出逐课结果。修改后再次运行，音频与每页视频按内容缓存，已完成资源直接复用。
 
-输出：preview.html、video.mp4、boards.pdf、pages/*.png、contact-sheet.png、tikz/*.tikz、tikz/boards.tex、timeline.json、narration.md、prosody.json、voice-report.json、build-report.json。完整文字讲义由制作课程时另写 `讲义.md`，与题设、推导和图文解答相配合。
+输出：preview.html、video.mp4、boards.pdf、pages/*.png、contact-sheet.png、tikz/*.tikz、tikz/boards.tex、timeline.json、narration.md、prosody.json、voice-report.json、layout-report.json、build-report.json。完整文字讲义由制作课程时另写 `讲义.md`，与题设、推导和图文解答相配合。
 
 ## 原题图片与两圆运动组件
 

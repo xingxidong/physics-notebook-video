@@ -49,10 +49,13 @@ def init(project,plan_file):
     project,team,contract_path,manifest_path=paths(project)
     if team.exists():raise ValueError(f'{team} already exists; keep the current work packages or choose a new project')
     plan=read_json(plan_file);course,sections=validate_plan(plan)
+    from engine_render import local_config
+    local_speech=(local_config().get('speech_defaults') or {}).get('minimax',{})
+    speech=course.get('speech') or {**DEFAULT_SPEECH,**local_speech}
     lesson={
         'title':course['title'],'show_titles':bool(course.get('show_titles',False)),
         'renderer':course.get('renderer','motion-canvas'),
-        'speech':course.get('speech',DEFAULT_SPEECH),
+        'speech':speech,
     }
     for key in ('font','parameters'):
         if key in course:lesson[key]=course[key]
@@ -60,7 +63,7 @@ def init(project,plan_file):
         'schema_version':1,'course':course,'lesson':lesson,
         'audience':plan.get('audience',''),'teaching_goal':plan.get('teaching_goal',''),
         'symbols':plan.get('symbols',{}),
-        'page_policy':plan.get('page_policy',{'prefer_complete_unit_per_page':True,'show_titles':False}),
+        'page_policy':plan.get('page_policy',{'prefer_complete_unit_per_page':True,'show_titles':False,'layout_preset':'one-page-problem'}),
         'voice_policy':plan.get('voice_policy',{}),
         'deliverables':plan.get('deliverables',['video','subtitles','lesson-source','tikz','boards-pdf']),
     }
@@ -84,7 +87,7 @@ def init(project,plan_file):
         manifest['sections'].append({'id':sid,'order':index,'title':section['title'],'target_minutes':section['target_minutes'],'page_prefix':prefix,'folder':f'team/sections/{sid}','bridge_in':section.get('bridge_in',''),'bridge_out':section.get('bridge_out','')})
         write_json(folder/'assignment.json',assignment)
         validate_cmd=' '.join(shlex.quote(x) for x in [sys.executable,str(Path(__file__).resolve()),'validate',str(project)])
-        prompt=f"""你负责课程的章节 `{sid}`：{section['title']}。\n\n读取本目录的 assignment.json 和其中列出的绝对路径原始资料，只在本目录写 fragment.json、讲义片段与 TikZ。你与其他 Agent 同时工作，不要修改、移动或撤销其他目录中的文件。保持共同符号表；需要新符号时记录在 handoff.md，交给主 Agent 更新课程合同。每个板书页尽量完成一个完整问题或概念单元；确需跨页时写明 continuation_reason。每页同时完成物理推导、自然口播、板书动作与配图。不要调用正式 TTS，不要写项目根目录的 lesson.json。\n\n完成后可直接运行：\n\n```sh\n{validate_cmd}\n```\n\n主 Agent 负责最终合并。\n"""
+        prompt=f"""你负责课程的章节 `{sid}`：{section['title']}。\n\n读取本目录的 assignment.json 和其中列出的绝对路径原始资料，只在本目录写 fragment.json、讲义片段与 TikZ。你与其他 Agent 同时工作，不要修改、移动或撤销其他目录中的文件。保持共同符号表；需要新符号时记录在 handoff.md，交给主 Agent 更新课程合同。每个板书页尽量完成一个完整问题或概念单元，设置 problem_id，并按 page_policy 采用一页一题语义布局；确需跨页时写明 continuation_reason。主图在本页保持原位，推导使用 formula_steps，页内焦点只做轻微缩放。每页同时完成物理推导、自然口播、板书动作与配图。不要调用正式 TTS，不要写项目根目录的 lesson.json。\n\n完成后可直接运行：\n\n```sh\n{validate_cmd}\n```\n\n主 Agent 负责最终合并。\n"""
         (folder/'AGENT_PROMPT.md').write_text(prompt)
     write_json(manifest_path,manifest)
     print(json.dumps({'project':str(project),'sections':len(sections),'target_minutes':course['target_minutes'],'team_dir':str(team)},ensure_ascii=False))
@@ -145,9 +148,11 @@ def inspect_team(project,deep=False):
     if deep and all_pages and not errors:
         try:
             from course import compile_lesson
+            from layout import audit_lesson
             validation_lesson=dict(contract['lesson']);validation_lesson['pages']=all_pages
-            compile_lesson(project,validation_lesson)
-            course_check={'ok':True,'message':'actions, glyphs, parameters, anchors, and geometry are valid'}
+            _,compiled=compile_lesson(project,validation_lesson);layout_report=audit_lesson(compiled)
+            warnings.extend('layout: '+x['message'] for x in layout_report['warnings'])
+            course_check={'ok':True,'message':'actions, glyphs, parameters, anchors, geometry, and semantic layout are valid','layout':layout_report['status']}
         except (ValueError,KeyError,TypeError,ImportError,OSError) as e:
             errors.append(f'Course action check: {e}');course_check={'ok':False,'message':str(e)}
     target=float(contract['course']['target_minutes']);minimum=float(contract['course'].get('minimum_minutes',target));estimated=seconds/60

@@ -3,7 +3,7 @@ name: physics-notebook-video
 description: 将物理题、物理竞赛讲义或概念课制作为电子笔记本式逐笔板书视频，含图文推导、自然中文口播、TikZ 源码、本地批量渲染与长课多 Agent 协作。适用于 Codex、Claude 及其他兼容 Agent Skills 的终端中的手写讲课、Goodnotes 录屏式课程、讲义转视频和系列课程制作。
 metadata:
   author: xingxidong
-  version: "0.4.0"
+  version: "0.5.0"
   standard: agentskills.io
   icon: assets/icon.png
   requirements: Python 3.11+, FFmpeg, Chinese font; optional Node.js 20+/Chrome for Motion Canvas and TeX/dvisvgm for Manim
@@ -25,6 +25,8 @@ metadata:
 
 每道例题、练习和综合题都配图，保留可编辑 TikZ；解题过程继续补图、引用图中的点、方向、路径与区域。一个完整问题尽量在同一页讲完：保留主图，逐步补充关系、计算和结论，问题结束后再换页。内容确实放不下时，在明确的中间关系之后换页，下一页第一步直接承接。练习题后保持题目本身，集中解答另列。保留求导、积分、微分方程和必要中间步骤。讲义语言按本用户偏好直接、自然地解释物理；用一条完整推导贯穿。
 
+v0.5 新课优先使用 `one-page-problem` 语义布局：主图固定在 `diagram`，连续推导写入 `derivation`，物理解释和最终关系分别落在 `explanation`、`result`。公式链用 `formula_steps` 对齐向下展开；cue 可用 `focus` 在当前区域做约 1.06 倍轻微聚焦。运行 `layout-check` 检查遮挡、信息密度和同题跨页。格式见 [一页一题布局](references/layout.md)。
+
 ## 长课的多 Agent 协作
 
 45 分钟以上、约 18 页以上或批量系列课采用混合工作流：一个主 Agent 先固定课程合同，再让最多三个章节 Agent 并行制作连贯教学段，最后由主 Agent 顺序合并、检查、配音和交付。短课由一个 Agent 完成，减少重复读取。
@@ -40,7 +42,7 @@ python3 SKILL/scripts/team.py validate PROJECT
 python3 SKILL/scripts/team.py merge PROJECT
 ```
 
-课程合同包含学生基础、时长、符号表、页面政策、音色和章节连接。任务包会写入项目、技能和原文的解析路径，以及可直接复制的校验命令。只把对应原文与任务包交给章节 Agent，以减少重复 token。`team.py validate` 同时执行板书动作、字形、参数、时间锚点与几何范围检查。
+课程合同包含学生基础、时长、符号表、页面政策、音色和章节连接。任务包会写入项目、技能和原文的解析路径，以及可直接复制的校验命令。只把对应原文与任务包交给章节 Agent，以减少重复 token。`team.py validate` 同时执行板书动作、字形、参数、时间锚点、几何范围与语义布局检查。
 
 无配音草稿仍用 `course.py build PROJECT --draft`。定稿后使用下列入口；它会先执行严格时长门、合并课程，然后才调用正式 TTS 和视频渲染：
 
