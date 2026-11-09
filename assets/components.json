@@ -1,0 +1,63 @@
+{
+  "title": "物理竞赛图形组件",
+  "show_titles": false,
+  "speech": {"backend": "glm", "voice": "chuichui", "speed": 1.0},
+  "pages": [
+    {
+      "id": "p01", "title": "受力图", "layout": "one-page-problem", "problem_id": "component-force",
+      "cues": [{"id": "force", "tts": "先确定研究对象，再把支持力、重力和摩擦力画在同一个受力图中。", "focus": "diagram", "actions": [
+        {"type": "component", "name": "force-diagram", "id": "force-main", "zone": "diagram"},
+        {"type": "formula_steps", "id": "force-chain", "zone": "derivation", "steps": ["F_N=mg\\cos\\theta", "f=mg\\sin\\theta"], "color": "blue"}
+      ]}]
+    },
+    {
+      "id": "p02", "title": "斜面", "layout": "one-page-problem", "problem_id": "component-incline",
+      "cues": [{"id": "incline", "tts": "斜面的倾角、滑块位置和几何辅助线一起进入分解。", "focus": "diagram", "actions": [
+        {"type": "component", "name": "inclined-plane", "id": "incline-main", "zone": "diagram", "angle": 30},
+        {"type": "formula_steps", "id": "incline-chain", "zone": "derivation", "steps": ["F_x=mg\\sin\\theta", "F_y=mg\\cos\\theta"], "color": "blue"}
+      ]}]
+    },
+    {
+      "id": "p03", "title": "抛体", "layout": "one-page-problem", "problem_id": "component-projectile",
+      "cues": [{"id": "projectile", "tts": "初速度决定轨迹的起始方向，重力让速度的竖直分量连续改变。", "focus": "diagram", "actions": [
+        {"type": "component", "name": "projectile-trajectory", "id": "projectile-main", "zone": "diagram"},
+        {"type": "formula_steps", "id": "projectile-chain", "zone": "derivation", "steps": ["x=v_0\\cos\\theta t", "y=v_0\\sin\\theta t-\\frac{1}{2}gt^2"], "color": "blue"}
+      ]}]
+    },
+    {
+      "id": "p04", "title": "电偶极", "layout": "one-page-problem", "problem_id": "component-dipole",
+      "cues": [{"id": "dipole", "tts": "场线从正电荷出发，终止于负电荷，电偶极矩沿两电荷连线指向正电荷。", "focus": "diagram", "actions": [
+        {"type": "component", "name": "electric-dipole", "id": "dipole-main", "zone": "diagram"},
+        {"type": "formula_steps", "id": "dipole-chain", "zone": "derivation", "steps": ["p=qd", "E=\\frac{2p}{4\\pi\\varepsilon_0r^3}"], "color": "blue"}
+      ]}]
+    },
+    {
+      "id": "p05", "title": "高斯面", "layout": "one-page-problem", "problem_id": "component-gauss",
+      "cues": [{"id": "gauss", "tts": "球形高斯面围住中心电荷，场强在球面上大小相等并沿半径方向。", "focus": "diagram", "actions": [
+        {"type": "component", "name": "gaussian-surface", "id": "gauss-main", "zone": "diagram"},
+        {"type": "formula_steps", "id": "gauss-chain", "zone": "derivation", "steps": ["\\Phi_E=\\oint\\vec E\\cdot d\\vec S", "E4\\pi r^2=\\frac{Q}{\\varepsilon_0}"], "color": "blue"}
+      ]}]
+    },
+    {
+      "id": "p06", "title": "直流回路", "layout": "one-page-problem", "problem_id": "component-circuit",
+      "cues": [{"id": "circuit", "tts": "沿电流方向读出电源和电阻，再按回路写电势变化。", "focus": "diagram", "actions": [
+        {"type": "component", "name": "circuit-loop", "id": "circuit-main", "zone": "diagram"},
+        {"type": "formula_steps", "id": "circuit-chain", "zone": "derivation", "steps": ["\\varepsilon=IR", "I=\\frac{\\varepsilon}{R}"], "color": "blue"}
+      ]}]
+    },
+    {
+      "id": "p07", "title": "薄透镜", "layout": "one-page-problem", "problem_id": "component-lens",
+      "cues": [{"id": "lens", "tts": "平行主轴的光线经过透镜后通过焦点，经过光心的光线方向保持不变。", "focus": "diagram", "actions": [
+        {"type": "component", "name": "thin-lens", "id": "lens-main", "zone": "diagram"},
+        {"type": "formula_steps", "id": "lens-chain", "zone": "derivation", "steps": ["\\frac{1}{f}=\\frac{1}{u}+\\frac{1}{v}", "m=-\\frac{v}{u}"], "color": "blue"}
+      ]}]
+    },
+    {
+      "id": "p08", "title": "机械波", "layout": "one-page-problem", "problem_id": "component-wave",
+      "cues": [{"id": "wave", "tts": "相邻同相位点之间的距离就是波长，波形沿传播方向平移。", "focus": "diagram", "actions": [
+        {"type": "component", "name": "wave-profile", "id": "wave-main", "zone": "diagram"},
+        {"type": "formula_steps", "id": "wave-chain", "zone": "derivation", "steps": ["y=A\\sin(\\omega t-kx)", "k=\\frac{2\\pi}{\\lambda}"], "color": "blue"}
+      ]}]
+    }
+  ]
+}

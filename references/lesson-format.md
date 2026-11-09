@@ -56,6 +56,9 @@ python3 SKILL/scripts/course.py layout-check PROJECT --strict
 | charge | center:[x,y],label,size,color |
 | stroke | points:[[x,y],...],curved,width,color |
 | plot | origin:[x,y],scale:[sx,sy],domain:[xmin,xmax],expr,samples,width,color |
+| component | name,id,zone,scale 与组件物理参数 |
+
+`component` 用于复用受力图、斜面、抛体、电偶极、高斯面、直流回路、薄透镜和机械波。它在编译时展开为表中的普通动作，保留逐笔动画和可编辑 TikZ。参数表见 [物理图形组件](components.md)。
 
 数字可写为参数表达式，例如 `"=cx+r"`、`"=R*cos(pi/6)"`。表达式支持基本算术和 sin/cos/tan/sqrt/exp/log/asin/acos/atan。plot 的 expr 使用数学变量 x；横向为正，图像纵轴向上，screen_y = origin_y - scale_y*f(x)。分段曲线用多条 plot，共享同一原点与比例。
 
@@ -77,7 +80,7 @@ LaTeX 子集：分式、上下标、向量、单位法线、时间导数点号�
 
 `course.py batch batch.json --video --jobs 2` 从批量文件所在目录解析路径，各课独立处理。`batch-report.json` 给出逐课结果。修改后再次运行，音频与每页视频按内容缓存，已完成资源直接复用。
 
-输出：preview.html、video.mp4、boards.pdf、pages/*.png、contact-sheet.png、tikz/*.tikz、tikz/boards.tex、timeline.json、narration.md、prosody.json、voice-report.json、layout-report.json、build-report.json。完整文字讲义由制作课程时另写 `讲义.md`，与题设、推导和图文解答相配合。
+输出：preview.html、video.mp4、boards.pdf、pages/*.png、contact-sheet.png、tikz/*.tikz、tikz/boards.tex、timeline.json、narration.md、prosody.json、voice-report.json、layout-report.json、component-report.json、build-report.json。完整文字讲义由制作课程时另写 `讲义.md`，与题设、推导和图文解答相配合。
 
 ## 原题图片与两圆运动组件
 

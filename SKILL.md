@@ -3,7 +3,7 @@ name: physics-notebook-video
 description: 将物理题、物理竞赛讲义或概念课制作为电子笔记本式逐笔板书视频，含图文推导、自然中文口播、TikZ 源码、本地批量渲染与长课多 Agent 协作。适用于 Codex、Claude 及其他兼容 Agent Skills 的终端中的手写讲课、Goodnotes 录屏式课程、讲义转视频和系列课程制作。
 metadata:
   author: xingxidong
-  version: "0.5.0"
+  version: "0.6.0"
   standard: agentskills.io
   icon: assets/icon.png
   requirements: Python 3.11+, FFmpeg, Chinese font; optional Node.js 20+/Chrome for Motion Canvas and TeX/dvisvgm for Manim
@@ -26,6 +26,8 @@ metadata:
 每道例题、练习和综合题都配图，保留可编辑 TikZ；解题过程继续补图、引用图中的点、方向、路径与区域。一个完整问题尽量在同一页讲完：保留主图，逐步补充关系、计算和结论，问题结束后再换页。内容确实放不下时，在明确的中间关系之后换页，下一页第一步直接承接。练习题后保持题目本身，集中解答另列。保留求导、积分、微分方程和必要中间步骤。讲义语言按本用户偏好直接、自然地解释物理；用一条完整推导贯穿。
 
 v0.5 新课优先使用 `one-page-problem` 语义布局：主图固定在 `diagram`，连续推导写入 `derivation`，物理解释和最终关系分别落在 `explanation`、`result`。公式链用 `formula_steps` 对齐向下展开；cue 可用 `focus` 在当前区域做约 1.06 倍轻微聚焦。运行 `layout-check` 检查遮挡、信息密度和同题跨页。格式见 [一页一题布局](references/layout.md)。
+
+v0.6 新题先从参数化物理组件中选择主图：受力图、斜面、抛体、电偶极、高斯面、直流回路、薄透镜和机械波已经内置。组件保存物理参数，编译时展开为逐笔路径，同步进入 TikZ、PDF、HTML 与三套视频渲染路径；题目特有的点、路径和辅助线继续用普通动作补充。运行 `component-check` 检查参数、区域占用和组件 id。字段与示例见 [物理图形组件](references/components.md)。
 
 ## 长课的多 Agent 协作
 

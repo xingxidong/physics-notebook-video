@@ -1,8 +1,8 @@
 # 物理逐笔板书视频技能
 
-版本：0.5.0。面向支持 Agent Skills 和本地命令的 Agent 宿主，制作带中文配音的物理讲解视频。
+版本：0.6.0。面向支持 Agent Skills 和本地命令的 Agent 宿主，制作带中文配音的物理讲解视频。
 
-已完成并实测：中文与公式逐笔书写、图文推导、MiniMax 与 Edge 配音、同步字幕、Motion Canvas 和 Manim 渲染、页面缓存、批量导出，以及 TikZ 与板书 PDF。0.4.0 新增教师口语与语调计划、公式口语化和配音质量报告；0.5.0 新增一页一题语义布局、公式变形链、页内聚焦与布局质量门。当前完整视频流程在 macOS 上验证；Windows、Linux 的完整安装流程尚未验证。
+已完成并实测：中文与公式逐笔书写、图文推导、MiniMax 与 Edge 配音、同步字幕、Motion Canvas 和 Manim 渲染、页面缓存、批量导出，以及 TikZ 与板书 PDF。0.4.0 新增教师口语与语调计划；0.5.0 新增一页一题语义布局；0.6.0 新增八类参数化物理图形组件、组件报告和跨引擎缓存联动。当前完整视频流程在 macOS 上验证；Windows、Linux 的完整安装流程尚未验证。
 
 模板默认采用无逐页标题的笔记本样式、自然课堂口播和 MiniMax 温润男声。使用者可指定其他样式与音色。
 
@@ -108,6 +108,16 @@ MINIMAX_API_HOST=https://api.minimax.cn
 ```
 
 新题由当前 Agent 完成物理推导、图形与口播编排；渲染、重新编码和缓存复用由程序执行。图形和笔画组件可随题型继续积累。
+
+内置组件涵盖受力图、斜面、抛体、电偶极、高斯面、直流回路、薄透镜和机械波。用完整示例检查组件布局：
+
+```sh
+python3 "$PHYSICS_SKILL/scripts/course.py" init components-demo --example components --backend minimax
+python3 "$PHYSICS_SKILL/scripts/course.py" build components-demo --draft
+python3 "$PHYSICS_SKILL/scripts/course.py" component-check components-demo --strict
+```
+
+组件字段与物理参数见 [参数化物理图形组件](references/components.md)。
 
 ## 长课与多 Agent
 
