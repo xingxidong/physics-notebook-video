@@ -38,8 +38,10 @@ def font_path(lesson,project):
 def compile_lesson(project,lesson=None):
     import ink
     from mathparse import parse
+    from speech_plan import apply as apply_speech_plan
     project=Path(project).resolve()
     lesson=json.loads((project/'lesson.json').read_text()) if lesson is None else copy.deepcopy(lesson)
+    lesson,speech_meta=apply_speech_plan(project,lesson);lesson['_speech_plan_meta']=speech_meta
     if not lesson.get('title') or not lesson.get('pages'):raise ValueError('A lesson needs a title and pages')
     cache=project/'cache/hanzi';cache.mkdir(parents=True,exist_ok=True)
     for seed in (ROOT/'assets/hanzi').glob('*.json'):
@@ -56,10 +58,12 @@ def compile_lesson(project,lesson=None):
         if page.get('image'):
             spec=copy.deepcopy(page['image']);source=(project/spec.pop('file')).resolve();spec['data']='data:image/png;base64,'+base64.b64encode(source.read_bytes()).decode();cooked['image']=spec
         for ci,cue in enumerate(page['cues']):
-            cue=copy.deepcopy(cue);cue.setdefault('id',f'{pid}-c{ci+1:02d}');cue.setdefault('tts',cue.get('text',''));cue.setdefault('text',cue['tts']);cue.setdefault('pause',.8)
-            cue['pause']=finite(cue['pause'])
+            cue=copy.deepcopy(cue);cue.setdefault('id',f'{pid}-c{ci+1:02d}');cue.setdefault('tts',cue.get('text',''));cue.setdefault('text',cue['tts']);cue.setdefault('role','explain');cue.setdefault('pause_before',0);cue.setdefault('pause',.8)
+            cue['pause']=finite(cue['pause']);cue['pause_before']=finite(cue['pause_before'])
             if cue['pause']<0:raise ValueError(f'{cue["id"]}: pause must be nonnegative')
+            if cue['pause_before']<0:raise ValueError(f'{cue["id"]}: pause_before must be nonnegative')
             if 'speed' in cue and not .5<=finite(cue['speed'])<=2:raise ValueError(f'{cue["id"]}: speed must be 0.5..2')
+            if 'volume' in cue and not .1<=finite(cue['volume'])<=10:raise ValueError(f'{cue["id"]}: volume must be 0.1..10')
             if not cue['tts'].strip():raise ValueError(f'{cue["id"]}: missing speakable narration')
             if cue['id'] in seen:raise ValueError(f'Duplicate cue id {cue["id"]}')
             seen.add(cue['id']);cue['blocks']=[]
@@ -157,10 +161,12 @@ def prepare(project,lesson,pages,args):
         if args.backend!=cfg.get('backend'):cfg['voice']=DEFAULTS[args.backend]
         cfg['backend']=args.backend
     if args.voice:cfg['voice']=args.voice
+    cfg.setdefault('audio_mastering',True)
     fps=args.fps;global_t=0;all_pcm=bytearray();timeline=[];voice_hits=voice_new=0
     for p in pages:
         local=.35;pcm=bytearray(b'\0'*round(local*SR)*2);events=[];cues=[]
         for cue in p['cues']:
+            pcm.extend(b'\0'*round(cue['pause_before']*SR)*2)
             if args.draft:
                 audio={'duration':max(1.2,len(cue['tts'])/4.2),'words':[],'file':None}
             else:
@@ -169,7 +175,8 @@ def prepare(project,lesson,pages,args):
             # Quantise start to exact audio samples for every playback/export path.
             local=len(pcm)/(2*SR)
             for e in schedule(cue,audio):e.update(start=e['start']+local,end=e['end']+local);events.append(e)
-            cues.append({'id':cue['id'],'text':cue['text'],'tts':cue['tts'],'start':local,'end':local+audio['duration'],'pause':cue['pause'],'timing':'estimated' if args.draft else 'measured','words':audio.get('words',[])})
+            delivery={k:cue[k] for k in ('role','speed','pitch','volume','emotion','emphasis') if k in cue}
+            cues.append({'id':cue['id'],'text':cue['text'],'tts':cue['tts'],'start':local,'end':local+audio['duration'],'pause_before':cue['pause_before'],'pause':cue['pause'],'timing':'estimated' if args.draft else 'measured','words':audio.get('words',[]),**delivery})
             if args.draft:pcm.extend(b'\0'*round(audio['duration']*SR)*2)
             else:pcm.extend(clip)
             pcm.extend(b'\0'*round(cue['pause']*SR)*2)
@@ -180,7 +187,7 @@ def prepare(project,lesson,pages,args):
         if 'demonstration' in p:
             m=copy.deepcopy(p['demonstration']);lookup={c['id']:c for c in cues};m['start']=lookup[m['start_cue']]['start'];m['stop']=lookup[m['end_cue']]['end'];m['vector_start']=lookup[m.get('vectors_cue',m['start_cue'])]['start'];prepared['demonstration']=m
         timeline.append(prepared);all_pcm.extend(pcm);global_t+=seconds
-    return {'title':lesson['title'],'width':W,'height':H,'fps':fps,'duration':global_t,'draft':args.draft,'speech':cfg,'pages':timeline},all_pcm,{'speech_new':voice_new,'speech_reused':voice_hits}
+    return {'title':lesson['title'],'width':W,'height':H,'fps':fps,'duration':global_t,'draft':args.draft,'speech':cfg,'speech_plan_source':lesson.get('_speech_plan_meta',{}).get('source','lesson.json'),'pages':timeline},all_pcm,{'speech_new':voice_new,'speech_reused':voice_hits}
 
 def portion(points,fraction):
     remaining=sum(math.dist(a,b) for a,b in zip(points,points[1:]))*min(1,max(0,fraction));out=[points[0]]
@@ -285,7 +292,14 @@ def run_build(project,args):
         for page in pages:native_scene(page,project,renderer)
     data,pcm,stats=prepare(project,lesson,pages,args)
     with wave.open(str(project/'narration.wav'),'wb') as w:w.setnchannels(1);w.setsampwidth(2);w.setframerate(SR);w.writeframes(pcm)
-    if not args.draft:subprocess.run(['ffmpeg','-loglevel','error','-y','-i',str(project/'narration.wav'),'-c:a','libmp3lame','-q:a','3',str(project/'narration.mp3')],check=True)
+    prosody={'version':1,'source':data['speech_plan_source'],'speech':data['speech'],'cues':[{k:c[k] for k in ('id','role','tts','speed','pitch','volume','emotion','emphasis','pause_before','pause') if k in c} for p in data['pages'] for c in p['cues']]}
+    write_json(project/'prosody.json',prosody)
+    if not args.draft:
+        from voice import master
+        mastering=master(project,data['speech'],project/'narration.wav',data['duration']);stats['audio_mastering']=mastering
+        from voice_quality import audit
+        voice_report=audit(project,data);stats.update(voice_quality=voice_report['status'],voice_warnings=len(voice_report['warnings']))
+        subprocess.run(['ffmpeg','-loglevel','error','-y','-i',str(project/'narration.wav'),'-c:a','libmp3lame','-q:a','3',str(project/'narration.mp3')],check=True)
     write_json(project/'timeline.json',data);export_boards(project,data,font)
     audio='' if args.draft else 'data:audio/mpeg;base64,'+base64.b64encode((project/'narration.mp3').read_bytes()).decode()
     template=(ROOT/'assets/player.html').read_text().replace('__DATA__',json.dumps(data,ensure_ascii=False).replace('</','<\\/')).replace('__AUDIO__',audio).replace('__MODELS__',(ROOT/'assets/models.js').read_text())
@@ -304,6 +318,7 @@ def main():
     init=subs.add_parser('init');init.add_argument('project');init.add_argument('--title');init.add_argument('--backend',choices=['glm','doubao','minimax','edge','user'],default='glm');init.add_argument('--example',choices=['starter','gauss'],default='starter')
     build=subs.add_parser('build');build.add_argument('project');build.add_argument('--draft',action='store_true');build.add_argument('--video',action='store_true');build.add_argument('--backend',choices=['glm','doubao','minimax','edge','user']);build.add_argument('--voice');build.add_argument('--fps',type=int,choices=[12,24,30],default=24);build.add_argument('--width',type=int,choices=[1280,1920],default=1280)
     check=subs.add_parser('check');check.add_argument('project')
+    voice_check=subs.add_parser('voice-check',help='Audit an existing narration.wav and timeline.json');voice_check.add_argument('project');voice_check.add_argument('--strict',action='store_true')
     batch=subs.add_parser('batch');batch.add_argument('manifest');batch.add_argument('--jobs',type=int,choices=[1,2,3,4],default=2);batch.add_argument('--draft',action='store_true');batch.add_argument('--video',action='store_true');batch.add_argument('--backend',choices=['glm','doubao','minimax','edge','user']);batch.add_argument('--voice');batch.add_argument('--fps',type=int,choices=[12,24,30],default=24);batch.add_argument('--width',type=int,choices=[1280,1920],default=1280)
     subs.add_parser('doctor')
     for target in (build,batch):
@@ -316,6 +331,11 @@ def main():
     if args.command=='doctor':
         from engine_render import doctor
         print(json.dumps({'python':sys.executable,'Pillow':bool(importlib.util.find_spec('PIL')),'edge_tts':bool(importlib.util.find_spec('edge_tts')),'ffmpeg':shutil.which('ffmpeg'),'ffprobe':shutil.which('ffprobe'),'animation':doctor()},ensure_ascii=False));return
+    if args.command=='voice-check':
+        from voice_quality import audit
+        report=audit(args.project);print(json.dumps(report,ensure_ascii=False))
+        if args.strict and report['warnings']:sys.exit(1)
+        return
     if args.command=='setup-renderers':
         from engine_render import setup
         setup(args.runtime);return
@@ -343,12 +363,14 @@ def main():
         return
     if args.command=='init':
         from voice import DEFAULTS
+        from speech_plan import externalize
         p=Path(args.project).resolve();p.mkdir(parents=True,exist_ok=True)
         if (p/'lesson.json').exists():raise ValueError('lesson.json already exists; edit it or choose another project')
         data=json.loads((ROOT/'assets'/(args.example+'.json')).read_text())
         if args.title:data['title']=args.title
         data.setdefault('show_titles',False)
-        data['speech']={'backend':args.backend,'voice':DEFAULTS[args.backend],'speed':1.0};write_json(p/'lesson.json',data);print(p/'lesson.json');return
+        data['speech']={'backend':args.backend,'voice':DEFAULTS[args.backend],'speed':1.0,'audio_mastering':True}
+        data,plan=externalize(data);write_json(p/'lesson.json',data);write_json(p/'speech-plan.json',plan);print(p/'lesson.json');return
     if args.command=='check':
         l,p=compile_lesson(args.project);print(json.dumps({'title':l['title'],'pages':len(p),'cues':sum(len(x['cues']) for x in p),'geometry':'finite and within writing area'}));return
     if args.draft and args.video:raise ValueError('Use --draft for layout, or --video for measured speech and final export')

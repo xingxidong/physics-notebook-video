@@ -3,7 +3,7 @@ name: physics-notebook-video
 description: 将物理题、物理竞赛讲义或概念课制作为电子笔记本式逐笔板书视频，含图文推导、自然中文口播、TikZ 源码、本地批量渲染与长课多 Agent 协作。适用于 Codex、Claude 及其他兼容 Agent Skills 的终端中的手写讲课、Goodnotes 录屏式课程、讲义转视频和系列课程制作。
 metadata:
   author: xingxidong
-  version: "0.3.0"
+  version: "0.4.0"
   standard: agentskills.io
   icon: assets/icon.png
   requirements: Python 3.11+, FFmpeg, Chinese font; optional Node.js 20+/Chrome for Motion Canvas and TeX/dvisvgm for Manim
@@ -80,11 +80,17 @@ python3 SKILL/scripts/course.py render PROJECT --renderer motion-canvas
 
 ## 口播与配音
 
-主参考是 edulab 的物理教学流程与共享 TTS 设计。`tts` 使用自然、能直接念出的口语，数学式另存为 LaTeX。先说物理量及其图中关系，按公式结构断句；一个连贯教学句群一起合成，句内动作可锚定关键词。读题、建模、关键转折、推导、结论分别安排速度与停顿。
+主参考是 edulab 的物理教学流程与共享 TTS 设计。v0.4 将板书源、实际口语和语调计划分开：`lesson.json` 保存板书及动作，`speech-plan.json` 保存教师口语、教学角色、重音词、语速与停顿，构建后生成已解析的 `prosody.json`。旧课继续兼容 cue 内的 `tts`。
+
+`tts` 使用自然、能直接念出的口语，数学式另存为 LaTeX。先说物理量及其图中关系，按公式结构断句；一个连贯教学句群一起合成，句内动作可锚定关键词。读题、观察、建模、关键转折、推导、结论和物理意义分别安排速度与停顿。需要在口语中嵌入公式时使用 `tts_parts`，本地公式口语化程序负责常见分式、向量、上下标、导数和单位读法；重要句子仍按上下文人工调整。
 
 配置支持 `glm`、`doubao`、`minimax`、`edge`、`user`。新项目默认 GLM 候选音色 `chuichui`，来自 edulab 配置；实际音色按账户可用项和用户试听结果确定。已接受的音色沿用。Edge 是已跑通的轻量路线；系统 `say` 不在本版正式配音后端中。读 [配音](references/voice.md) 获取配置、读音和缓存说明。
 
 本用户已接受 MiniMax 的 `speech-2.8-hd`、音色 `Chinese (Mandarin)_Gentleman`（温润男声）。后续本系列优先沿用这套配置，逐段安排速度和停顿；已经完成真实调用与试听。
+
+用户提供本人或已获授权的原始 MP3、M4A、WAV 时，可用 `scripts/voice_clone.py` 创建专属 MiniMax `voice_id`。先生成短试听，用户确认后再用 `--apply-voice-id` 写入课程，复用已经创建的 ID；不要从粘贴为文本或已经损坏的音频构建音色。具体要求见 [配音](references/voice.md#minimax-本人音色复刻)。
+
+正式构建默认执行本地高通、轻压缩和响度统一，保持音频总时长不变；随后生成 `voice-report.json`，检查峰值、削波、长静音、口语密度、未口语化公式和模板式表达。需要把警告作为失败处理时运行 `python3 SKILL/scripts/course.py voice-check PROJECT --strict`。配音配置与质量门见 [配音](references/voice.md)。
 
 用户已选的后端与音色保持一致。缺密钥时继续完成推导、课程源与布局预览，配置问题只影响实际合成。凭据从当前进程或本课 `.env` 读取；对外汇报只给出是否配置。付费后端按用户选择使用，失败保留已生成资源并报告原因。
 

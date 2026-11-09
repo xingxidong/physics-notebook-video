@@ -2,7 +2,7 @@
 
 ## 入口与产物
 
-`course.py init PROJECT --title "课程" --backend glm` 创建一课；示例是完整的点电荷概念课，可按新课改写。`--example gauss` 是完整高斯定理课程。`check` 检查源文件与笔画范围；`build --draft` 生成无配音排版预览；`build --video` 配音并导出正式视频。
+`course.py init PROJECT --title "课程" --backend glm` 创建一课，同时生成 `lesson.json` 和 `speech-plan.json`；示例是完整的点电荷概念课，可按新课改写。`--example gauss` 是完整高斯定理课程。`check` 检查源文件与笔画范围；`build --draft` 生成无配音排版预览；`build --video` 配音并导出正式视频。
 
 依赖：Python 3、Pillow、FFmpeg；Edge 路线另装 edge-tts。推荐在工作区虚拟环境安装。`doctor` 列出当前环境已有依赖。页面标题需要中文 TTF/TTC，自动查找 macOS Songti 或 Linux Noto CJK，也可通过 `font` 或 `PHYSICS_NOTEBOOK_FONT` 指定。笔迹由向量路径绘制。
 
@@ -13,12 +13,11 @@
 ```json
 {
   "title":"点电荷的电场",
-  "speech":{"backend":"glm","voice":"chuichui","speed":1.0},
+  "speech":{"backend":"glm","voice":"chuichui","speed":1.0,"audio_mastering":true},
+  "speech_plan":"speech-plan.json",
   "parameters":{"cx":330,"cy":400,"r":180},
   "pages":[{"id":"p01","title":"电场与距离","cues":[{
-    "id":"field","tts":"根据库仑定律，场强与距离的平方成反比。",
-    "text":"根据库仑定律，场强与距离的平方成反比。",
-    "speed":0.96,"pause":1.0,
+    "id":"field","text":"场强与距离的平方成反比。",
     "actions":[
       {"type":"charge","center":["=cx","=cy"],"label":"Q","color":"red"},
       {"type":"math","latex":"E(r)=\\frac{Q}{4\\pi\\varepsilon_0r^2}",
@@ -28,7 +27,7 @@
 }
 ```
 
-页面与 cue 的 id 在一门课程内唯一，并在修改时保持稳定。`tts` 是实际朗读文本，`text` 是可选的正常书面表达；省略 text 时沿用 tts。cue 可单独设置 speed、pause，Edge 可设置 pitch；MiniMax 可在音色支持时设置 emotion。
+页面与 cue 的 id 在一门课程内唯一，并在修改时保持稳定。`text` 是正常书面表达；实际朗读文本和语调参数按相同 cue id 写入 `speech-plan.json`。旧课程继续支持 cue 内的 `tts`、`speed` 和 `pause`。新格式及角色表见 [教师口播与配音](voice.md)。
 
 本用户的新课在 lesson 顶层设置 `"show_titles":false`：保留内部页面名称，视频、板书 PNG 与 HTML 画布不绘制页标题。个别页面可用 `show_title` 覆盖；未配置时兼容已有课程。
 
@@ -68,7 +67,7 @@ LaTeX 子集：分式、上下标、向量、单位法线、时间导数点号�
 
 `course.py batch batch.json --video --jobs 2` 从批量文件所在目录解析路径，各课独立处理。`batch-report.json` 给出逐课结果。修改后再次运行，音频与每页视频按内容缓存，已完成资源直接复用。
 
-输出：preview.html、video.mp4、boards.pdf、pages/*.png、contact-sheet.png、tikz/*.tikz、tikz/boards.tex、timeline.json、narration.md、build-report.json。完整文字讲义由制作课程时另写 `讲义.md`，与题设、推导和图文解答相配合。
+输出：preview.html、video.mp4、boards.pdf、pages/*.png、contact-sheet.png、tikz/*.tikz、tikz/boards.tex、timeline.json、narration.md、prosody.json、voice-report.json、build-report.json。完整文字讲义由制作课程时另写 `讲义.md`，与题设、推导和图文解答相配合。
 
 ## 原题图片与两圆运动组件
 

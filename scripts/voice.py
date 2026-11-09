@@ -2,7 +2,7 @@
 Protocols reviewed against edulab at 805fdc5dd6bdf942290a7791924bf0ee08f26632.
 Paid services are used only when explicitly selected in the lesson or CLI.
 """
-import asyncio,base64,hashlib,json,os,subprocess,urllib.request,urllib.error,uuid,wave
+import asyncio,base64,hashlib,json,os,re,shutil,subprocess,urllib.request,urllib.error,uuid,wave
 from pathlib import Path
 
 DEFAULTS={'glm':'chuichui','doubao':'zh_male_youyoujunzi_uranus_bigtts','minimax':'Chinese (Mandarin)_Gentleman','edge':'zh-CN-YunxiNeural','user':''}
@@ -42,15 +42,43 @@ def parse_minimax(d):
     if not body.get('audio'):raise RuntimeError('MiniMax returned no audio')
     return bytes.fromhex(body['audio']),body.get('subtitle_file')
 
+def _minimax_pitch(value):
+    if isinstance(value,(int,float)):pitch=float(value)
+    elif isinstance(value,str) and re.fullmatch(r'[+-]?\d+(?:\.\d+)?(?:st)?',value.strip()):pitch=float(value.lower().removesuffix('st'))
+    else:return 0
+    if not -12<=pitch<=12:raise ValueError('MiniMax pitch must be between -12 and 12 semitones')
+    return round(pitch)
+
+def master(project,cfg,source,duration):
+    """Apply duration-preserving local mastering and reuse it by content hash."""
+    project=Path(project);settings=cfg.get('audio_mastering',True)
+    if settings is False:return {'enabled':False,'cache_hit':False,'filter':'none'}
+    if settings is True:settings={}
+    if not isinstance(settings,dict):raise ValueError('speech.audio_mastering must be true, false or an object')
+    target=float(settings.get('target_lufs',-16));peak=float(settings.get('true_peak_db',-1.5));lra=float(settings.get('lra',7));highpass=float(settings.get('highpass_hz',65))
+    if not -24<=target<=-12 or not -3<=peak<=-.5 or not 3<=lra<=20 or not 20<=highpass<=160:raise ValueError('audio_mastering values are outside the supported range')
+    chain=f'highpass=f={highpass:g},acompressor=threshold=-20dB:ratio=2:attack=20:release=220:makeup=1dB,loudnorm=I={target:g}:TP={peak:g}:LRA={lra:g},apad,atrim=0:{duration:.6f}'
+    source=Path(source);signature={'sha256':hashlib.sha256(source.read_bytes()).hexdigest(),'filter':chain,'adapter':1}
+    key=hashlib.sha256(json.dumps(signature,sort_keys=True).encode()).hexdigest()[:24];folder=project/'cache/master';folder.mkdir(parents=True,exist_ok=True);cached=folder/(key+'.wav')
+    hit=cached.exists()
+    if not hit:
+        part=folder/(key+'.part.wav')
+        subprocess.run(['ffmpeg','-loglevel','error','-y','-i',str(source),'-af',chain,'-ac','1','-ar','24000','-c:a','pcm_s16le',str(part)],check=True)
+        part.replace(cached)
+    shutil.copy2(cached,source)
+    return {'enabled':True,'cache_hit':hit,'filter':chain,'target_lufs':target,'true_peak_db':peak,'lra':lra,'highpass_hz':highpass}
+
 def synth(project,cfg,cue):
     project=Path(project);env=environment(project);backend=cfg.get('backend','glm')
     if backend not in DEFAULTS:raise ValueError(f'Unknown speech backend {backend}')
     voice=cfg.get('voice') or env.get(backend.upper()+'_VOICE') or DEFAULTS[backend]
-    speed=float(cue.get('speed',cfg.get('speed',1.0)));pitch=cue.get('pitch',cfg.get('pitch','+0Hz'))
+    speed=float(cue.get('speed',cfg.get('speed',1.0)));pitch=cue.get('pitch',cfg.get('pitch','+0Hz'));volume=float(cue.get('volume',cfg.get('volume',1.0)))
     if not .5<=speed<=2:raise ValueError('Speech speed must be between 0.5 and 2')
+    if not .1<=volume<=10:raise ValueError('Speech volume must be between 0.1 and 10')
+    if backend=='edge' and volume>2:raise ValueError('Edge speech volume must be between 0.1 and 2')
     text=cue.get('tts',cue.get('text',''));audio_path=cue.get('audio')
     model=cfg.get('model') or env.get('MINIMAX_MODEL','speech-2.8-hd') if backend=='minimax' else cfg.get('model','')
-    signature={'backend':backend,'voice':voice,'model':model,'speed':speed,'pitch':pitch,'tts':text,'adapter':1}
+    signature={'backend':backend,'voice':voice,'model':model,'speed':speed,'pitch':pitch,'volume':volume,'tts':text,'adapter':2}
     signature.update(resource_id=cfg.get('resource_id',env.get('DOUBAO_RESOURCE_ID','seed-tts-2.0')),host=env.get('MINIMAX_API_HOST','https://api.minimaxi.com'),emotion=cue.get('emotion'))
     if backend=='user':
         if not audio_path:raise ValueError(f'Cue {cue["id"]} needs an explicit audio file')
@@ -67,7 +95,8 @@ def synth(project,cfg,cue):
         import edge_tts
         async def run():
             data=[];timings=[]
-            talk=edge_tts.Communicate(text,voice,rate=f'{round((speed-1)*100):+d}%',pitch=pitch,boundary='WordBoundary',receive_timeout=40)
+            edge_pitch=pitch if isinstance(pitch,str) and pitch.endswith('Hz') else '+0Hz'
+            talk=edge_tts.Communicate(text,voice,rate=f'{round((speed-1)*100):+d}%',pitch=edge_pitch,volume=f'{round((volume-1)*100):+d}%',boundary='WordBoundary',receive_timeout=40)
             async for m in talk.stream():
                 if m['type']=='audio':data.append(m['data'])
                 elif m['type']=='WordBoundary':timings.append({'text':m['text'],'start':m['offset']/1e7,'end':(m['offset']+m['duration'])/1e7})
@@ -82,7 +111,7 @@ def synth(project,cfg,cue):
     elif backend=='minimax':
         host=env.get('MINIMAX_API_HOST','https://api.minimaxi.com').rstrip('/')
         if not host.startswith('https://'):raise ValueError('MiniMax endpoint must use HTTPS')
-        payload={'model':model,'text':text,'stream':False,'voice_setting':{'voice_id':voice,'speed':speed,'vol':1,'pitch':0},'audio_setting':{'format':'mp3','sample_rate':32000,'bitrate':128000,'channel':1},'subtitle_enable':True,'subtitle_type':'word','output_format':'hex'}
+        payload={'model':model,'text':text,'stream':False,'voice_setting':{'voice_id':voice,'speed':speed,'vol':volume,'pitch':_minimax_pitch(pitch)},'audio_setting':{'format':'mp3','sample_rate':32000,'bitrate':128000,'channel':1},'subtitle_enable':True,'subtitle_type':'word','output_format':'hex'}
         if cue.get('emotion'):payload['voice_setting']['emotion']=cue['emotion']
         raw,url=parse_minimax(json.loads(http(host+'/v1/t2a_v2',payload,{'Authorization':'Bearer '+env['MINIMAX_API_KEY']})))
         if url and url.startswith('https://'):

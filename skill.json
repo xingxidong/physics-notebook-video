@@ -2,7 +2,7 @@
   "format": "agentskills.io",
   "name": "physics-notebook-video",
   "display_name": "物理逐笔板书课",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "将物理题和讲义制作为图文推导、自然中文配音的逐笔板书视频。",
   "icon": "assets/icon.png",
   "repository": "https://github.com/xingxidong/physics-notebook-video",

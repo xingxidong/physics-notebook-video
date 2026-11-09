@@ -23,7 +23,43 @@
 | 10 m/s | 十米每秒 |
 | 2 m/s² | 二米每二次方秒 |
 
-口播在 JSON 中另存 tts；公式用 latex，原书面字幕可放 text。多音字先通过自然措辞或该后端的发音功能处理。试听关注数字、字母串、希腊字母、单位和分式。
+## 三层课程源
+
+新课由 `course.py init` 生成独立的 `speech-plan.json`。`lesson.json` 保存板书、图形与动作；讲义保存在 `讲义.md`；实际朗读和语调安排保存在语音计划。构建输出的 `prosody.json` 是解析角色默认值后的最终语调表。
+
+```json
+{
+  "version":1,
+  "defaults":{"role":"explain"},
+  "cues":{
+    "symmetry":{
+      "role":"key_turn",
+      "tts":"看这里。由对称性，交点的横坐标始终等于圆心距的一半。",
+      "emphasis":["对称性","一半"],
+      "pause_before":0.25,
+      "pause_after":0.9
+    }
+  }
+}
+```
+
+内置角色为 `read_problem`、`observe`、`model`、`derive`、`key_turn`、`conclusion`、`physical_meaning`、`transition` 和 `explain`。角色给出适合该教学动作的默认语速与停顿；cue 中的显式参数覆盖默认值。
+
+口播在语音计划中另存 `tts`，公式用 `latex`，原书面表达放在 lesson cue 的 `text`。多音字先通过自然措辞或该后端的发音功能处理。试听关注数字、字母串、希腊字母、单位和分式。
+
+### 本地公式口语化
+
+`tts_parts` 可以混合普通句子和 LaTeX：
+
+```json
+{"tts_parts":["因此，",{"latex":"E(r)=\\frac{Q}{4\\pi\\varepsilon_0r^2}"},"。"]}
+```
+
+程序支持当前板书 LaTeX 子集中的分式、根式、上下标、向量、时间导数和常用希腊字母。课程可在 `speech-plan.json` 的 `pronunciation` 中覆盖读法。单独试听某个公式：
+
+```sh
+python3 SKILL/scripts/oralize.py 'v^2=2gh'
+```
 
 ## 配置
 
@@ -41,13 +77,51 @@
 
 合成成功的段落会缓存；失败保留已有段落和课程源。付费请求失败后停止该项，不自动切换服务或音色。Edge 的服务可用性按运行环境确认；与同一合成无关的全局依赖和浏览器设置保持原样。
 
+MiniMax cue 支持 `speed`、`volume`、数值 `pitch`（半音）和该音色可用的 `emotion`；Edge 支持 `speed`、`volume` 与 `+NHz`/`-NHz` 形式的 `pitch`。整课优先靠角色、断句和停顿形成起伏，音高只做小范围调整。
+
+## MiniMax 本人音色复刻
+
+使用本人声音或已取得明确授权的声音。准备 MP3、M4A 或 WAV，时长 10 秒到 5 分钟，文件不超过 20 MB；30—60 秒安静、单人、无音乐和低混响的自然讲课录音通常更适合作为课程音色。先创建试听：
+
+```sh
+python3 SKILL/scripts/voice_clone.py teacher.wav \
+  --project PROJECT \
+  --voice-id PhysicsTeacher01 \
+  --preview-text "看图，先把物体受到的力逐个画出来。" \
+  --confirm-rights
+```
+
+成功后得到 `voice-clone-report.json`、可用时得到 `voice-clone-preview.mp3`。试听通过后直接应用已经创建的 ID，不重复调用复刻接口：
+
+```sh
+python3 SKILL/scripts/voice_clone.py --project PROJECT --apply-voice-id PhysicsTeacher01
+```
+
+课程的 MiniMax `voice` 会切换到该 `voice_id`，后续 TTS 请求持续复用这个 ID，无需重复上传音频。希望创建后立即写入课程时可在第一次命令加入 `--update-project`。降噪适合有稳定背景噪声的素材，干净录音保持关闭更能保留音色细节。
+
+## 本地母带与质量报告
+
+正式构建默认启用：
+
+```json
+{"speech":{"audio_mastering":{"target_lufs":-16,"true_peak_db":-1.5,"lra":7,"highpass_hz":65}}}
+```
+
+流程包含高通、轻压缩和响度统一，输出时通过补齐与裁切保持时间轴长度。设置 `"audio_mastering":false` 可保留原始合成声音。处理结果按音频内容和参数缓存。
+
+每次正式构建生成 `voice-report.json`，记录峰值、均方根电平、削波比例、长静音、逐 cue 口语密度、词级时间覆盖率和文稿提示。普通构建保留警告继续交付；发布前可执行：
+
+```sh
+python3 SKILL/scripts/course.py voice-check PROJECT --strict
+```
+
 ## 时间戳与成本
 
 真实段长来自音频。Edge 保存 WordBoundary；豆包保存返回的 word 时间；MiniMax 在字幕返回可用时保存时间。没有词级时间时明确记录估算落点，避免把字符比例称作精确字级对齐。
 
 本版程序没有语言模型调用。生成和改写物理内容仍使用模型 token；语音服务费用、本地渲染时间分别统计。缓存能减少重复合成，逐页缓存能减少修改后的重渲。
 
-实现状态：Edge、MiniMax 已在本机实际跑通。GLM、豆包适配按公开源码和接口结构编写，仍需用用户选定账户实际试听和验证。ASR 自动听写尚未接入固定流水线；按课程需要可用本地听写检查片段。
+实现状态：Edge、MiniMax 已在本机实际跑通。GLM、豆包适配按公开源码和接口结构编写，仍需用用户选定账户实际试听和验证。v0.4 已接入确定性的音频和文稿检查；ASR 回听仍作为后续可选质量门。
 
 2026-11-09 更新：MiniMax 已通过用户账户实际调用，25 秒温润男声试听已被用户接受。后续本系列采用 `speech-2.8-hd`、`Chinese (Mandarin)_Gentleman`；本课 `.env` 使用 `MINIMAX_API_HOST=https://api.minimax.cn`。电偶极层课程已取得全部 18 段音频和 1342 条词级时间数据。GLM、豆包仍保持未实测状态。
 

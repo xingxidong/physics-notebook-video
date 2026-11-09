@@ -1,8 +1,8 @@
 # 物理逐笔板书视频技能
 
-版本：0.3.0。面向支持 Agent Skills 和本地命令的 Agent 宿主，制作带中文配音的物理讲解视频。
+版本：0.4.0。面向支持 Agent Skills 和本地命令的 Agent 宿主，制作带中文配音的物理讲解视频。
 
-已完成并实测：中文与公式逐笔书写、图文推导、MiniMax 与 Edge 配音、同步字幕、Motion Canvas 和 Manim 渲染、页面缓存、批量导出，以及 TikZ 与板书 PDF。0.2.0 新增长课多 Agent 任务包、章节校验与确定性合并；0.3.0 新增 Agent Skills 标准元数据、Codex/Claude/通用宿主安装器，以及 Claude.ai 和豆包工作的 ZIP 打包检查。当前完整视频流程在 macOS 上验证；Windows、Linux 的完整安装流程尚未验证。
+已完成并实测：中文与公式逐笔书写、图文推导、MiniMax 与 Edge 配音、同步字幕、Motion Canvas 和 Manim 渲染、页面缓存、批量导出，以及 TikZ 与板书 PDF。0.4.0 新增独立教师口语与语调计划、教学角色节奏、公式口语化、本地音频母带和配音质量报告。当前完整视频流程在 macOS 上验证；Windows、Linux 的完整安装流程尚未验证。
 
 模板默认采用无逐页标题的笔记本样式、自然课堂口播和 MiniMax 温润男声。使用者可指定其他样式与音色。
 
