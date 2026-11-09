@@ -1,0 +1,33 @@
+{
+  "title":"点电荷的电场与电场力",
+  "speech":{"backend":"glm","voice":"chuichui","speed":1.0},
+  "parameters":{"cx":330,"cy":400,"r":180},
+  "pages":[
+    {"id":"p01","title":"先确定场，再讨论放入的电荷","cues":[
+      {"id":"field-setup","tts":"先把一个正点电荷放在图一的中心。沿半径向外，取一个观察点。我们要确定这个位置的电场。","pause":0.8,"actions":[
+        {"type":"charge","center":["=cx","=cy"],"label":"Q","color":"red","size":30},
+        {"type":"arrow","from":["=cx","=cy"],"to":["=cx+r","=cy"],"color":"blue"},
+        {"type":"math","latex":"r","x":410,"y":355,"size":32,"color":"blue"},
+        {"type":"text","text":"图1","x":340,"y":565,"size":26}
+      ]},
+      {"id":"field-equation","tts":"根据库仑定律，场强与源电荷的电荷量成正比，与到源电荷距离的平方成反比。对正点电荷，电场方向沿半径向外。","pause":1.0,"actions":[
+        {"type":"arrow","from":[510,400],"to":[630,400],"color":"red"},
+        {"type":"math","latex":"\\vec E","x":580,"y":345,"size":34,"color":"red"},
+        {"type":"math","latex":"E(r)=\\frac{Q}{4\\pi\\varepsilon_0 r^2}","x":755,"y":345,"size":36,"color":"blue","at":{"word":"场强"}}
+      ]}
+    ]},
+    {"id":"p02","title":"电场与电场力怎样联系","cues":[
+      {"id":"force-setup","tts":"接着，在图二的观察点放一个正试探电荷。这里的电场由源电荷产生，试探电荷受到的电场力，沿着电场方向。","pause":0.8,"actions":[
+        {"type":"charge","center":[330,400],"label":"Q","color":"red","size":30},
+        {"type":"charge","center":[510,400],"label":"q","color":"blue","size":30},
+        {"type":"arrow","from":[510,400],"to":[650,400],"color":"red"},
+        {"type":"math","latex":"\\vec F","x":600,"y":345,"size":34,"color":"red"},
+        {"type":"text","text":"图2","x":340,"y":565,"size":26}
+      ]},
+      {"id":"force-result","tts":"把试探电荷的电荷量乘以该处场强，就得到电场力。场描述空间中这个位置的作用，力还与放入的电荷有关。","pause":1.2,"actions":[
+        {"type":"math","latex":"\\vec F=q\\vec E","x":785,"y":345,"size":40,"color":"blue"},
+        {"type":"line","from":[778,420],"to":[1080,420],"color":"red","width":2}
+      ]}
+    ]}
+  ]
+}

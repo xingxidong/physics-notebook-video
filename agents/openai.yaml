@@ -1,0 +1,3 @@
+interface:
+  display_name: "物理逐笔板书课"
+  short_description: "用 Motion Canvas、Manim 或本地笔迹引擎制作逐笔板书、物理动画与配音同步的竞赛课程。"
