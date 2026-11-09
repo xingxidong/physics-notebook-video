@@ -1,0 +1,39 @@
+{
+  "title":"光滑斜面的受力与运动",
+  "show_titles":false,
+  "camera":"static",
+  "speech":{"backend":"minimax","speed":1.0},
+  "pages":[{
+    "id":"p01","title":"从受力图到速度","layout":"one-page-problem","problem_id":"incline-motion",
+    "cues":[
+      {"id":"observe","role":"observe","tts":"先看左边这幅图。物体放在光滑斜面上，斜面的倾角记作西塔。整道推导都围绕这张图展开。","actions":[
+        {"type":"component","name":"inclined-plane","id":"ramp","zone":"diagram","origin":[20,315],"length":320,"angle":30,"block_position":0.55,"at":{"word":"左边"}},
+        {"type":"arrow","from":[272,170],"to":[205,209],"relative_to":"diagram","color":"green","width":2.5},
+        {"type":"math","latex":"s","x":235,"y":160,"size":26,"color":"green","relative_to":"diagram"},
+        {"type":"math","latex":"\\vec a","x":252,"y":205,"size":25,"color":"green","relative_to":"diagram"}
+      ]},
+      {"id":"forces","role":"model","tts":"把重力分到两个方向。垂直斜面的分量由支持力平衡；沿斜面向下的分量，是物体加速的原因。","actions":[
+        {"type":"arrow","from":[0,0],"to":[0,115],"attach_to":"ramp.block_center","color":"red","width":2.7,"at":{"word":"重力"}},
+        {"type":"math","latex":"mg","x":12,"y":93,"attach_to":"ramp.block_center","size":27,"color":"red"},
+        {"type":"arrow","from":[0,0],"to":[-49.796,-86.25],"attach_to":"ramp.block_center","color":"blue","width":2.7},
+        {"type":"math","latex":"F_N","x":-79,"y":-110,"attach_to":"ramp.block_center","size":26,"color":"blue"},
+        {"type":"arrow","from":[0,0],"to":[-49.796,28.75],"attach_to":"ramp.block_center","color":"red","width":2.3},
+        {"type":"math","latex":"mg\\sin\\theta","x":-134,"y":25,"attach_to":"ramp.block_center","size":23,"color":"red"},
+        {"type":"dashed_line","from":[0,0],"to":[49.796,86.25],"attach_to":"ramp.block_center","color":"muted"},
+        {"type":"math","latex":"mg\\cos\\theta","x":58,"y":63,"attach_to":"ramp.block_center","size":23,"color":"muted"}
+      ]},
+      {"id":"derive","role":"derive","tts":"沿斜面列牛顿第二定律，重力沿斜面的分量等于质量乘加速度。约去质量，得到加速度等于重力加速度乘西塔的正弦。再和运动学关系连接，就得到速度平方。","actions":[
+        {"type":"formula_steps","id":"motion-chain","zone":"derivation","connect":false,"size":33,"color":"blue","steps":[
+          {"latex":"mg\\sin\\theta=ma","at":{"word":"牛顿第二定律"},"write_seconds":2.5},
+          {"latex":"a=g\\sin\\theta","at":{"word":"约去质量"},"write_seconds":2.0},
+          {"latex":"v^2-v_0^2=2as","at":{"word":"运动学关系"},"write_seconds":2.3}
+        ]},
+        {"type":"math","latex":"F_N=mg\\cos\\theta","zone":"explanation","place":{"line":0},"size":28,"color":"green"}
+      ]},
+      {"id":"result","role":"conclusion","tts":"所以，从静止开始滑过距离艾斯以后，速度等于根号下，二乘重力加速度、位移和西塔正弦的乘积。图中的受力方向、加速度和最后的速度关系，现在连成了一条线。","actions":[
+        {"type":"math","latex":"v_0=0","zone":"explanation","place":{"line":1},"size":29,"color":"blue","at":{"word":"静止"},"write_seconds":1.0},
+        {"type":"math","latex":"v=\\sqrt{2gs\\sin\\theta}","zone":"result","place":{"line":0},"size":34,"color":"red","at":{"word":"速度等于"},"write_seconds":3.8}
+      ]}
+    ]
+  }]
+}

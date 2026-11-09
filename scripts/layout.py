@@ -39,7 +39,7 @@ def page_spec(value):
 def _xy(zone,line,gap,padding,dx=0,dy=0):return zone[0]+padding+dx,zone[1]+padding+line*gap+dy
 
 def expand_actions(actions,spec):
-    """Expand formula_steps into aligned formula lines and subtle connectors."""
+    """Expand formula_steps into aligned formula lines; connectors are opt-in."""
     out=[]
     for raw in actions:
         if raw.get('type')!='formula_steps':out.append(copy.deepcopy(raw));continue
@@ -53,7 +53,7 @@ def expand_actions(actions,spec):
             step={'latex':value} if isinstance(value,str) else copy.deepcopy(value)
             if not isinstance(step,dict) or not isinstance(step.get('latex'),str):raise ValueError('Each formula step needs LaTeX')
             line=int(step.pop('line',start+index));x,y=_xy(zone,line,gap,padding,float(raw.get('dx',0)),float(raw.get('dy',0)))
-            if previous_y is not None and raw.get('connect',True):
+            if previous_y is not None and raw.get('connect',False):
                 out.append({'type':'arrow','from':[x-18,previous_y+18],'to':[x-18,y-8],'width':1.8,'color':raw.get('connector_color','muted'),'zone':zone_name,'allow_overlap':True,'transform_group':raw.get('id')})
             action={k:v for k,v in raw.items() if k not in ('type','steps','start_line','line_gap','connect','connector_color','at','id')}
             action.update(step);action.update(type='math',x=x,y=y,zone=zone_name,transform_group=raw.get('id'),transform_step=index)
@@ -61,7 +61,7 @@ def expand_actions(actions,spec):
             out.append(action);previous_y=y
     return out
 
-def place_action(raw,spec,state):
+def place_action(raw,spec,state,anchors=None):
     action=copy.deepcopy(raw);place=action.pop('place',None);zone_name=action.get('zone')
     if place:
         if not isinstance(place,dict):raise ValueError('action.place must be an object')
@@ -69,11 +69,21 @@ def place_action(raw,spec,state):
     if zone_name and spec is None:raise ValueError(f'Action uses zone {zone_name!r} without page.layout')
     zone=spec['zones'].get(zone_name) if spec and zone_name else None
     if zone_name and zone is None:raise ValueError(f'Unknown layout zone {zone_name!r}')
-    if action['type'] in ('text','math') and zone and ('x' not in action or 'y' not in action):
+    if action['type'] in ('text','math') and not action.get('attach_to') and zone and ('x' not in action or 'y' not in action):
         line=int((place or {}).get('line',state.get(zone_name,0)));state[zone_name]=max(state.get(zone_name,0),line+1)
         x,y=_xy(zone,line,float((place or {}).get('line_gap',spec['line_gap'])),float(spec.get('padding',12)),float((place or {}).get('dx',0)),float((place or {}).get('dy',0)))
         action.setdefault('x',x);action.setdefault('y',y)
-    relative=action.pop('relative_to',None)
+    relative=action.pop('relative_to',None);attachment=action.pop('attach_to',None)
+    if relative and attachment:raise ValueError('Use either attach_to or relative_to on an action')
+    if attachment:
+        if not anchors or attachment not in anchors:raise ValueError(f'Unknown component anchor {attachment!r}; declare the component before its attached actions')
+        ox,oy=anchors[attachment]
+        if action['type'] in ('text','math'):action.setdefault('x',0);action.setdefault('y',0)
+        if 'x' in action:action['x']=ox+action['x']
+        if 'y' in action:action['y']=oy+action['y']
+        for key in ('center','from','to','origin'):
+            if key in action:action[key]=[ox+action[key][0],oy+action[key][1]]
+        if 'points' in action:action['points']=[[ox+p[0],oy+p[1]] for p in action['points']]
     if relative:
         if spec is None or relative not in spec['zones']:raise ValueError(f'Unknown relative layout zone {relative!r}')
         ox,oy=spec['zones'][relative][:2]
@@ -132,6 +142,7 @@ def audit_lesson(pages):
     return {'status':'pass' if not warnings else 'attention','pages':reports,'warnings':warnings}
 
 def focus_state(page,t):
+    if page.get('camera')=='static':return {'amount':0,'zoom':1,'center':[640,360]}
     for event in page.get('focus',[]):
         transition=event['transition'];start,end=event['start'],event['end']
         if start-transition<=t<=end+transition:

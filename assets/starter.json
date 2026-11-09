@@ -1,5 +1,6 @@
 {
   "title":"点电荷的电场与电场力",
+  "camera":"static",
   "speech":{"backend":"glm","voice":"chuichui","speed":1.0},
   "parameters":{"cx":330,"cy":400,"r":180},
   "pages":[

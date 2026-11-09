@@ -31,9 +31,11 @@
 
 本用户的新课在 lesson 顶层设置 `"show_titles":false`：保留内部页面名称，视频、板书 PNG 与 HTML 画布不绘制页标题。个别页面可用 `show_title` 覆盖；未配置时兼容已有课程。
 
+v0.7 默认 `"camera":"static"`。旧 cue 中保留的 `focus` 在固定模式下被忽略。需要继续使用旧课的镜头聚焦时设置 `"camera":"focus"`。
+
 ## 一页一题布局
 
-页面设置 `"layout":"one-page-problem"` 和稳定的 `problem_id`。动作可写入 `diagram`、`derivation`、`explanation`、`result` 四个区域；公式链使用 `formula_steps`，cue 使用 `focus` 做轻微页内聚焦。完整字段、相对坐标和示例见 [一页一题语义布局](layout.md)。
+页面设置 `"layout":"one-page-problem"` 和稳定的 `problem_id`。动作可写入 `diagram`、`derivation`、`explanation`、`result` 四个区域；公式链使用 `formula_steps` 逐行展开。完整字段、相对坐标和可选聚焦见 [一页一题语义布局](layout.md)。
 
 ```sh
 python3 SKILL/scripts/course.py layout-check PROJECT --strict
@@ -69,6 +71,8 @@ LaTeX 子集：分式、上下标、向量、单位法线、时间导数点号�
 ## 落笔时机
 
 动作默认按顺序在本段配音中书写。`at:0.4` 表示该段实际时长的40%；`at:{"word":"场强","occurrence":1,"offset":0}` 表示对齐该关键词。关键词应出现在本段 tts 内，各动作的落点按书写顺序递增。
+
+文字、公式和普通图形动作可设置 `write_seconds`（0.1—30 秒）限制本次落笔时长。动作仍从 `at` 指定时刻开始，完成后保留在页面；其余口播继续播放。若下一个动作的时间锚点更早到来，会按可用时间完成。重要结论可以用 `"write_seconds":3.8` 提前写完，学生能够一边听物理意义，一边看完整公式。`formula_steps` 的每个 step 也支持此字段。
 
 语音服务有词级时间戳时优先使用实际数据；缺少时按文本位置估算，并将 `anchor_quality` 标记为 estimated-word。GLM 当前适配提供真实段长；Edge、豆包及 MiniMax 依可用返回值提供词级信息。长推导拆成有教学意义的句群，在关键步骤后留出看图时间。
 

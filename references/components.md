@@ -59,6 +59,23 @@ python3 SKILL/scripts/course.py build PROJECT --draft
 
 力的方向和标签来自题目建模；组件负责保持箭头、物体与标注的相对关系。
 
+## 斜面接触与附着点
+
+斜面组件按滑块底边中心确定接触位置，再沿斜面外法线移动半个滑块高度得到物体中心。底边的两个端点落在斜面线上，滑块其余部分位于斜面上方。`block_position` 指接触位置沿斜面长度的比例。
+
+v0.7 提供 `block_center`、`contact`、`slope_start`、`slope_end` 四个附着点。先声明组件，再用 `attach_to` 绑定后续的受力线或标签：
+
+```json
+{"type":"component","name":"inclined-plane","id":"ramp","zone":"diagram","angle":30}
+```
+
+```json
+{"type":"arrow","attach_to":"ramp.block_center",
+ "from":[0,0],"to":[0,100],"color":"red"}
+```
+
+上述重力箭头随滑块中心移动。`attach_to` 动作中的坐标是相对该点的屏幕像素偏移；与 `relative_to` 二选一。倾角改变时，分解方向与分量大小按题目的物理关系重新计算。`timeline.json` 保留最终的全局附着点坐标，便于编辑器复用。
+
 ## 电学与光学
 
 球形高斯面：
@@ -79,5 +96,7 @@ python3 SKILL/scripts/course.py component-check PROJECT --strict
 ```
 
 报告写入 `component-report.json`，列出每页组件、展开后的包围框、各类组件数量和区域占用提示。未知组件、非物理参数范围、重复 id 及超出总书写区会在编译时给出具体位置；`--strict` 将组件区域提示作为失败处理。
+
+斜面组件还从实际滑块路径计算法向间距，报告 `contact.minimum_clearance` 和 `contact.base_distance`。滑块进入斜面或底边悬空时产生 `block-contact` 提示。
 
 每个组件生成的 TikZ 路径前带组件 id 注释，便于在 `tikz/页面.tikz` 中定位和继续编辑。新题先选最接近的组件，再根据题设补充辅助线、局部过程图和结果图。

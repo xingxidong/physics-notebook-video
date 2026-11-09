@@ -22,6 +22,10 @@ class PhysicsComponentsV06Tests(unittest.TestCase):
         dipole,_=expand_component({'type':'component','name':'electric-dipole','id':'d'},'x')
         moment=next(i for i,a in enumerate(dipole) if a.get('latex')==r'\vec p')
         self.assertGreater(dipole[moment-1]['from'][0],dipole[moment-1]['to'][0])
+        self.assertEqual([a['sign'] for a in dipole if a['type']=='charge'],[1,-1])
+        import ink
+        ink.groups=[[],[]];ink.charge(0,[300,300],'q',sign=1);ink.charge(1,[300,300],'q',sign=-1)
+        self.assertEqual(len(ink.groups[0]),len(ink.groups[1])+1)
         projectile,_=expand_component({'type':'component','name':'projectile-trajectory','id':'p'},'x')
         trajectory=next(a for a in projectile if a['type']=='stroke')
         self.assertAlmostEqual(trajectory['points'][0][1],trajectory['points'][-1][1],places=6)

@@ -55,10 +55,20 @@ def _force_diagram(raw):
         actions.extend(_arrow_label(o,angle,length,str(force['label']),force.get('color','blue'),s))
     return actions
 
-def _inclined_plane(raw):
+def incline_geometry(raw):
     o=_point(raw.get('origin',[28,318]));s=_number(raw.get('scale',1),'scale',.35,2.2)
     length=_number(raw.get('length',350),'length',120,520)*s;angle=_number(raw.get('angle',28),'angle',8,70);a=math.radians(angle)
     top=[o[0]+length*math.cos(a),o[1]-length*math.sin(a)]
+    f=_number(raw.get('block_position',.58),'block_position',.18,.86)
+    tangent=[math.cos(a),-math.sin(a)];normal=[-math.sin(a),-math.cos(a)];bw,bh=62*s,39*s
+    if min(f*length,(1-f)*length)<bw/2:raise ValueError('inclined-plane block base must fit on the finite slope; adjust block_position or length')
+    contact=[o[i]+f*(top[i]-o[i]) for i in (0,1)]
+    center=[contact[i]+normal[i]*bh/2 for i in (0,1)]
+    corners=[[center[i]+u*tangent[i]+v*normal[i] for i in (0,1)] for u,v in [(-bw/2,-bh/2),(bw/2,-bh/2),(bw/2,bh/2),(-bw/2,bh/2),(-bw/2,-bh/2)]]
+    return {'origin':o,'top':top,'scale':s,'angle':a,'center':center,'contact':contact,'corners':corners,'normal':normal,'tangent':tangent}
+
+def _inclined_plane(raw):
+    g=incline_geometry(raw);o,top,s,a,c=g['origin'],g['top'],g['scale'],g['angle'],g['center']
     actions=[
         {'type':'line','from':o,'to':top,'color':'ink','width':3*s},
         {'type':'line','from':o,'to':[top[0],o[1]],'color':'ink','width':2.2*s},
@@ -66,13 +76,8 @@ def _inclined_plane(raw):
     ]
     r=42*s;arc=[_pt(o,r*math.cos(t),-r*math.sin(t)) for t in [a*k/18 for k in range(19)]]
     actions.extend([_poly(arc,color='blue',width=2*s),{'type':'math','latex':raw.get('angle_label',r'\theta'),'x':o[0]+48*s,'y':o[1]-12*s,'size':25*s,'color':'blue'}])
-    f=_number(raw.get('block_position',.58),'block_position',.18,.86);c=[o[0]+f*(top[0]-o[0]),o[1]+f*(top[1]-o[1])]
-    tangent=[math.cos(a),-math.sin(a)];normal=[-math.sin(a),-math.cos(a)];bw,bh=62*s,39*s
-    corners=[]
-    for u,v in [(-bw/2,-bh/2),(bw/2,-bh/2),(bw/2,bh/2),(-bw/2,bh/2),(-bw/2,-bh/2)]:
-        corners.append([c[0]+u*tangent[0]+v*normal[0],c[1]+u*tangent[1]+v*normal[1]])
-    actions.append(_poly(corners,color=raw.get('block_color','red'),width=2.8*s))
-    actions.append({'type':'math','latex':raw.get('block_label','m'),'x':c[0]-9*s,'y':c[1]-5*s,'size':24*s,'color':raw.get('block_color','red')})
+    actions.append(_poly(g['corners'],color=raw.get('block_color','red'),width=2.8*s))
+    actions.append({'type':'math','latex':raw.get('block_label','m'),'x':c[0]-3*s,'y':c[1]-23*s,'size':20*s,'color':raw.get('block_color','red')})
     return actions
 
 def _projectile(raw):
@@ -102,12 +107,12 @@ def _electric_dipole(raw):
         for sign in (-1,1):
             points=[]
             for k in range(41):
-                t=k/40;x=left[0]+sep*t;y=c[1]+sign*4*height*t*(1-t);points.append([x,y])
+                t=k/40;x=left[0]+sep*t;y=c[1]+sign*4*height*s*t*(1-t);points.append([x,y])
             actions.append(_poly(points,color='blue',width=2.1*s))
             p=points[20];q=points[23];actions.append({'type':'arrow','from':p,'to':q,'color':'blue','width':1.8*s})
     actions.extend([
-        {'type':'charge','center':left,'label':raw.get('positive_label','+q'),'size':25*s,'color':'red'},
-        {'type':'charge','center':right,'label':raw.get('negative_label','-q'),'size':25*s,'color':'blue'},
+        {'type':'charge','center':left,'label':raw.get('positive_label','q'),'sign':1,'size':25*s,'color':'red'},
+        {'type':'charge','center':right,'label':raw.get('negative_label','q'),'sign':-1,'size':25*s,'color':'blue'},
         {'type':'arrow','from':[right[0],c[1]+160*s],'to':[left[0],c[1]+160*s],'color':'red','width':2.6*s},
         {'type':'math','latex':raw.get('moment_label',r'\vec p'),'x':c[0]-12*s,'y':c[1]+142*s,'size':27*s,'color':'red'},
     ])
@@ -143,15 +148,15 @@ def _circuit(raw):
         {'type':'line','from':[mid+gap/2,y],'to':[x+w,y],'color':'ink','width':2.7*s},
         {'type':'line','from':[x+w,y],'to':[x+w,y+h],'color':'ink','width':2.7*s},
         {'type':'line','from':[x+w,y+h],'to':[x,y+h],'color':'ink','width':2.7*s},
-        {'type':'line','from':[x,y+h],'to':[x,y+h*.60],'color':'ink','width':2.7*s},
-        {'type':'line','from':[x,y+h*.40],'to':[x,y],'color':'ink','width':2.7*s},
+        {'type':'line','from':[x,y+h],'to':[x,y+h*.56],'color':'ink','width':2.7*s},
+        {'type':'line','from':[x,y+h*.44],'to':[x,y],'color':'ink','width':2.7*s},
     ])
     zig=[]
     for k in range(9):zig.append([mid-gap/2+gap*k/8,y+(0 if k in (0,8) else (-1 if k%2 else 1)*11*s)])
     actions.extend([_poly(zig,color='red',width=2.7*s),{'type':'math','latex':raw.get('resistance_label','R'),'x':mid-10*s,'y':y-34*s,'size':27*s,'color':'red'}])
     actions.extend([
-        {'type':'line','from':[x-18*s,y+h*.44],'to':[x+18*s,y+h*.44],'color':'blue','width':2.6*s},
-        {'type':'line','from':[x-29*s,y+h*.56],'to':[x+29*s,y+h*.56],'color':'blue','width':2.6*s},
+        {'type':'line','from':[x-29*s,y+h*.44],'to':[x+29*s,y+h*.44],'color':'blue','width':2.6*s},
+        {'type':'line','from':[x-18*s,y+h*.56],'to':[x+18*s,y+h*.56],'color':'blue','width':2.6*s},
         {'type':'math','latex':raw.get('emf_label',r'\varepsilon'),'x':x+20*s,'y':y+h*.47,'size':26*s,'color':'blue'},
         {'type':'arrow','from':[x+w*.68,y+h],'to':[x+w*.48,y+h],'color':'green','width':2.5*s},
         {'type':'math','latex':raw.get('current_label','I'),'x':x+w*.57,'y':y+h-34*s,'size':26*s,'color':'green'},
@@ -218,6 +223,10 @@ def expand_component(raw,default_id):
         if raw.get('allow_overlap'):action['allow_overlap']=True
     public={k:copy.deepcopy(v) for k,v in raw.items() if k not in ('type','at')}
     manifest={'id':component_id,'name':name,'label':CATALOG[name],'zone':zone,'primitive_count':len(actions),'parameters':public}
+    if name=='inclined-plane':
+        g=incline_geometry(raw)
+        manifest['anchors']={'block_center':g['center'],'contact':g['contact'],'slope_start':g['origin'],'slope_end':g['top']}
+        manifest['relative_to']=relative
     return actions,manifest
 
 def _bbox(blocks):
@@ -233,6 +242,14 @@ def audit_components(pages):
         for item in page.get('components',[]):
             owned=[b for b in blocks if b.get('component_id')==item['id']];box=_bbox(owned);entry={**item,'bbox':[round(x,1) for x in box] if box else None}
             counts[item['name']]+=1
+            if item['name']=='inclined-plane':
+                surface=next(b['strokes'][0]['points'] for b in owned if b.get('component_part')==0)
+                body=next(b['strokes'][0]['points'] for b in owned if b.get('component_part')==5)
+                a,b=surface[0],surface[-1];dx,dy=b[0]-a[0],b[1]-a[1];length=math.hypot(dx,dy);normal=[dy/length,-dx/length]
+                distances=[sum((p[i]-a[i])*normal[i] for i in (0,1)) for p in body]
+                entry['contact']={'minimum_clearance':round(min(distances),6),'base_distance':round(max(abs(x) for x in distances[:2]),6)}
+                if min(distances)<-.01 or max(abs(x) for x in distances[:2])>.01:
+                    warning={'code':'block-contact','page':page['id'],'component_id':item['id'],'message':f'Block {item["id"]} must rest with its base on the slope'};warnings.append(warning);entry.setdefault('warnings',[]).append(warning)
             if not box:
                 warning={'code':'empty-component','page':page['id'],'component_id':item['id'],'message':f'Component {item["id"]} has no ink'};warnings.append(warning);entry.setdefault('warnings',[]).append(warning)
             zone=item.get('zone');spec=page.get('layout')

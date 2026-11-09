@@ -56,7 +56,9 @@ def compile_lesson(project,lesson=None):
         seen.add(pid)
         if not page.get('cues'):raise ValueError(f'Page {pid} needs cues')
         layout_spec=page_spec(page.get('layout'));layout_state={}
-        cooked={'id':pid,'title':page.get('title',lesson['title']),'show_title':page.get('show_title',lesson.get('show_titles',True)),'cues':[],'components':[],'index':pi};component_ids=set()
+        camera=page.get('camera',lesson.get('camera','static'))
+        if camera not in ('static','focus'):raise ValueError('camera must be static or focus')
+        cooked={'id':pid,'title':page.get('title',lesson['title']),'show_title':page.get('show_title',lesson.get('show_titles',True)),'camera':camera,'cues':[],'components':[],'anchors':{},'index':pi};component_ids=set()
         if layout_spec:cooked['layout']=layout_spec
         if page.get('problem_id'):cooked['problem_id']=str(page['problem_id'])
         if page.get('native_scenes'):cooked['native_scenes']=copy.deepcopy(page['native_scenes'])
@@ -72,16 +74,25 @@ def compile_lesson(project,lesson=None):
             if not cue['tts'].strip():raise ValueError(f'{cue["id"]}: missing speakable narration')
             if cue['id'] in seen:raise ValueError(f'Duplicate cue id {cue["id"]}')
             seen.add(cue['id']);cue['blocks']=[]
-            if cue.get('focus'):cue['focus']=focus_spec(cue['focus'],layout_spec)
+            if camera=='static':cue.pop('focus',None)
+            elif cue.get('focus'):cue['focus']=focus_spec(cue['focus'],layout_spec)
             expanded=[]
             for ri,raw_action in enumerate(expand_actions(cue.get('actions',[]),layout_spec)):
                 primitives,manifest=expand_component(raw_action,f'{cue["id"]}-component-{ri+1}')
                 if manifest:
                     if manifest['id'] in component_ids:raise ValueError(f'Duplicate component id {manifest["id"]} on page {pid}')
                     component_ids.add(manifest['id']);cooked['components'].append(manifest)
+                    relative=manifest.get('relative_to');offset=[0,0]
+                    if relative:
+                        if not layout_spec or relative not in layout_spec['zones']:raise ValueError(f'Unknown component zone {relative!r}')
+                        offset=layout_spec['zones'][relative][:2]
+                    for name,point_value in manifest.get('anchors',{}).items():
+                        cooked['anchors'][manifest['id']+'.'+name]=[point_value[i]+offset[i] for i in (0,1)]
                 expanded.extend(primitives)
             for ai,raw_action in enumerate(expanded):
-                a=place_action(raw_action,layout_spec,layout_state)
+                a=place_action(raw_action,layout_spec,layout_state,cooked['anchors'])
+                write_seconds=finite(a['write_seconds']) if 'write_seconds' in a else None
+                if write_seconds is not None and not .1<=write_seconds<=30:raise ValueError(f'{cue["id"]}: write_seconds must be 0.1..30')
                 at=a.get('at')
                 if isinstance(at,(int,float)) and not 0<=at<=1:raise ValueError(f'{cue["id"]}: numeric anchors must be 0..1')
                 if isinstance(at,dict):
@@ -104,7 +115,7 @@ def compile_lesson(project,lesson=None):
                 elif kind=='stroke':ink.stroke(gi,[point(p) for p in a['points']],color,width,a.get('curved',False))
                 elif kind=='ellipse':ink.ellipse(gi,point(a['center']),n(a['rx']),n(a.get('ry',a['rx'])),color,width)
                 elif kind=='dashed_circle':ink.circle_dashed(gi,point(a['center']),n(a['radius']),color)
-                elif kind=='charge':ink.charge(gi,point(a['center']),a.get('label','q'),size,color)
+                elif kind=='charge':ink.charge(gi,point(a['center']),a.get('label','q'),size,color,a.get('sign',1))
                 elif kind=='rect':
                     x,y=n(a['x']),n(a['y']);w,h=n(a['w']),n(a['h']);ink.stroke(gi,[[x,y],[x+w,y],[x+w,y+h],[x,y+h],[x,y]],color,width)
                 elif kind=='plot':
@@ -117,7 +128,7 @@ def compile_lesson(project,lesson=None):
                 else:raise ValueError(f'Unknown action type {kind}')
                 for e in ink.groups[gi]:
                     if not e['points'] or any(not(120<=x<=1200 and 95<=y<=655) for x,y in e['points']):raise ValueError(f'{cue["id"]}, action {ai}: ink leaves the writing area x=120..1200, y=95..655')
-                cue['blocks'].append({'strokes':ink.groups[gi],'at':a.get('at'),'action':ai,'kind':kind,'zone':a.get('zone'),'allow_overlap':bool(a.get('allow_overlap',False)),'transform_group':a.get('transform_group'),'transform_step':a.get('transform_step'),'component_id':a.get('component_id'),'component_name':a.get('component_name'),'component_part':a.get('component_part')})
+                cue['blocks'].append({'strokes':ink.groups[gi],'at':a.get('at'),'write_seconds':write_seconds,'action':ai,'kind':kind,'zone':a.get('zone'),'allow_overlap':bool(a.get('allow_overlap',False)),'transform_group':a.get('transform_group'),'transform_step':a.get('transform_step'),'component_id':a.get('component_id'),'component_name':a.get('component_name'),'component_part':a.get('component_part')})
             cooked['cues'].append(cue)
         if page.get('demonstration'):
             import models
@@ -162,9 +173,10 @@ def schedule(cue,audio):
         t=begin
         for j in range(left,right):
             span=(end-begin)*weights[j]/sum(weights[left:right]);block=blocks[j];strokes=block['strokes']
+            writing_span=min(span,block['write_seconds']) if block.get('write_seconds') is not None else span
             sw=[max(8,sum(math.dist(a,b) for a,b in zip(e['points'],e['points'][1:])))**.7+9 for e in strokes];cursor=t
             for e,w in zip(strokes,sw):
-                dt=span*w/sum(sw);event=copy.deepcopy(e);event.update(start=cursor,end=cursor+dt*.88,cue=cue['id'],action=j,anchor_quality=qualities.get(j,'sequence'),component_id=block.get('component_id'),component_name=block.get('component_name'),component_part=block.get('component_part'));events.append(event);cursor+=dt
+                dt=writing_span*w/sum(sw);event=copy.deepcopy(e);event.update(start=cursor,end=cursor+dt*.88,cue=cue['id'],action=j,anchor_quality=qualities.get(j,'sequence'),component_id=block.get('component_id'),component_name=block.get('component_name'),component_part=block.get('component_part'));events.append(event);cursor+=dt
             t+=span
     return events
 
@@ -202,6 +214,8 @@ def prepare(project,lesson,pages,args):
         if p.get('layout_report'):prepared['layout_report']=p['layout_report']
         if p.get('problem_id'):prepared['problem_id']=p['problem_id']
         if p.get('components'):prepared['components']=p['components']
+        if p.get('anchors'):prepared['anchors']=p['anchors']
+        prepared['camera']=p['camera']
         if focuses:prepared['focus']=focuses
         if 'image' in p:prepared['image']=p['image']
         if 'native_scenes' in p:prepared['native_scenes']=p['native_scenes']
@@ -351,7 +365,7 @@ def run_build(project,args):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__);subs=parser.add_subparsers(dest='command',required=True)
-    init=subs.add_parser('init');init.add_argument('project');init.add_argument('--title');init.add_argument('--backend',choices=['glm','doubao','minimax','edge','user'],default='glm');init.add_argument('--example',choices=['starter','gauss','components'],default='starter')
+    init=subs.add_parser('init');init.add_argument('project');init.add_argument('--title');init.add_argument('--backend',choices=['glm','doubao','minimax','edge','user'],default='glm');init.add_argument('--example',choices=['starter','gauss','components','incline'],default='starter')
     build=subs.add_parser('build');build.add_argument('project');build.add_argument('--draft',action='store_true');build.add_argument('--video',action='store_true');build.add_argument('--backend',choices=['glm','doubao','minimax','edge','user']);build.add_argument('--voice');build.add_argument('--fps',type=int,choices=[12,24,30],default=24);build.add_argument('--width',type=int,choices=[1280,1920],default=1280)
     check=subs.add_parser('check');check.add_argument('project')
     layout_check=subs.add_parser('layout-check',help='Audit semantic zones, overlaps and one-page problem policy');layout_check.add_argument('project');layout_check.add_argument('--strict',action='store_true')
@@ -417,7 +431,7 @@ def main():
         if (p/'lesson.json').exists():raise ValueError('lesson.json already exists; edit it or choose another project')
         data=json.loads((ROOT/'assets'/(args.example+'.json')).read_text())
         if args.title:data['title']=args.title
-        data.setdefault('show_titles',False)
+        data.setdefault('show_titles',False);data.setdefault('camera','static')
         local_speech=(local_config().get('speech_defaults') or {}).get(args.backend,{})
         data['speech']={'backend':args.backend,'voice':local_speech.get('voice',DEFAULTS[args.backend]),'speed':1.0,'audio_mastering':True}
         if local_speech.get('model'):data['speech']['model']=local_speech['model']

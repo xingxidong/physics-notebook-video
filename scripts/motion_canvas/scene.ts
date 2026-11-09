@@ -7,6 +7,7 @@ export default makeScene2D(function* (view) {
   const page = data.page;
   const clock = createSignal(0);
   const focus = () => {
+    if (page.camera === 'static') return {zoom: 1, center: [0, 0]};
     for (const event of (page.focus || [])) {
       const transition = event.transition;
       if (clock() >= event.start - transition && clock() <= event.end + transition) {

@@ -4,6 +4,7 @@
     "target_minutes": 100,
     "minimum_minutes": 90,
     "show_titles": false,
+    "camera": "static",
     "renderer": "motion-canvas"
   },
   "audience": "填写学生基础",

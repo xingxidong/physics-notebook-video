@@ -41,7 +41,7 @@ python SKILL/scripts/captions.py PROJECT --burn
 
 Motion Canvas 通过真实的 `Renderer`、`Scene2D`、`Line`、`Circle` 与信号绘制笔迹和动态物体。无头 Chrome 执行引擎，自定义导出器把 PNG 帧流传给本机 FFmpeg。板书纸张使用共用背景，笔迹和动态模型由 Motion Canvas 的矢量组件绘制。
 
-Manim 通过 `MovingCameraScene`、`VMobject` 与更新器绘制同一组笔画，按实测时间逐笔出现。动态模型的解析坐标由同一模块逐帧提供，两个引擎读取相同的数据。普通课程的中心线笔画渲染使用已编译路径，无需每次调用 LaTeX。Motion Canvas、Manim、Notebook 和 HTML 预览按相同的 `focus` 事件围绕当前区域轻微缩放。
+Manim 通过 `MovingCameraScene`、`VMobject` 与更新器绘制同一组笔画，按实测时间逐笔出现。动态模型的解析坐标由同一模块逐帧提供，两个引擎读取相同的数据。普通课程的中心线笔画渲染使用已编译路径，无需每次调用 LaTeX。v0.7 默认 `camera:"static"`，Motion Canvas、Manim、Notebook 和 HTML 都保持画面大小与位置一致。显式使用 `camera:"focus"` 时，才按共用的 `focus` 事件控制镜头。
 
 页面缓存包括引擎源码、引擎版本、页面内容、分辨率、帧率、字体、音频与本地时间轴。不同引擎的缓存目录独立，完整导出且帧数正确后才写入缓存。换引擎、改图和重编码复用已有配音。
 

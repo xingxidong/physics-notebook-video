@@ -166,10 +166,11 @@ def circle_dashed(group,c,r,color=BLUE):
     for j in range(24):
         stroke(group,[[c[0]+r*math.cos(t),c[1]+r*math.sin(t)] for t in [(j+k/8*.55)*math.tau/24 for k in range(9)]],color,2)
 
-def charge(group,c,label='q',size=28,color=RED):
+def charge(group,c,label='q',size=28,color=RED,sign=1):
+    if sign not in (-1,1):raise ValueError('charge.sign must be 1 or -1')
     ellipse(group,c,9,color=color,width=2)
     line(group,(c[0]-4,c[1]),(c[0]+4,c[1]),color,1.8)
-    line(group,(c[0],c[1]-4),(c[0],c[1]+4),color,1.8)
+    if sign==1:line(group,(c[0],c[1]-4),(c[0],c[1]+4),color,1.8)
     text(group,label,c[0]+14,c[1]+2,size,color)
 
 # Single-line glyphs; these remain pen trajectories rather than font outlines.

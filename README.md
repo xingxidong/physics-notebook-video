@@ -1,10 +1,10 @@
 # 物理逐笔板书视频技能
 
-版本：0.6.0。面向支持 Agent Skills 和本地命令的 Agent 宿主，制作带中文配音的物理讲解视频。
+版本：0.7.0。面向支持 Agent Skills 和本地命令的 Agent 宿主，制作带中文配音的物理讲解视频。
 
-已完成并实测：中文与公式逐笔书写、图文推导、MiniMax 与 Edge 配音、同步字幕、Motion Canvas 和 Manim 渲染、页面缓存、批量导出，以及 TikZ 与板书 PDF。0.4.0 新增教师口语与语调计划；0.5.0 新增一页一题语义布局；0.6.0 新增八类参数化物理图形组件、组件报告和跨引擎缓存联动。当前完整视频流程在 macOS 上验证；Windows、Linux 的完整安装流程尚未验证。
+已完成并实测：中文与公式逐笔书写、图文推导、MiniMax 与 Edge 配音、同步字幕、Motion Canvas 和 Manim 渲染、页面缓存、批量导出，以及 TikZ 与板书 PDF。0.6 新增八类参数化物理图形组件；0.7 默认固定画面、取消公式行间连接箭头，加入滑块接触检查、组件附着点和书写时长控制。当前完整视频流程在 macOS 上验证；Windows、Linux 的完整安装流程尚未验证。
 
-模板默认采用无逐页标题的笔记本样式、自然课堂口播和 MiniMax 温润男声。使用者可指定其他样式与音色。
+模板默认采用固定画面、无逐页标题的笔记本样式和自然课堂口播。MiniMax 音色优先读取本机已配置的默认值。使用者可指定其他样式与音色。
 
 项目仓库：[xingxidong/physics-notebook-video](https://github.com/xingxidong/physics-notebook-video)。
 
@@ -118,6 +118,14 @@ python3 "$PHYSICS_SKILL/scripts/course.py" component-check components-demo --str
 ```
 
 组件字段与物理参数见 [参数化物理图形组件](references/components.md)。
+
+v0.7 的斜面完整示例包含底边接触、受力线附着、逐行推导和结果停留：
+
+```sh
+python3 "$PHYSICS_SKILL/scripts/course.py" init incline-demo --example incline --backend minimax
+python3 "$PHYSICS_SKILL/scripts/course.py" build incline-demo --draft
+python3 "$PHYSICS_SKILL/scripts/course.py" component-check incline-demo --strict
+```
 
 ## 长课与多 Agent
 

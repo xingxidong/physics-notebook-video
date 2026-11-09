@@ -56,7 +56,7 @@ class VoiceV04Tests(unittest.TestCase):
 
     def test_semantic_layout_formula_steps_and_focus(self):
         spec=page_spec('one-page-problem');actions=expand_actions([{'type':'formula_steps','id':'energy','steps':[r'E_k=\frac{1}{2}mv^2',r'E_k+E_p=C']}],spec)
-        self.assertEqual(sum(a['type']=='math' for a in actions),2);self.assertTrue(any(a['type']=='arrow' for a in actions))
+        self.assertEqual(sum(a['type']=='math' for a in actions),2);self.assertFalse(any(a['type']=='arrow' for a in actions))
         placed=place_action({'type':'text','text':'方向','zone':'explanation','place':{'line':1}},spec,{})
         self.assertGreater(placed['x'],140);self.assertGreater(placed['y'],500)
         focus=focus_spec('diagram',spec);page={'focus':[{**focus,'start':1,'end':3}]}

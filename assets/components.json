@@ -1,13 +1,14 @@
 {
   "title": "物理竞赛图形组件",
   "show_titles": false,
+  "camera": "static",
   "speech": {"backend": "glm", "voice": "chuichui", "speed": 1.0},
   "pages": [
     {
       "id": "p01", "title": "受力图", "layout": "one-page-problem", "problem_id": "component-force",
       "cues": [{"id": "force", "tts": "先确定研究对象，再把支持力、重力和摩擦力画在同一个受力图中。", "focus": "diagram", "actions": [
         {"type": "component", "name": "force-diagram", "id": "force-main", "zone": "diagram"},
-        {"type": "formula_steps", "id": "force-chain", "zone": "derivation", "steps": ["F_N=mg\\cos\\theta", "f=mg\\sin\\theta"], "color": "blue"}
+        {"type": "formula_steps", "id": "force-chain", "zone": "derivation", "steps": ["F_N=mg", "F_x=-f"], "color": "blue"}
       ]}]
     },
     {
