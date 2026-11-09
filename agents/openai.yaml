@@ -1,4 +1,4 @@
 interface:
   display_name: "物理逐笔板书课"
-  short_description: "制作逐笔板书物理视频，并协作生产长课与系列课。"
+  short_description: "用开放 Agent Skills 制作逐笔板书物理课。"
   default_prompt: "使用 $physics-notebook-video，把这份物理讲义制作成图文结合、自然配音的逐笔板书课程。"

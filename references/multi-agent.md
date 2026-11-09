@@ -96,7 +96,7 @@ python3 SKILL/scripts/team.py merge PROJECT
 python3 SKILL/scripts/course.py build PROJECT --draft
 ```
 
-`team.py validate` 检查章节是否齐全、页面与 cue ID 是否冲突、符号是否属于共同符号表、每页是否完成一个板书单元，同时调用课程编译器检查动作、字形、参数、语音锨点和几何范围。估算口播时长只用于发现内容缺口；正式时长以实测配音和最终 MP4 为准。
+`team.py validate` 检查章节是否齐全、页面与 cue ID 是否冲突、符号是否属于共同符号表、每页是否完成一个板书单元，同时调用课程编译器检查动作、字形、参数、语音时间锚点和几何范围。估算口播时长只用于发现内容缺口；正式时长以实测配音和最终 MP4 为准。
 
 章节定稿前再运行一次严格时长检查；估算不足最低时长 85% 时停止：
 

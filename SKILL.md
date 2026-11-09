@@ -1,13 +1,19 @@
 ---
 name: physics-notebook-video
-description: 将物理题、物理竞赛讲义或概念课制作为电子笔记本式逐笔板书视频，含图文推导、自然中文口播、TikZ 源码、本地批量渲染与长课多 Agent 协作。适用于手写讲课、Goodnotes 录屏式课程、讲义转视频及系列课程制作。
+description: 将物理题、物理竞赛讲义或概念课制作为电子笔记本式逐笔板书视频，含图文推导、自然中文口播、TikZ 源码、本地批量渲染与长课多 Agent 协作。适用于 Codex、Claude 及其他兼容 Agent Skills 的终端中的手写讲课、Goodnotes 录屏式课程、讲义转视频和系列课程制作。
+metadata:
+  author: xingxidong
+  version: "0.3.0"
+  standard: agentskills.io
+  icon: assets/icon.png
+  requirements: Python 3.11+, FFmpeg, Chinese font; optional Node.js 20+/Chrome for Motion Canvas and TeX/dvisvgm for Manim
 ---
 
 # 物理逐笔板书课
 
-把物理讲解变成可编辑的课程源包，再用固定程序生成逐笔笔迹、音频、预览和视频。内容与制作分开：模型负责新内容和教学安排，程序负责重复渲染。默认采用本用户已选定的方格笔记本、笔尖光标、中文教师口播。
+把物理讲解变成可编辑的课程源包，再用固定程序生成逐笔笔迹、音频、预览和视频。内容与制作分开：模型负责新内容和教学安排，程序负责重复渲染。技能根目录遵循开放 Agent Skills 格式，不把课程逻辑绑定到单一模型供应商。默认采用本用户已选定的方格笔记本、笔尖光标、中文教师口播。
 
-分享版安装、运行依赖与首次试用见 [README](README.md)。下文的样式、写法和音色是本模板默认设置，使用者的明确要求优先。
+分享版安装、运行依赖与首次试用见 [README](README.md)。跨平台安装、打包与能力边界见 [平台安装](references/platform-install.md)。下文的样式、写法和音色是本模板默认设置，使用者的明确要求优先。
 
 本用户的新偏好：视频每页不显示标题。新课设置 `show_titles:false`，内部页面名称只用于编辑与章节定位。画面直接从图、变量和推导开始。口播用自然的课堂句子，靠指图和物理关系推进，删去模板式开场、流程预告和重复总结；保持必要的推导步骤。
 
@@ -34,7 +40,7 @@ python3 SKILL/scripts/team.py validate PROJECT
 python3 SKILL/scripts/team.py merge PROJECT
 ```
 
-课程合同包含学生基础、时长、符号表、页面政策、音色和章节连接。任务包会写入项目、技能和原文的解析路径，以及可直接复制的校验命令。只把对应原文与任务包交给章节 Agent，以减少重复 token。`team.py validate` 同时执行板书动作、字形、参数、锨点与几何范围检查。
+课程合同包含学生基础、时长、符号表、页面政策、音色和章节连接。任务包会写入项目、技能和原文的解析路径，以及可直接复制的校验命令。只把对应原文与任务包交给章节 Agent，以减少重复 token。`team.py validate` 同时执行板书动作、字形、参数、时间锚点与几何范围检查。
 
 无配音草稿仍用 `course.py build PROJECT --draft`。定稿后使用下列入口；它会先执行严格时长门、合并课程，然后才调用正式 TTS 和视频渲染：
 

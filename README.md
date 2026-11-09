@@ -1,8 +1,8 @@
 # 物理逐笔板书视频技能
 
-版本：0.2.0。面向可运行本地命令的 Codex，制作带中文配音的物理讲解视频。
+版本：0.3.0。面向支持 Agent Skills 和本地命令的 Agent 宿主，制作带中文配音的物理讲解视频。
 
-已完成并实测：中文与公式逐笔书写、图文推导、MiniMax 与 Edge 配音、同步字幕、Motion Canvas 和 Manim 渲染、页面缓存、批量导出，以及 TikZ 与板书 PDF。0.2.0 新增长课多 Agent 任务包、章节校验与确定性合并。当前完整视频流程在 macOS 上验证；Windows、Linux 的完整安装流程尚未验证。
+已完成并实测：中文与公式逐笔书写、图文推导、MiniMax 与 Edge 配音、同步字幕、Motion Canvas 和 Manim 渲染、页面缓存、批量导出，以及 TikZ 与板书 PDF。0.2.0 新增长课多 Agent 任务包、章节校验与确定性合并；0.3.0 新增 Agent Skills 标准元数据、Codex/Claude/通用宿主安装器，以及 Claude.ai 和豆包工作的 ZIP 打包检查。当前完整视频流程在 macOS 上验证；Windows、Linux 的完整安装流程尚未验证。
 
 模板默认采用无逐页标题的笔记本样式、自然课堂口播和 MiniMax 温润男声。使用者可指定其他样式与音色。
 
@@ -10,57 +10,56 @@
 
 下载：[最新版本](https://github.com/xingxidong/physics-notebook-video/releases/latest)。
 
-## 最省事的安装方式
+## 平台支持
 
-把仓库地址发给 Codex，并发送：
+| 平台 | 安装方式 | 说明 |
+|---|---|---|
+| Codex | `~/.codex/skills/physics-notebook-video` 或项目 `.codex/skills/` | 原生 Agent Skills |
+| Claude Code | `~/.claude/skills/physics-notebook-video` 或项目 `.claude/skills/` | 原生 Agent Skills |
+| claude.ai | 上传发布 ZIP | 需支持自定义 Skill 和代码执行的账户方案 |
+| 豆包工作 | 在开发者平台上传豆包 ZIP | 公开上架需企业认证和审核 |
+| DeepSeek | 在 Codex、Claude Code、OpenCode 等宿主中使用 DeepSeek 模型 | DeepSeek 官方聊天端当前无本地 Skill 商店 |
+| 其他宿主 | 安装到宿主的 Agent Skills/capability 目录 | 遵循 `agentskills.io` |
 
-```text
-请从 https://github.com/xingxidong/physics-notebook-video 安装技能。
-先阅读 README.md 和 SKILL.md，检查本机环境，再配置独立的 Python 环境与所需动画依赖。
-先生成自带示例的无配音排版预览，确认安装完成。
-MiniMax 使用我自己的 API Key，保存在本地课程 .env 中。
-```
+平台是执行文件和脚本的宿主，模型是负责推理与生成的供应商。同一个 Codex/Claude/OpenCode 宿主可以使用 OpenAI、Anthropic、豆包或 DeepSeek 模型，技能源码不变。详细能力边界见 [跨平台安装](references/platform-install.md)。
 
-也可以下载上面的发布 ZIP，附给 Codex，并发送：
+## 统一安装器
 
-```text
-请安装附件中的 physics-notebook-video 技能到当前 Codex 支持的用户级技能目录。
-先检查本机环境，再配置独立的 Python 环境和所需动画依赖。
-先生成自带示例的无配音排版预览，确认安装完成。
-MiniMax 使用我自己的 API Key，保存在本地课程 .env 中。
-```
-
-安装完成后开启新会话，使用 `$physics-notebook-video` 调用。
-
-## 手动安装技能
-
-解压 ZIP，复制整个 `physics-notebook-video` 文件夹。按当前 Codex 官方手动安装说明，用户级目录为：
-
-```text
-~/.agents/skills/physics-notebook-video/SKILL.md
-```
-
-文件夹内应直接有 `SKILL.md`，以及 `scripts`、`references`、`assets` 等目录。通过内置 skill-installer 安装时，使用安装器选定的技能目录，避免重复安装同名副本。
-
-[Codex 官方技能安装目录说明](https://developers.openai.com/api/reference/cli)。
-
-使用 Git 安装时：
+克隆仓库后，使用同一个脚本安装：
 
 ```sh
-mkdir -p "$HOME/.agents/skills"
-git clone https://github.com/xingxidong/physics-notebook-video.git "$HOME/.agents/skills/physics-notebook-video"
+git clone https://github.com/xingxidong/physics-notebook-video.git
+cd physics-notebook-video
+python3 scripts/platform_install.py info
+python3 scripts/platform_install.py install --target codex
+# 或
+python3 scripts/platform_install.py install --target claude
 ```
 
-已安装同名技能时，先确认原目录的位置与自己的改动，再进行更新。技能文件安装完成后，继续准备下面的运行环境。
+安装到项目级目录：
+
+```sh
+python3 scripts/platform_install.py install --target codex --scope project --project /path/to/project
+python3 scripts/platform_install.py install --target claude --scope project --project /path/to/project
+```
+
+生成通用上传包和豆包专用检查包：
+
+```sh
+python3 scripts/platform_install.py package --target universal --output physics-notebook-video.zip
+python3 scripts/platform_install.py package --target doubao --output physics-notebook-video-doubao.zip
+```
+
+安装完成后开启新会话。Codex 使用 `$physics-notebook-video`，Claude Code 可使用 `/physics-notebook-video`，也可以让宿主按 `description` 自动触发。已安装同名技能时，显式使用 `--update`；更新保留 `.env` 和 `runtime-local.json`。
 
 ## 准备运行环境
 
 需要 Python 3.11 或更新版本、FFmpeg/ffprobe、中文字体。Motion Canvas 还需要 Node.js 20 或更新版本与 Chrome/Chromium。原生 Manim 的 MathTex 需要 TeX 和 dvisvgm。
 
-让 Codex 检查已有依赖并补齐缺项，或在工作目录中运行以下 macOS 命令。将 `PHYSICS_SKILL` 改成实际安装目录：
+让当前 Agent 检查已有依赖并补齐缺项，或在工作目录中运行以下 macOS 命令。将 `PHYSICS_SKILL` 改成实际安装目录：
 
 ```sh
-PHYSICS_SKILL="$HOME/.agents/skills/physics-notebook-video"
+PHYSICS_SKILL="$HOME/.codex/skills/physics-notebook-video"
 python3 -m venv .venv
 .venv/bin/python -m pip install -r "$PHYSICS_SKILL/assets/requirements.txt"
 .venv/bin/python -m pip install -r "$PHYSICS_SKILL/assets/requirements-manim.txt"
@@ -99,7 +98,7 @@ MINIMAX_API_HOST=https://api.minimax.cn
 
 ## 日常使用
 
-向 Codex 提供题图或讲义，然后发送：
+向已安装技能的 Agent 提供题图或讲义，然后发送：
 
 ```text
 使用 $physics-notebook-video，将这道题制作成物理竞赛讲解视频。
@@ -108,7 +107,7 @@ MINIMAX_API_HOST=https://api.minimax.cn
 导出1080p视频、字幕、讲义与课程源。
 ```
 
-新题由 Codex 完成物理推导、图形与口播编排；渲染、重新编码和缓存复用由程序执行。图形和笔画组件可随题型继续积累。
+新题由当前 Agent 完成物理推导、图形与口播编排；渲染、重新编码和缓存复用由程序执行。图形和笔画组件可随题型继续积累。
 
 ## 长课与多 Agent
 
@@ -142,7 +141,7 @@ python3 "$PHYSICS_SKILL/scripts/team.py" build-final long-course --renderer moti
 
 ## 分享给其他人
 
-直接发送发布 ZIP 和这份 README 即可。接收者安装到自己的 Codex，并配置自己的运行环境与配音账户。
+直接发送发布 ZIP 和这份 README 即可。接收者安装到自己的 Agent 宿主，并配置自己的运行环境与配音账户。
 
 分享 [GitHub 仓库](https://github.com/xingxidong/physics-notebook-video) 或 [最新发布页](https://github.com/xingxidong/physics-notebook-video/releases/latest)，接收者即可自行下载。每个版本同时提供 ZIP 与 SHA256 校验文件。
 
