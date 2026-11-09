@@ -1,0 +1,62 @@
+{
+  "course": {
+    "title": "长课示例",
+    "target_minutes": 100,
+    "minimum_minutes": 90,
+    "show_titles": false,
+    "renderer": "motion-canvas",
+    "speech": {
+      "backend": "minimax",
+      "voice": "Chinese (Mandarin)_Gentleman",
+      "model": "speech-2.8-hd",
+      "speed": 1.0
+    }
+  },
+  "audience": "填写学生基础",
+  "teaching_goal": "填写本课结束时学生能够完成的任务",
+  "symbols": {
+    "x": {
+      "meaning": "位置或位移，按具体页面说明",
+      "unit": "m",
+      "direction": "沿页面规定的正方向"
+    }
+  },
+  "page_policy": {
+    "prefer_complete_unit_per_page": true,
+    "show_titles": false,
+    "layout": "题图或主图保留，推导在同页完成，结论落在本页"
+  },
+  "voice_policy": {
+    "style": "自然中文物理课堂",
+    "pace": "定义和推导放慢，结果后留阅读停顿"
+  },
+  "sections": [
+    {
+      "id": "section-a",
+      "title": "第一教学段",
+      "target_minutes": 34,
+      "brief": "填写内容范围与练习",
+      "source_files": ["填写原始讲义路径"],
+      "bridge_in": "填写与前文的连接",
+      "bridge_out": "填写交给下一段的关系"
+    },
+    {
+      "id": "section-b",
+      "title": "第二教学段",
+      "target_minutes": 33,
+      "brief": "填写内容范围与练习",
+      "source_files": ["填写原始讲义路径"],
+      "bridge_in": "填写与前文的连接",
+      "bridge_out": "填写交给下一段的关系"
+    },
+    {
+      "id": "section-c",
+      "title": "第三教学段",
+      "target_minutes": 33,
+      "brief": "填写内容范围与练习",
+      "source_files": ["填写原始讲义路径"],
+      "bridge_in": "填写与前文的连接",
+      "bridge_out": "填写课程收束"
+    }
+  ]
+}

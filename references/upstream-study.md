@@ -1,11 +1,12 @@
 # 上游研究与采纳记录
 
-研究时间：2026-11-08。优先研究用户点名的前两个项目。以下关注度为该次 GitHub API 快照，后续会变化。
+研究时间：2026-11-08 至 2026-11-09。优先研究用户点名的项目。以下关注度为对应 GitHub API 快照，后续会变化。
 
 | 项目 | 星标/分支 | 对本项目的价值 |
 |---|---|---|
 | [wy51ai/edulab](https://github.com/wy51ai/edulab) | 1767 stars、388 forks；最近推送2026-10-23 | 主参考：物理对象、过程分段、规律选择、图解、口播、数学读音、语音后端、真实音频时间轴 |
 | [liangdabiao/whiteboard-teacher-video](https://github.com/liangdabiao/whiteboard-teacher-video) | 516 stars、70 forks；最近推送2026-11-08 | 补充参考：按时间纯函数回放、关键词落点、单页缓存、过程截图 |
+| [haiderfarooq3/khan-explainer](https://github.com/haiderfarooq3/khan-explainer) | 156 stars、31 forks；读取提交 `326bf9b5332bb30a09e9d11f0ba81e30e7a0e81f` | 补充参考：语句片段驱动画笔、整板累积、逐片段总览图和本地渲染 |
 
 读取固定版本：edulab `805fdc5dd6bdf942290a7791924bf0ee08f26632`；whiteboard-teacher-video `834902a813f9831cb6638aa2d2c5f18b5819cb04`。
 
@@ -26,6 +27,12 @@ engine.js 中的 txt 使用 `fillText(chars.slice(...))`，是手写字体逐字
 采纳它的时间函数、关键词锚点与分段缓存原则。本版用本地 Python 笔画渲染，缓存键包括影响输出的页面、局部时间、声音、引擎与输出设置。保留当前被用户接受的真实逐笔外观。
 
 该项目的包装代码为MIT，上游 Frametell 引擎为AGPL。此技能没有复制该引擎或安装它；复用的是本对话已完成的本地渲染代码。edulab 的仓库许可为Apache-2.0，本版为独立实现与流程借鉴。
+
+## khan-explainer 的补充作用
+
+已读 README、SKILL、Canvas 绘制层、渲染程序、中文测试和持续集成。采纳“先规划完整画板、同一问题累积呈现、语句片段按实测声音长度驱动画笔、每个片段结束生成检查图”的工作方式。
+
+该项目的中文 `write` 使用 Canvas 字体整体排版后逐步揭示，没有汉字笔顺路径；公式也没有 LaTeX 排版层。当前技能继续使用自身的汉字中心线笔画、公式布局、MiniMax 配音和页面缓存。长课按完整问题分页，并用主 Agent 加章节 Agent 的课程合同保持符号、口播和图形一致。没有复制 khan-explainer 源码。
 
 ## 微信范例
 

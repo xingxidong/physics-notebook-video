@@ -35,10 +35,11 @@ def font_path(lesson,project):
         if p.exists():return p
     raise ValueError('Set lesson.font or PHYSICS_NOTEBOOK_FONT to a Chinese TTF/TTC font')
 
-def compile_lesson(project):
+def compile_lesson(project,lesson=None):
     import ink
     from mathparse import parse
-    project=Path(project).resolve();lesson=json.loads((project/'lesson.json').read_text())
+    project=Path(project).resolve()
+    lesson=json.loads((project/'lesson.json').read_text()) if lesson is None else copy.deepcopy(lesson)
     if not lesson.get('title') or not lesson.get('pages'):raise ValueError('A lesson needs a title and pages')
     cache=project/'cache/hanzi';cache.mkdir(parents=True,exist_ok=True)
     for seed in (ROOT/'assets/hanzi').glob('*.json'):

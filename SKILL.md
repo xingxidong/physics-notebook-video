@@ -1,6 +1,6 @@
 ---
 name: physics-notebook-video
-description: 将物理题、物理竞赛讲义或概念课制作为电子笔记本式逐笔板书视频，含图文推导、自然中文口播、TikZ 源码与本地批量渲染。适用于手写讲课、Goodnotes 录屏式课程、讲义转视频及同系列课程批量制作。
+description: 将物理题、物理竞赛讲义或概念课制作为电子笔记本式逐笔板书视频，含图文推导、自然中文口播、TikZ 源码、本地批量渲染与长课多 Agent 协作。适用于手写讲课、Goodnotes 录屏式课程、讲义转视频及系列课程制作。
 ---
 
 # 物理逐笔板书课
@@ -17,7 +17,30 @@ description: 将物理题、物理竞赛讲义或概念课制作为电子笔记�
 
 本用户将 edulab 的四棱锥与球心、激光测曲率两条成片作为质量参照。新系列或调整风格时读 [成片参照](references/reference-cases.md)。先突出题目条件，让图中的辅助线、光路、投影和方向承担推导，再在对应位置记公式；保留完整必要步骤。批量制作复用已经确定的这套讲解规格。
 
-每道例题、练习和综合题都配图，保留可编辑 TikZ；解题过程继续补图、引用图中的点、方向、路径与区域。练习题后保持题目本身，集中解答另列。保留求导、积分、微分方程和必要中间步骤。讲义语言按本用户偏好直接、自然地解释物理；用一条完整推导贯穿。
+每道例题、练习和综合题都配图，保留可编辑 TikZ；解题过程继续补图、引用图中的点、方向、路径与区域。一个完整问题尽量在同一页讲完：保留主图，逐步补充关系、计算和结论，问题结束后再换页。内容确实放不下时，在明确的中间关系之后换页，下一页第一步直接承接。练习题后保持题目本身，集中解答另列。保留求导、积分、微分方程和必要中间步骤。讲义语言按本用户偏好直接、自然地解释物理；用一条完整推导贯穿。
+
+## 长课的多 Agent 协作
+
+45 分钟以上、约 18 页以上或批量系列课采用混合工作流：一个主 Agent 先固定课程合同，再让最多三个章节 Agent 并行制作连贯教学段，最后由主 Agent 顺序合并、检查、配音和交付。短课由一个 Agent 完成，减少重复读取。
+
+按章节分工，每个章节 Agent 同时负责本段的物理推导、自然口播、板书动作和 TikZ。不要把同一页拆给物理、文案、板书三个 Agent。章节 Agent 只写自己的目录，不直接修改最终 `lesson.json`，也不调用正式付费 TTS。
+
+先读 [多 Agent 工作流](references/multi-agent.md)，再创建任务包：
+
+```sh
+python3 SKILL/scripts/team.py init PROJECT --plan PROJECT/team-plan.json
+python3 SKILL/scripts/team.py status PROJECT --fail-on-error
+python3 SKILL/scripts/team.py validate PROJECT
+python3 SKILL/scripts/team.py merge PROJECT
+```
+
+课程合同包含学生基础、时长、符号表、页面政策、音色和章节连接。任务包会写入项目、技能和原文的解析路径，以及可直接复制的校验命令。只把对应原文与任务包交给章节 Agent，以减少重复 token。`team.py validate` 同时执行板书动作、字形、参数、锨点与几何范围检查。
+
+无配音草稿仍用 `course.py build PROJECT --draft`。定稿后使用下列入口；它会先执行严格时长门、合并课程，然后才调用正式 TTS 和视频渲染：
+
+```sh
+python3 SKILL/scripts/team.py build-final PROJECT --renderer motion-canvas --width 1920
+```
 
 ## 内容文件与程序
 

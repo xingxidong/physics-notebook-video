@@ -1,14 +1,14 @@
 # 物理逐笔板书视频技能
 
-版本：0.1.0。面向可运行本地命令的 Codex，制作带中文配音的物理讲解视频。
+版本：0.2.0。面向可运行本地命令的 Codex，制作带中文配音的物理讲解视频。
 
-已完成并实测：中文与公式逐笔书写、图文推导、MiniMax 与 Edge 配音、同步字幕、Motion Canvas 和 Manim 渲染、页面缓存、批量导出，以及 TikZ 与板书 PDF。当前完整流程在 macOS 上验证；Windows、Linux 的完整安装流程尚未验证。
+已完成并实测：中文与公式逐笔书写、图文推导、MiniMax 与 Edge 配音、同步字幕、Motion Canvas 和 Manim 渲染、页面缓存、批量导出，以及 TikZ 与板书 PDF。0.2.0 新增长课多 Agent 任务包、章节校验与确定性合并。当前完整视频流程在 macOS 上验证；Windows、Linux 的完整安装流程尚未验证。
 
 模板默认采用无逐页标题的笔记本样式、自然课堂口播和 MiniMax 温润男声。使用者可指定其他样式与音色。
 
 项目仓库：[xingxidong/physics-notebook-video](https://github.com/xingxidong/physics-notebook-video)。
 
-下载：[v0.1.0 安装包](https://github.com/xingxidong/physics-notebook-video/releases/download/v0.1.0/physics-notebook-video-v0.1.0.zip) · [最新版本](https://github.com/xingxidong/physics-notebook-video/releases/latest)。
+下载：[最新版本](https://github.com/xingxidong/physics-notebook-video/releases/latest)。
 
 ## 最省事的安装方式
 
@@ -109,6 +109,36 @@ MINIMAX_API_HOST=https://api.minimax.cn
 ```
 
 新题由 Codex 完成物理推导、图形与口播编排；渲染、重新编码和缓存复用由程序执行。图形和笔画组件可随题型继续积累。
+
+## 长课与多 Agent
+
+目标时长超过 45 分钟时，可让主 Agent 先建立课程合同，再把不同教学段交给最多三个章节 Agent 并行制作。每个章节 Agent 同时完成本段的物理、口播、板书和 TikZ；主 Agent 最后统一合并、生成正式配音和视频。
+
+从示例建立计划：
+
+```sh
+cp "$PHYSICS_SKILL/assets/team-plan.example.json" long-course/team-plan.json
+python3 "$PHYSICS_SKILL/scripts/team.py" init long-course --plan long-course/team-plan.json
+python3 "$PHYSICS_SKILL/scripts/team.py" status long-course --fail-on-error
+```
+
+各章节完成 `fragment.json` 后：
+
+```sh
+python3 "$PHYSICS_SKILL/scripts/team.py" validate long-course
+python3 "$PHYSICS_SKILL/scripts/team.py" merge long-course
+python3 "$PHYSICS_SKILL/scripts/course.py" build long-course --draft
+```
+
+`validate` 已包含动作、字形和几何范围检查。定稿后使用下列命令正式制作；它会先执行严格时长门和合并，通过后才调用 TTS 与视频渲染：
+
+```sh
+python3 "$PHYSICS_SKILL/scripts/team.py" build-final long-course --renderer motion-canvas --width 1920
+```
+
+成片后用 `team.py verify-video long-course --video long-course/video-captioned.mp4` 检查最低时长。
+
+详细任务边界、片段格式与质量门见 [多 Agent 工作流](references/multi-agent.md)。
 
 ## 分享给其他人
 
