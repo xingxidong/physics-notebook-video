@@ -3,7 +3,7 @@ name: physics-notebook-video
 description: 将物理题、物理竞赛讲义或概念课制作为电子笔记本式逐笔板书视频，含图文推导、自然中文口播、TikZ 源码、本地批量渲染与长课多 Agent 协作。适用于 Codex、Claude 及其他兼容 Agent Skills 的终端中的手写讲课、Goodnotes 录屏式课程、讲义转视频和系列课程制作。
 metadata:
   author: xingxidong
-  version: "0.7.0"
+  version: "0.7.1"
   standard: agentskills.io
   icon: assets/icon.png
   requirements: Python 3.11+, FFmpeg, Chinese font; optional Node.js 20+/Chrome for Motion Canvas and TeX/dvisvgm for Manim
@@ -16,6 +16,12 @@ metadata:
 分享版安装、运行依赖与首次试用见 [README](README.md)。跨平台安装、打包与能力边界见 [平台安装](references/platform-install.md)。下文的样式、写法和音色是本模板默认设置，使用者的明确要求优先。
 
 本用户的新偏好：视频每页不显示标题。新课设置 `show_titles:false`，内部页面名称只用于编辑与章节定位。画面直接从图、变量和推导开始。口播用自然的课堂句子，靠指图和物理关系推进，删去模板式开场、流程预告和重复总结；保持必要的推导步骤。
+
+## 自然课堂口播
+
+文稿直接讲眼前的对象和正在算的量。例如“势能只含位置，对速度求导就是零”“两边都有质量，约掉”。删去“整道推导都围绕这张图展开”“图、受力和结论连成了一条线”这类介绍讲解结构的句子。每句话落实到一个物理关系、一个运算或一个确有作用的问题；技术名词照常使用，并在出现时讲清它指什么。
+
+公式写在板书上，口播说明各项从哪里来、为什么这样算、这一步得到什么。长公式分成有意义的部分讲，避免连续逐字念符号。正文保留正常变量记号，朗读优先说“位移”“倾角”等物理名称；读音修正放在语音层。成稿按课堂速度通读，删掉没有新增物理信息的概括句，保留推导所需的中间步骤。具体写法与对照见 [教师口播](references/voice.md#写法)。
 
 本系列采用固定画面：设置 `camera:"static"`，整页尺寸与位置保持一致。公式链逐行出现，默认省去行间连接箭头；受力、位移、速度等物理方向保留。斜面滑块按底边接触放置；后续受力线与标签用 `attach_to` 引用滑块中心，改图时一起移动。重要结果用 `write_seconds` 提前写完，给学生保留看图和读式时间。
 

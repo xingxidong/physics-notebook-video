@@ -10,6 +10,13 @@ from layout import expand_actions,page_spec,focus_state
 
 
 class StableBoardTests(unittest.TestCase):
+    def test_lagrange_partial_derivative_has_editable_finite_ink(self):
+        with tempfile.TemporaryDirectory() as folder:
+            _,pages=compile_lesson(folder,{'title':'partial','pages':[{'id':'p1','cues':[{'tts':'分别计算速度和位置的偏导。','actions':[{'type':'math','latex':r'\frac{d}{dt}(\frac{\partial L}{\partial\dot{x}})-\frac{\partial L}{\partial x}=0','x':665,'y':124,'size':32}]}]}]})
+            points=[p for b in pages[0]['cues'][0]['blocks'] for s in b['strokes'] for p in s['points']]
+            self.assertGreater(len(points),50)
+            self.assertTrue(all(math.isfinite(x) and math.isfinite(y) for x,y in points))
+
     def test_block_base_contacts_slope_at_multiple_angles_and_scales(self):
         for angle in (8,15,30,60,70):
             for scale in (.35,1,2.2):
