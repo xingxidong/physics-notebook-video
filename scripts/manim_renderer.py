@@ -3,6 +3,7 @@ import argparse,importlib.util,json,math,shutil,sys
 from pathlib import Path
 import numpy as np
 from manim import Scene,MovingCameraScene,ImageMobject,VMobject,VGroup,Dot,tempconfig
+from manim.constants import CapStyleType,LineJointType
 from course import portion
 from layout import focus_state
 
@@ -20,7 +21,18 @@ def render(payload,output):
                 self.add(ImageMobject(data['background']).set(width=1280,height=720))
                 multiplier=self.camera.cairo_line_width_multiple
                 def points(path):return np.array([[x-640,360-y,0] for x,y in path])
-                def make(e):return VMobject(stroke_color=e['color'],stroke_width=e['width']/multiplier,fill_opacity=0).set_points_as_corners(points(e['points']))
+                def geometry(mob,path,e,opacity=1):
+                    coords=points(path)
+                    # Cairo can discard subpixel segments even with round caps.
+                    # An actual filled disk preserves dot accents and point markers.
+                    if max(np.linalg.norm(p-coords[0]) for p in coords)<.5:
+                        center=coords.mean(axis=0);radius=e['width']/2
+                        circle=np.array([center+radius*np.array([math.cos(a),math.sin(a),0]) for a in np.linspace(0,2*math.pi,25)])
+                        mob.set_points_as_corners(circle);mob.close_path();mob.set_fill(e['color'],opacity=opacity);mob.set_stroke(opacity=0)
+                    else:
+                        mob.set_points_as_corners(coords);mob.set_fill(opacity=0);mob.set_stroke(color=e['color'],width=e['width']/multiplier,opacity=opacity)
+                    return mob
+                def make(e):return geometry(VMobject(cap_style=CapStyleType.ROUND,joint_type=LineJointType.ROUND),e['points'],e)
                 dynamic=data.get('dynamic_frames',[]);max_count=max((len(f) for f in dynamic),default=0)
                 dynamic_nodes=VGroup(*[make(next(f[i] for f in dynamic if i<len(f))) for i in range(max_count)])
                 events=page['strokes'];nodes=VGroup(*[make(e).set_stroke(opacity=0) for e in events]);states=[None]*len(events)
@@ -34,8 +46,8 @@ def render(payload,output):
                         frame=dynamic[min(len(dynamic)-1,int((t+1e-8)*data['fps']))]
                         for i,mob in enumerate(dynamic_nodes):
                             if i<len(frame):
-                                e=frame[i];mob.set_points_as_corners(points(e['points']));mob.set_stroke(color=e['color'],width=e['width']/multiplier,opacity=1)
-                            else:mob.set_stroke(opacity=0)
+                                e=frame[i];geometry(mob,e['points'],e)
+                            else:mob.set_opacity(0)
                     cursor.set_opacity(0)
                     for i,(mob,e) in enumerate(zip(nodes,events)):
                         f=max(0,min(1,(t-e['start'])/(e['end']-e['start'])))
@@ -43,7 +55,7 @@ def render(payload,output):
                         if state!=states[i] or state==1:
                             pts=portion(e['points'],f) if state==1 else e['points']
                             if len(pts)<2:pts=[pts[0],[pts[0][0]+.001,pts[0][1]]]
-                            mob.set_points_as_corners(points(pts));mob.set_stroke(opacity=0 if state==0 else 1);states[i]=state
+                            geometry(mob,pts,e,opacity=0 if state==0 else 1);states[i]=state
                             if state==1:cursor.move_to(points([pts[-1]])[0]).set_opacity(1)
                 # Manim samples both ends of the interval; a half-frame offset
                 # produces the exact shared-timeline frame count.

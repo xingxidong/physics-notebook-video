@@ -3,7 +3,7 @@ name: physics-notebook-video
 description: 将物理题、物理竞赛讲义或概念课制作为电子笔记本式逐笔板书视频，含图文推导、自然中文口播、TikZ 源码、本地批量渲染与长课多 Agent 协作。适用于 Codex、Claude 及其他兼容 Agent Skills 的终端中的手写讲课、Goodnotes 录屏式课程、讲义转视频和系列课程制作。
 metadata:
   author: xingxidong
-  version: "0.8.0"
+  version: "0.8.1"
   standard: agentskills.io
   icon: assets/icon.png
   requirements: Python 3.11+, FFmpeg, Chinese font; XeLaTeX/xeCJK and PyMuPDF for problem text; Node.js 20+/Chrome for Motion Canvas; TeX/dvisvgm for Manim

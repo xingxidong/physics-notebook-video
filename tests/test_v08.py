@@ -1,4 +1,4 @@
-import copy,hashlib,json,math,shutil,subprocess,sys,tempfile,unittest
+import copy,hashlib,json,math,os,shutil,subprocess,sys,tempfile,unittest
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT/'scripts'))
@@ -110,5 +110,18 @@ class ProblemWorkflowTests(unittest.TestCase):
         run=subprocess.run(['node','-e',script,str(ROOT/'assets/models.js')],input=json.dumps({'m':m,'f':fractions}),text=True,capture_output=True,check=True)
         for a,b in zip(json.loads(run.stdout),[state(m,f) for f in fractions]):
             for x,y in zip(a,b):self.assertAlmostEqual(x,y,places=12)
+
+    @unittest.skipUnless(os.environ.get('PHYSICS_MANIM_PYTHON') and shutil.which('ffmpeg'),'Manim runtime is needed for the pixel regression render')
+    def test_manim_preserves_the_visible_time_derivative_dot(self):
+        from PIL import Image
+        with tempfile.TemporaryDirectory() as d:
+            p=Path(d);Image.new('RGB',(1280,720),'white').save(p/'paper.png')
+            payload={'width':1280,'height':720,'fps':12,'background':str(p/'paper.png'),'page':{'camera':'static','frames':12,'strokes':[{'points':[[640,350],[640.01,350]],'color':'#205b96','width':3,'start':0,'end':.05},{'points':[[635,374],[635,362],[638,360],[642,362]],'color':'#205b96','width':3,'start':0,'end':.05}]}}
+            (p/'payload.json').write_text(json.dumps(payload))
+            subprocess.run([os.environ['PHYSICS_MANIM_PYTHON'],str(ROOT/'scripts/manim_renderer.py'),'--input',str(p/'payload.json'),'--output',str(p/'dot.mp4')],check=True,capture_output=True,text=True)
+            subprocess.run(['ffmpeg','-v','error','-y','-ss','0.5','-i',str(p/'dot.mp4'),'-frames:v','1',str(p/'frame.png')],check=True,capture_output=True)
+            crop=Image.open(p/'frame.png').convert('RGB').crop((635,345,646,356))
+            blue=sum(b>r+30 and b>g+15 for r,g,b in crop.getdata())
+            self.assertGreaterEqual(blue,4,'The time derivative dot disappeared from the actual Manim video')
 
 if __name__=='__main__':unittest.main()
