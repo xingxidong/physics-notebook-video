@@ -34,8 +34,11 @@ def audit(project,data=None):
     if _db(peak)>-0.8:warnings.append({'code':'peak-high','message':'峰值距离满刻度不足 0.8 dB。'})
     if clip>.0001:warnings.append({'code':'clipping','message':f'削波样本比例为 {clip:.4%}。'})
     if _db(rms)<-34:warnings.append({'code':'level-low','message':'全片平均电平偏低。'})
-    long_silence=_silences(samples,rate)
-    for span in long_silence:warnings.append({'code':'long-silence','message':f'{span["start"]:.2f}—{span["end"]:.2f} 秒存在较长静音。'})
+    long_silence=_silences(samples,rate);planned=[]
+    for span in long_silence:
+        intentional=any(c.get('pause_reason') in ('read_formula','observe_motion','think','transition') and span['start']<=p.get('start',0)+c['end']<=span['end'] for p in data['pages'] for c in p['cues'])
+        if intentional:planned.append(span)
+        else:warnings.append({'code':'long-silence','message':f'{span["start"]:.2f}—{span["end"]:.2f} 秒存在较长静音。'})
     formula_re=re.compile(r'[\\{}_^]|\b(?:frac|sqrt|vec|dot)\b')
     timed=0
     for cue in cues:
@@ -49,7 +52,7 @@ def audit(project,data=None):
     report={
         'status':'pass' if not warnings else 'attention','duration':round(len(samples)/rate,3),'sample_rate':rate,
         'peak_dbfs':round(_db(peak),2),'rms_dbfs':round(_db(rms),2),'clipping_ratio':round(clip,7),
-        'long_silences':long_silence,'cues':len(cues),'word_timing_coverage':round(timed/max(1,len(cues)),3),
+        'long_silences':long_silence,'planned_silences':planned,'cues':len(cues),'word_timing_coverage':round(timed/max(1,len(cues)),3),
         'warnings':warnings,
     }
     (project/'voice-report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2));return report

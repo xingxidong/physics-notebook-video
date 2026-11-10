@@ -196,17 +196,22 @@ def prepare(project,lesson,pages,args):
     for p in pages:
         local=.35;pcm=bytearray(b'\0'*round(local*SR)*2);events=[];cues=[];focuses=[]
         for cue in p['cues']:
+            edge_report=None
             pcm.extend(b'\0'*round(cue['pause_before']*SR)*2)
             if args.draft:
                 audio={'duration':max(1.2,len(cue['tts'])/4.2),'words':[],'file':None}
             else:
                 audio=synth(project,cfg,cue);voice_hits+=bool(audio['cache_hit']);voice_new+=not audio['cache_hit']
                 with wave.open(audio['file']) as w:clip=w.readframes(w.getnframes())
+                if cfg.get('trim_edges',False):
+                    from audio_edges import trim
+                    clip,audio,edge_report=trim(clip,audio,SR,cfg['trim_edges'])
             # Quantise start to exact audio samples for every playback/export path.
             local=len(pcm)/(2*SR)
             for e in schedule(cue,audio):e.update(start=e['start']+local,end=e['end']+local);events.append(e)
-            delivery={k:cue[k] for k in ('role','speed','pitch','volume','emotion','emphasis') if k in cue}
+            delivery={k:cue[k] for k in ('role','speed','pitch','volume','emotion','emphasis','pause_reason') if k in cue}
             cues.append({'id':cue['id'],'text':cue['text'],'tts':cue['tts'],'start':local,'end':local+audio['duration'],'pause_before':cue['pause_before'],'pause':cue['pause'],'timing':'estimated' if args.draft else 'measured','words':audio.get('words',[]),**delivery})
+            if edge_report:cues[-1]['audio_edges']=edge_report
             if cue.get('focus'):
                 focused=copy.deepcopy(cue['focus']);focused.update(start=local,end=local+audio['duration']);focuses.append(focused)
             if args.draft:pcm.extend(b'\0'*round(audio['duration']*SR)*2)
@@ -349,6 +354,8 @@ def run_build(project,args):
     from teaching import audit as audit_teaching
     teaching_report=audit_teaching(project,lesson,pages);write_json(project/'teaching-report.json',teaching_report)
     if teaching_report['errors']:raise ValueError('Teaching source check failed: '+'; '.join(x['message'] for x in teaching_report['errors']))
+    from delivery import inspect_script
+    write_json(project/'delivery-report.json',inspect_script(lesson))
     from layout import audit_lesson
     layout_report=audit_lesson(pages);write_json(project/'layout-report.json',layout_report)
     from components import audit_components
@@ -465,7 +472,7 @@ def main():
         if args.title:data['title']=args.title
         data.setdefault('show_titles',False);data.setdefault('camera','static')
         local_speech=(local_config().get('speech_defaults') or {}).get(args.backend,{})
-        data['speech']={'backend':args.backend,'voice':local_speech.get('voice',DEFAULTS[args.backend]),'speed':1.0,'audio_mastering':True}
+        data['speech']={'backend':args.backend,'voice':local_speech.get('voice',DEFAULTS[args.backend]),'speed':1.0,'audio_mastering':True,'delivery_profile':'classroom','trim_edges':True}
         if local_speech.get('model'):data['speech']['model']=local_speech['model']
         if args.example=='pursuit':
             from intake import register
