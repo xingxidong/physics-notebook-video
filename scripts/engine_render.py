@@ -51,7 +51,7 @@ def render(project,data,font,width,engine,runtime=None):
     if data['draft']:raise ValueError('Final video requires measured audio')
     project=Path(project).resolve();runtime=runtime_path(runtime);info=versions(engine,runtime)
     root=project/'cache'/'video'/engine;root.mkdir(parents=True,exist_ok=True)
-    sources=[ROOT/'scripts/engine_render.py',ROOT/'scripts/models.py',ROOT/'scripts/course.py',ROOT/'scripts/layout.py',ROOT/'scripts/components.py']
+    sources=[ROOT/'scripts/engine_render.py',ROOT/'scripts/models.py',ROOT/'scripts/pursuit.py',ROOT/'scripts/cards.py',ROOT/'scripts/course.py',ROOT/'scripts/layout.py',ROOT/'scripts/components.py']
     sources += list((ROOT/'scripts/motion_canvas').glob('*')) if engine=='motion-canvas' else [ROOT/'scripts/manim_renderer.py']
     fingerprint=digest(b''.join(p.read_bytes() for p in sorted(sources) if p.is_file())+font.read_bytes())
     keys=[];new=reused=0

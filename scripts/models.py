@@ -3,6 +3,9 @@ import copy,math
 import ink
 
 def setup(spec):
+    if spec.get('kind')=='pursuit':
+        from pursuit import setup as pursuit_setup
+        return pursuit_setup(spec)
     if spec.get('kind')!='equal-circles':raise ValueError('Unknown demonstration model')
     m={'cx':350,'cy':405,'radius':155,'d0':.45,'d1':1.75,**copy.deepcopy(spec)}
     if not 0<m['d0']<2 or not 0<m['d1']<2:raise ValueError('Circle demo needs 0 < d/R < 2')
@@ -18,6 +21,9 @@ def setup(spec):
     return m
 
 def strokes(m,t):
+    if m.get('kind')=='pursuit':
+        from pursuit import strokes as pursuit_strokes
+        return pursuit_strokes(m,t)
     u=max(0,min(1,(t-m['start'])/max(.001,m['stop']-m['start'])))
     R=m['radius'];d=R*(m['d0']+(m['d1']-m['d0'])*u);h=math.sqrt(R*R-d*d/4);cx,cy=m['cx'],m['cy'];P=[cx+d/2,cy-h];out=[]
     def path(points,color='#29333c',width=2.6):out.append({'points':points,'color':color,'width':width})
@@ -42,3 +48,41 @@ def strokes(m,t):
             for k in range(0,8,2):line([a[j]+(b[j]-a[j])*k/8 for j in (0,1)],[a[j]+(b[j]-a[j])*(k+1)/8 for j in (0,1)],'#9caeaa',1.3)
         label('vx',P[0]+27,P[1]-80,'#205b96');label('vy',P[0]-49,B[1]+4,'#205b96');label('v',V[0]+10,V[1]-20,'#b54d40')
     return out
+
+def validate_cues(m,ids):
+    segments=m.get('segments')
+    if segments:
+        if m.get('kind')!='pursuit':raise ValueError('Segmented motion is currently supported by pursuit')
+        previous=0
+        for segment in segments:
+            if segment.get('start_cue') not in ids or segment.get('end_cue') not in ids:raise ValueError('Motion segment cue ids must belong to this page')
+            a,b=segment.get('from',0),segment.get('to',1)
+            if not 0<=a<=b<=1 or a<previous:raise ValueError('Motion segments need ordered progress ranges in 0..1')
+            previous=b
+    elif any(m.get(k) not in ids for k in ('start_cue','end_cue')):raise ValueError('Demonstration cue ids must belong to this page')
+    if m.get('vectors_cue') and m['vectors_cue'] not in ids:raise ValueError('vectors_cue must belong to this page')
+
+def bind_cues(m,cues):
+    m=copy.deepcopy(m);lookup={c['id']:c for c in cues}
+    if m.get('segments'):
+        previous=-1
+        for segment in m['segments']:
+            segment['start']=lookup[segment['start_cue']]['start'];segment['stop']=lookup[segment['end_cue']]['end']
+            if segment['stop']<=segment['start'] or segment['start']<previous:raise ValueError('Motion segment times must be ordered and nonoverlapping')
+            previous=segment['stop']
+        m['start']=m['segments'][0]['start'];m['stop']=m['segments'][-1]['stop']
+        first=m['segments'][0]['start_cue']
+    else:
+        m['start']=lookup[m['start_cue']]['start'];m['stop']=lookup[m['end_cue']]['end'];first=m['start_cue']
+        if m['stop']<=m['start']:raise ValueError('Demonstration must end after it starts')
+    m['vector_start']=lookup[m.get('vectors_cue',first)]['start'];return m
+
+def motion_report(m):
+    if m.get('kind')=='pursuit':
+        from pursuit import state
+        segments=m.get('segments');lo=segments[0]['from'] if segments else 0;hi=segments[-1]['to'] if segments else 1
+        a,b=state(m,lo),state(m,hi);distance=math.hypot(b[2]-a[2],b[3]-a[3])*m['scale']
+        return {'moving':distance>5,'kind':'pursuit','dog_displacement_pixels':distance,'catch_time':m['catch_time']}
+    if m.get('kind')=='equal-circles':
+        distance=abs(m['d1']-m['d0'])*m['radius'];return {'moving':distance>5,'kind':'equal-circles','center_displacement_pixels':distance}
+    return {'moving':False,'kind':m.get('kind')}

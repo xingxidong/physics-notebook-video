@@ -1,0 +1,37 @@
+{
+  "title":"追逐运动：把两个速度投影合成一个导数",
+  "kind":"problem","input_manifest":"input-manifest.json","show_titles":false,"camera":"static","renderer":"motion-canvas",
+  "speech":{"backend":"minimax","speed":1.0},
+  "pages":[{
+    "id":"p01","title":"追逐运动的投影与加权相加","problem_id":"pursuit-projection",
+    "problem":{"text":"目标点 $F$ 沿水平直线向右匀速运动，速率为 $v_F$。点 $D$ 以恒定速率 $v_D$ 追逐 $F$，速度方向始终指向 $F$。初始两点上下对齐，相距 $L$，且 $v_D>v_F>0$。记当前间距为 $r$，水平领先量为 $x$，视线与水平向右方向的夹角为 $\\theta$。求 $\\dot r$ 和 $\\dot x$，再组合出不含 $\\theta$ 的时间导数关系。","rect":[145,100,1035,125],"font_size":21},
+    "demonstration":{"kind":"pursuit","vF":1,"vD":1.5,"L":1,"origin":[210,305],"scale":210,"board_progress":0.35,"vectors_cue":"radial","segments":[{"start_cue":"motion","end_cue":"motion","from":0,"to":0.35},{"start_cue":"finish","end_cue":"finish","from":0.35,"to":1}]},
+    "cues":[
+      {"id":"setup","role":"read_problem","tts":"题目在上方。目标点沿水平直线向右跑，追逐点的速度始终指向目标。两个速率都固定。我们要写出两者间距和水平领先量怎样变化，再把夹角从式子里消掉。","actions":[]},
+      {"id":"motion","role":"observe","tts":"看左边。蓝点向右匀速移动，绿点一边前进，一边朝蓝点转向，因此走出一条曲线。先停在这个位置。红色线段是两者间距，下面的水平线段是领先量，夹角也标在图里。","actions":[]},
+      {"id":"radial","role":"derive","tts":"沿红色视线看。绿点向蓝点跑，使距离减少；蓝点的速度在视线上的投影，使距离增大。两者相减，就是距离的变化率。","actions":[{"id":"r-projection","type":"math","latex":"\\dot r=v_F\\cos\\theta-v_D","x":665,"y":252,"size":27,"color":"blue","at":{"word":"两者相减"},"write_seconds":4}]},
+      {"id":"horizontal","role":"derive","tts":"再看水平差。蓝点的水平速度就是它的速率；绿点的水平速度，还要乘这个夹角的余弦。蓝点速度减去绿点的水平分量，得到水平领先量的变化率。","actions":[{"id":"x-projection","type":"math","latex":"\\dot x=v_F-v_D\\cos\\theta","x":665,"y":299,"size":27,"color":"green","at":{"word":"减去"},"write_seconds":4}]},
+      {"id":"weights","role":"key_turn","tts":"这两个余弦项，系数还不一样。第一式乘追逐点速率，第二式乘目标点速率。这样，两项都带上两个速率的乘积，符号却一正一负。","actions":[
+        {"id":"multiply-r","type":"math","latex":"v_D\\dot r=v_Dv_F\\cos\\theta-v_D^2","x":665,"y":348,"size":25,"color":"blue","at":{"word":"第一式乘"},"write_seconds":4},
+        {"id":"multiply-x","type":"math","latex":"v_F\\dot x=v_F^2-v_Dv_F\\cos\\theta","x":665,"y":396,"size":25,"color":"green","at":{"word":"第二式乘"},"write_seconds":4}
+      ]},
+      {"id":"sum","role":"derive","tts":"把这两行相加。右边的两个余弦项正好消掉，留下目标点速率的平方，减去追逐点速率的平方。左边就是两个加权后的变化率之和。","actions":[{"id":"cancel-angle","type":"math","latex":"v_D\\dot r+v_F\\dot x=v_F^2-v_D^2","x":665,"y":446,"size":25,"color":"red","at":{"word":"相加"},"write_seconds":4.5}]},
+      {"id":"constants","role":"derive","tts":"再处理左边。两个速率都是常量，所以追逐点速率乘距离的导数，等于这个速率与距离的乘积，再对时间求导。水平差那一项也一样。把这两步分别写出来。","actions":[
+        {"id":"constant-r","type":"math","latex":"v_D\\dot r=\\frac{d}{dt}(v_Dr)","x":665,"y":496,"size":25,"color":"blue","at":{"word":"距离的导数"},"write_seconds":3.5},
+        {"id":"constant-x","type":"math","latex":"v_F\\dot x=\\frac{d}{dt}(v_Fx)","x":665,"y":545,"size":25,"color":"green","at":{"word":"水平差那一项"},"write_seconds":3.5}
+      ]},
+      {"id":"combine","role":"conclusion","tts":"最后，两个导数相加，合成和的导数。这样就得到最下面这条关系。加权系数的选择，是为了让角度项相消；而把常量放进导数里，靠的是两个速率恒定。","actions":[{"id":"combined-derivative","type":"math","latex":"\\frac{d}{dt}(v_Dr+v_Fx)=v_F^2-v_D^2","x":665,"y":605,"size":27,"color":"red","at":{"word":"合成"},"write_seconds":5}]},
+      {"id":"finish","role":"physical_meaning","tts":"继续看左边。绿点的速度方向始终指着蓝点，最后两点重合。这时，距离和水平差都等于零，这就是追上时的末状态。","actions":[]}
+    ],
+    "derivation_steps":[
+      {"id":"s1","depends_on":[],"reason":"沿视线作相对速度投影","cue_id":"radial","action_id":"r-projection","result":"\\dot r=v_F\\cos\\theta-v_D"},
+      {"id":"s2","depends_on":[],"reason":"沿水平方向作相对速度投影","cue_id":"horizontal","action_id":"x-projection","result":"\\dot x=v_F-v_D\\cos\\theta"},
+      {"id":"s3","depends_on":["s1"],"reason":"第一式两边乘常量vD，使余弦项系数变为vDvF","cue_id":"weights","action_id":"multiply-r","result":"v_D\\dot r=v_Dv_F\\cos\\theta-v_D^2"},
+      {"id":"s4","depends_on":["s2"],"reason":"第二式两边乘常量vF，使余弦项系数的绝对值相同","cue_id":"weights","action_id":"multiply-x","result":"v_F\\dot x=v_F^2-v_Dv_F\\cos\\theta"},
+      {"id":"s5","depends_on":["s3","s4"],"reason":"两式相加，正负余弦项相消","cue_id":"sum","action_id":"cancel-angle","result":"v_D\\dot r+v_F\\dot x=v_F^2-v_D^2"},
+      {"id":"s6","depends_on":["s3"],"reason":"vD为常量，常量可移入时间导数","cue_id":"constants","action_id":"constant-r","result":"v_D\\dot r=\\frac{d}{dt}(v_Dr)"},
+      {"id":"s7","depends_on":["s4"],"reason":"vF为常量，常量可移入时间导数","cue_id":"constants","action_id":"constant-x","result":"v_F\\dot x=\\frac{d}{dt}(v_Fx)"},
+      {"id":"s8","depends_on":["s5","s6","s7"],"reason":"代入两个乘积的导数，并用导数对加法的线性性质合并","cue_id":"combine","action_id":"combined-derivative","result":"\\frac{d}{dt}(v_Dr+v_Fx)=v_F^2-v_D^2"}
+    ]
+  }]
+}

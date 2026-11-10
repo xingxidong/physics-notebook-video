@@ -2,9 +2,13 @@
 
 ## 入口与产物
 
+讲题新流程使用 `kind:"problem"`，登记题目与解答，在页面 `problem` 中显示识别后的文字，并配置情景动画和 `derivation_steps`。见 [题目与解答工作流](problem-workflow.md)。`--example pursuit` 提供可直接构建的完整小例子。
+
+题面 `problem.text` 的正文中使用 `$v_D$`、`$\frac{dr}{dt}$` 等 LaTeX 公式，由 XeLaTeX 排版；完整转写、公式审阅记录与可编辑 `.tex` 一起保留。下文的 LaTeX 子集说明针对逐笔板书解析器，题面由实际 TeX 编译器处理。
+
 `course.py init PROJECT --title "课程" --backend glm` 创建一课，同时生成 `lesson.json` 和 `speech-plan.json`；示例是完整的点电荷概念课，可按新课改写。`--example gauss` 是完整高斯定理课程。`check` 检查源文件与笔画范围；`build --draft` 生成无配音排版预览；`build --video` 配音并导出正式视频。
 
-依赖：Python 3、Pillow、FFmpeg；Edge 路线另装 edge-tts。推荐在工作区虚拟环境安装。`doctor` 列出当前环境已有依赖。页面标题需要中文 TTF/TTC，自动查找 macOS Songti 或 Linux Noto CJK，也可通过 `font` 或 `PHYSICS_NOTEBOOK_FONT` 指定。笔迹由向量路径绘制。
+依赖：Python 3、Pillow、FFmpeg；题面另用 XeLaTeX、xeCJK、amsmath 与 PyMuPDF；Edge 路线另装 edge-tts。推荐在工作区虚拟环境安装。`doctor` 列出当前环境已有依赖。中文排版需要中文 TTF/TTC，自动查找 macOS Songti 或 Linux Noto CJK，也可通过 `font` 或 `PHYSICS_NOTEBOOK_FONT` 指定。笔迹由向量路径绘制。
 
 `--width 1920` 输出 1080p；默认 720p。`--fps 24` 为默认，12 用于快速试片，30 用于较细的动态书写。`--backend`、`--voice` 可临时覆盖项目配音配置。
 
@@ -85,6 +89,8 @@ LaTeX 子集：分式、上下标、向量、单位法线、时间导数点号�
 `course.py batch batch.json --video --jobs 2` 从批量文件所在目录解析路径，各课独立处理。`batch-report.json` 给出逐课结果。修改后再次运行，音频与每页视频按内容缓存，已完成资源直接复用。
 
 输出：preview.html、video.mp4、boards.pdf、pages/*.png、contact-sheet.png、tikz/*.tikz、tikz/boards.tex、timeline.json、narration.md、prosody.json、voice-report.json、layout-report.json、component-report.json、build-report.json。完整文字讲义由制作课程时另写 `讲义.md`，与题设、推导和图文解答相配合。
+
+v0.8 讲题项目另保留 `input-manifest.json`、输入原件、识别转写、参考解答或独立题解、`teaching-report.json`。正式题目视频使用 Motion Canvas 或 Manim；Notebook 继续用于排版草稿。物理运动与 cue 的分段播放见 [情景动画](scenario-animation.md)。
 
 ## 原题图片与两圆运动组件
 

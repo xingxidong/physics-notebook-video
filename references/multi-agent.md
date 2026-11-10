@@ -88,6 +88,8 @@ PROJECT/
 
 每个章节同时保留文字讲义片段和可编辑 TikZ。`fragment.json` 的页面使用现有 [课程格式](lesson-format.md)，合并后由原有编译器处理。
 
+讲题章节遵循 [题目与解答工作流](problem-workflow.md)：原题与参考解答先登记，页面显示识别后的题目，物理情景实际运动，并用 `derivation_steps` 关联每个中间式、依据和口播。课程合同可设置 `kind:"problem"` 和 `input_manifest`，主 Agent 统一管理原始资料与转写。章节 Agent 补全参考中的省略步骤。
+
 ## 校验与合并
 
 ```sh

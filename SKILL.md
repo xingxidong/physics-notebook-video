@@ -3,10 +3,10 @@ name: physics-notebook-video
 description: 将物理题、物理竞赛讲义或概念课制作为电子笔记本式逐笔板书视频，含图文推导、自然中文口播、TikZ 源码、本地批量渲染与长课多 Agent 协作。适用于 Codex、Claude 及其他兼容 Agent Skills 的终端中的手写讲课、Goodnotes 录屏式课程、讲义转视频和系列课程制作。
 metadata:
   author: xingxidong
-  version: "0.7.1"
+  version: "0.8.0"
   standard: agentskills.io
   icon: assets/icon.png
-  requirements: Python 3.11+, FFmpeg, Chinese font; optional Node.js 20+/Chrome for Motion Canvas and TeX/dvisvgm for Manim
+  requirements: Python 3.11+, FFmpeg, Chinese font; XeLaTeX/xeCJK and PyMuPDF for problem text; Node.js 20+/Chrome for Motion Canvas; TeX/dvisvgm for Manim
 ---
 
 # 物理逐笔板书课
@@ -26,6 +26,18 @@ metadata:
 本系列采用固定画面：设置 `camera:"static"`，整页尺寸与位置保持一致。公式链逐行出现，默认省去行间连接箭头；受力、位移、速度等物理方向保留。斜面滑块按底边接触放置；后续受力线与标签用 `attach_to` 引用滑块中心，改图时一起移动。重要结果用 `write_seconds` 提前写完，给学生保留看图和读式时间。
 
 ## 先确定这一课教什么
+
+讲题时先提醒用户：“请同时提供题目和参考解答，图片、PDF 或文字均可；只有题目时也可先独立求解。”已有资料直接使用，缺少解答时仍具备自主解题能力。先独立梳理物理关系，再核对参考解答；参考中的省略步骤补全，有错误时按正确推导修正并在制作记录中说明。按 [题目与解答工作流](references/problem-workflow.md) 登记原始资料、识别题干与解答，保留原件和可编辑转写。关键数值、上下标或图形条件辨认不清时再向用户确认。
+
+识别后的题目要真正出现在视频画面中，逐项呈现已知、所求与变量；题目正文属于教学内容，沿用每页不加装饰标题的设置。题图优先重画并保留 TikZ；原图本身有教学价值时可截取，记录来源和像素裁切范围，检查文字和关键图形完整。题干、解答和图中的符号、方向与几何关系保持一致。
+
+题目与参考解答中的数学表达式统一转写为 LaTeX。逐式对照原图，保留分式、根号、上下标、向量、点导数、积分上下限、括号层次和分段条件，确认变量字母、正负号、数值与单位。正文中的变量也写成 `$v_F$`、`$\theta$` 等行内公式。辨认不清的部分留为待确认项，明确后再制作。完整转写保存为 Markdown＋LaTeX，题面通过 XeLaTeX 实际排版进入视频，保留可编辑 `.tex`；解答中的板书动作沿用同一份 LaTeX 源。逐式确认与题面预览在正式配音之前完成，排版失败先修复，再生成成片。依赖与写法见 [题目与解答工作流](references/problem-workflow.md#公式识别与-latex-排版)。
+
+讲题成片使用 Motion Canvas 或 Manim，让物理情景实际运动：物体位置、轨迹、速度方向、场、光线或状态随模型变化，重要时刻可以暂停、回看和对照。固定的是镜头，物理对象照常运动。逐笔写字、淡入公式和镜头缩放仅作为呈现手段。已有模型优先复用，其他题型实现本课模型或原生引擎场景；运动由物理参数决定。配置见 [情景动画](references/scenario-animation.md)。
+
+推导按“依据—运算—结果”连续展开。取方向、作投影、两边乘系数、相加消项、常量移入导数、积分和初末条件均展示必要中间式，并在对应位置讲清原因。尤其当多条关系合成新关系时，先写各条关系怎样变形，再写合成结果。每个关键步骤关联实际口播与板书，写入 `derivation_steps`；完整讲义保留更细的计算。
+
+新讲题课程设置 `kind:"problem"`。正式构建先运行 `teaching-check`，检查输入资料、已复核转写、屏幕题目、真实情景运动和推导链的显示关联。它检查材料与结构；物理结论、数学等价和步骤是否充分仍由独立推导、必要计算及实际画面审阅确定。
 
 复用用户已有讲义、题目、符号和已接受的视觉样式。已有完整题解时，把主要精力放在图文衔接、口播和落笔顺序。新题先完成物理推导，再安排页面；过程分段与所用规律按物理对象确定。按需读 [物理教学](references/teaching.md)。
 

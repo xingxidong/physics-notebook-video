@@ -1,12 +1,14 @@
 # 物理逐笔板书视频技能
 
-版本：0.7.1。面向支持 Agent Skills 和本地命令的 Agent 宿主，制作带中文配音的物理讲解视频。
+版本：0.8.0。面向支持 Agent Skills 和本地命令的 Agent 宿主，制作带中文配音的物理讲解视频。
 
 已完成并实测：中文与公式逐笔书写、图文推导、MiniMax 与 Edge 配音、同步字幕、Motion Canvas 和 Manim 渲染、页面缓存、批量导出，以及 TikZ 与板书 PDF。0.6 新增八类参数化物理图形组件；0.7 默认固定画面、取消公式行间连接箭头，加入滑块接触检查、组件附着点和书写时长控制。当前完整视频流程在 macOS 上验证；Windows、Linux 的完整安装流程尚未验证。
 
 模板默认采用固定画面、无逐页标题的笔记本样式和自然课堂口播。MiniMax 音色优先读取本机已配置的默认值。使用者可指定其他样式与音色。
 
 0.7.1 将自然课堂文稿要求写入技能：直接解释物理对象与运算，删去介绍讲解结构的套话；重写斜面示例口播，并增加偏导符号的逐笔书写支持。
+
+0.8.0 加入题目与参考解答登记、LaTeX 题面排版、源图片裁切、纯追逐情景动画和逐步推导关联。题干和解答公式逐式对照原件，保留上下标、分式、向量和积分范围；题面经 XeLaTeX 编译，交付可编辑 `.tex`。新讲题课程在正式配音前检查资料与教学结构。固定镜头下，物理对象按模型移动，推导保留乘系数、消项和合成导数等中间步骤。
 
 项目仓库：[xingxidong/physics-notebook-video](https://github.com/xingxidong/physics-notebook-video)。
 
@@ -56,7 +58,7 @@ python3 scripts/platform_install.py package --target doubao --output physics-not
 
 ## 准备运行环境
 
-需要 Python 3.11 或更新版本、FFmpeg/ffprobe、中文字体。Motion Canvas 还需要 Node.js 20 或更新版本与 Chrome/Chromium。原生 Manim 的 MathTex 需要 TeX 和 dvisvgm。
+需要 Python 3.11 或更新版本、FFmpeg/ffprobe、中文字体。题面排版需要 XeLaTeX、xeCJK、amsmath 和 PyMuPDF。Motion Canvas 还需要 Node.js 20 或更新版本与 Chrome/Chromium。原生 Manim 的 MathTex 需要 TeX 和 dvisvgm。
 
 让当前 Agent 检查已有依赖并补齐缺项，或在工作目录中运行以下 macOS 命令。将 `PHYSICS_SKILL` 改成实际安装目录：
 
@@ -100,12 +102,22 @@ MINIMAX_API_HOST=https://api.minimax.cn
 
 ## 日常使用
 
+请同时提供题目和参考解答，图片、PDF、文字均可。只有题目时，Agent 也会独立求解。原件先登记，再将识别后的题干、参考解答和逐步推导转成课程源：
+
+```sh
+python3 "$PHYSICS_SKILL/scripts/intake.py" my-problem --problem question.png --solution answer.pdf
+```
+
+实际转写、解题与图文编排由当前 Agent 完成，程序保留原件和来源哈希。详细流程见 [题目与解答](references/problem-workflow.md)。
+
 向已安装技能的 Agent 提供题图或讲义，然后发送：
 
 ```text
 使用 $physics-notebook-video，将这道题制作成物理竞赛讲解视频。
+我会同时提供题目和参考解答；公式转写为 LaTeX，逐式对照原图，补全参考解答中的省略步骤。
 用我已配置的 MiniMax 音色，文案像老师自然讲课。
 逐笔书写，每页不加标题；保留必要推导、过程配图和可编辑 TikZ。
+题目要出现在视频里，情景用 Motion Canvas 或 Manim 动起来，镜头保持固定。
 导出1080p视频、字幕、讲义与课程源。
 ```
 
@@ -120,6 +132,17 @@ python3 "$PHYSICS_SKILL/scripts/course.py" component-check components-demo --str
 ```
 
 组件字段与物理参数见 [参数化物理图形组件](references/components.md)。
+
+体验 v0.8 的“题目入屏、情景运动、逐步推导”完整示例：
+
+```sh
+python3 "$PHYSICS_SKILL/scripts/course.py" init pursuit-demo --example pursuit --backend minimax
+python3 "$PHYSICS_SKILL/scripts/course.py" teaching-check pursuit-demo
+python3 "$PHYSICS_SKILL/scripts/course.py" build pursuit-demo --draft
+python3 "$PHYSICS_SKILL/scripts/course.py" build pursuit-demo --video --renderer motion-canvas --width 1920
+```
+
+该示例随包提供文字题目和参考解答。物理运动由模型计算，含 8 个有依据的中间式。`teaching-report.json` 检查资料与结构，数学和物理正确性仍由推导、计算和画面审阅共同确定。模型设置见 [情景动画](references/scenario-animation.md)。
 
 v0.7 的斜面完整示例包含底边接触、受力线附着、逐行推导和结果停留：
 
