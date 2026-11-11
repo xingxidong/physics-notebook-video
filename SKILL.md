@@ -3,7 +3,7 @@ name: physics-notebook-video
 description: 将物理题或教材制作为电子笔记本式逐笔板书视频。习题课从题面、情景动画和配图推导讲到结果；新授课从现象和对照讲到完整定义、定律与应用。支持中文配音、可编辑 LaTeX 和 TikZ、Manim、Motion Canvas 及本地批量导出。
 metadata:
   author: xingxidong
-  version: "0.11.0"
+  version: "0.11.1"
   standard: agentskills.io
   icon: assets/icon.png
   requirements: Python 3.11+, FFmpeg, Chinese font; XeLaTeX/xeCJK and PyMuPDF for problem text; Node.js 20+/Chrome for Motion Canvas; TeX/dvisvgm for Manim
@@ -21,7 +21,7 @@ metadata:
 
 用户要求教一个知识点、定律或教材章节，围绕学生学完应能说明或应用的知识组织课程。课程源使用 `kind:"concept"`。先读[新授课工作流](references/concept-lesson.md)，确定各段要观察的对象、保留的条件、图上的变化和要写进笔记的结论。用观察、对照、解释、正式板书和应用衔接课程；按内容选择所需环节。
 
-先排图、条件和板书位置，再让口播随实际对象、状态和公式推进。用 `knowledge_points` 关联定义、定律或结论的名称、完整文字、条件和公式。全部写完后留出读写时间。用 `scene_events` 让实际物理状态随口播变化。新授课包含例题时，保留新授课的知识主线，例题段沿用习题课的图文推导。
+先排图、条件和板书位置，再让口播随实际对象、状态和公式推进。用 `knowledge_points` 关联定义、定律或结论的名称、完整文字、条件和公式。在对应讲解中把板书写完，随后继续讲课。学生可自行暂停记笔记。用 `scene_events` 让实际物理状态随口播变化。新授课包含例题时，保留新授课的知识主线，例题段沿用习题课的图文推导。
 
 ## 共用的制作流程
 
@@ -42,7 +42,7 @@ python3 SKILL/scripts/course.py build PROJECT --draft
 
 ## 课堂表达与配音
 
-参照[课堂表达与节奏](references/classroom-delivery.md)改写口播。先让每句承接眼前的图、前一步结果或当前运算，再按实际语速通读。长式分句说清物理量、运算和原因。新项目采用 `speech.delivery_profile:"classroom"`，按观察、思考、读式或转场安排有用途的停顿。批量课可参考[成片案例](references/reference-cases.md)。
+参照[课堂表达与节奏](references/classroom-delivery.md)改写口播。先让每句承接眼前的图、前一步结果或当前运算，再按实际语速通读。长式分句说清物理量、运算和原因。新项目采用 `speech.delivery_profile:"classroom"`，停顿用于实际观察、思考和转场，抄录由学生自行暂停。批量课可参考[成片案例](references/reference-cases.md)。
 
 正式配音前运行 `scripts/delivery.py PROJECT` 查看原句和术语提示。文字保留正常术语，读音在语音层按词覆盖。沿用用户已选的音色和供应商，配置从本地读取。支持的后端、语调、个人音色和缓存见[教师口播与配音](references/voice.md)。配音后结合画面回听关键术语及相邻语句。可用 `course.py voice-check PROJECT --listen CUE_ID` 截取试听。改稿或修读音后复用其余段的配音缓存。
 

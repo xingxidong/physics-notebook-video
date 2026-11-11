@@ -11,8 +11,7 @@
       "name_action_id": "field-name",
       "statement": "电场中某点的电场强度等于放在该点的正试探电荷所受电场力与其电荷量的比值。",
       "statement_action_ids": ["field-definition-1", "field-definition-2", "field-definition-3"],
-      "formula_action_ids": ["field-definition"],
-      "read_seconds": 6
+      "formula_action_ids": ["field-definition"]
     }
   ],
   "pages": [
@@ -61,8 +60,6 @@
           "id": "define",
           "role": "conclusion",
           "tts": "这个比值描述的就是这个位置的电场。我们把它叫作电场强度。取放在这一点的正试探电荷，用它所受的电场力除以电荷量，方向也就沿着这个力。",
-          "pause": 4,
-          "pause_reason": "read_formula",
           "actions": [
             {"type": "text", "id": "field-name", "text": "电场强度", "x": 665, "y": 235, "size": 29, "color": "blue", "write_seconds": 2.1},
             {"type": "text", "id": "field-definition-1", "text": "电场中某点的电场强度等于", "x": 665, "y": 288, "size": 25},
@@ -87,8 +84,6 @@
           "id": "apply-answer",
           "role": "physical_meaning",
           "tts": "电场仍然向右。电场强度乘以负的电荷量，力的方向就反过来，指向左边的源电荷。",
-          "pause": 2,
-          "pause_reason": "read_formula",
           "actions": [
             {"type": "arrow", "from": [409, 530], "to": [507, 530], "color": "blue"},
             {"type": "math", "latex": "\\vec E", "teaching_role": "context", "x": 441, "y": 477, "size": 27, "color": "blue"},

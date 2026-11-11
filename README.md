@@ -1,6 +1,6 @@
 # 物理逐笔板书视频技能
 
-版本 0.11.0。面向支持 Agent Skills 和本地命令的 Agent 宿主，制作带中文配音的物理讲解视频。
+版本 0.11.1。面向支持 Agent Skills 和本地命令的 Agent 宿主，制作带中文配音的物理讲解视频。
 
 ## 选择课型
 
@@ -16,7 +16,7 @@ python3 scripts/course.py init exercise-demo --kind problem
 python3 scripts/course.py init concept-demo --kind concept
 ~~~
 
-习题课载入追逐运动示例，新授课载入电场强度示例。各自用 `build PROJECT --draft` 查看布局与落笔顺序。两种课型继续使用同一套板书笔迹、动画引擎、配音缓存和导出命令。
+习题课载入追逐运动示例，新授课载入电场强度示例。各自用 `build PROJECT --draft` 查看布局与落笔顺序。两种课型继续使用同一套板书笔迹、动画引擎、配音缓存和导出命令。完整结论在讲解中写完，学生可自行暂停记笔记。
 
 ## 制作能力
 
@@ -45,6 +45,8 @@ python3 scripts/course.py init concept-demo --kind concept
 项目仓库：[xingxidong/physics-notebook-video](https://github.com/xingxidong/physics-notebook-video)。
 
 下载：[最新版本](https://github.com/xingxidong/physics-notebook-video/releases/latest)。
+
+[课程成片合集](https://github.com/xingxidong/physics-notebook-video/releases/tag/course-videos-2026-11-11) 收录已完成的习题课和新授课 MP4。
 
 ## 平台支持
 

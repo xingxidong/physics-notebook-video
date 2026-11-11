@@ -62,7 +62,7 @@ def inspect_sources(lesson, pages):
                 errors.append({'code': 'knowledge-formula-visible', 'message': f'{kid}: link {action_id} to an actual formula action.'})
             else:
                 refs.append({'cue': linked[0], 'action': linked[2], 'id': action_id})
-        read_seconds = point.get('read_seconds', 4)
+        read_seconds = point.get('read_seconds', 0)
         if not isinstance(read_seconds, (int, float)) or not math.isfinite(read_seconds) or read_seconds < 0:
             errors.append({'code': 'knowledge-reading-time', 'message': f'{kid}: read_seconds must be a finite nonnegative number.'})
             continue
