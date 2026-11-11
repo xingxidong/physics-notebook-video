@@ -1,7 +1,7 @@
 """Small explicit LaTeX subset -> editable single-stroke math layout."""
 import re
 PARTIAL='∂'
-SYMBOLS={'alpha':'α','beta':'β','gamma':'γ','delta':'δ','theta':'θ','lambda':'λ','mu':'μ','pi':'π','rho':'ρ','sigma':'σ','tau':'τ','phi':'φ','omega':'ω','varepsilon':'ε','epsilon':'ε','Phi':'Φ','Omega':'Ω','Delta':'Δ','Sigma':'Σ','oint':'∮','int':'∫','cdot':'·','times':'×','to':'→','parallel':'∥','infty':'∞','leq':'≤','geq':'≥','approx':'≈','sin':'sin','cos':'cos','tan':'tan','ln':'ln','exp':'exp'}
+SYMBOLS={'alpha':'α','beta':'β','gamma':'γ','delta':'δ','theta':'θ','lambda':'λ','mu':'μ','pi':'π','rho':'ρ','sigma':'σ','tau':'τ','phi':'φ','varphi':'φ','nu':'ν','xi':'ξ','Psi':'Ψ','kappa':'κ','ell':'ℓ','omega':'ω','varepsilon':'ε','epsilon':'ε','Phi':'Φ','Omega':'Ω','Delta':'Δ','Sigma':'Σ','oint':'∮','int':'∫','cdot':'·','times':'×','to':'→','parallel':'∥','infty':'∞','leq':'≤','geq':'≥','approx':'≈','sin':'sin','cos':'cos','tan':'tan','ln':'ln','exp':'exp'}
 class Parser:
     def __init__(self,s):self.s=s;self.i=0
     def spaces(self):

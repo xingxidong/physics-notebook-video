@@ -41,25 +41,32 @@ def stroke(group, points, color=INK, width=3, curved=False):
     if curved: points=smooth(points)
     groups[group].append({'points':points,'color':color,'width':width})
 
-def text(group, content, x,y,size,color=INK):
+def text_strokes(content, x, y, size, color=INK, cache=None):
+    cache = CACHE if cache is None else Path(cache)
+    strokes = []
     for char in content:
-        if char==' ': x+=size*.24; continue
+        if char.isspace(): x+=size*.24; continue
         if char in glyphs:
             advance,paths=glyphs[char]
-            for path in paths:
-                stroke(group,[[x+u*size,y+v*size] for u,v in path],color,2.6 if size<34 else 3,True)
-            x+=advance*size
+            width=2.6 if size<34 else 3
         else:
             if not ('\u3400' <= char <= '\u9fff'):
                 raise ValueError(f'Unsupported handwriting glyph: {char!r}; add a stroke glyph before rendering.')
-            path=CACHE/(char+'.json')
+            path=cache/(char+'.json')
             if not path.exists():
                 url='https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0.1/'+urllib.parse.quote(char)+'.json'
                 path.write_bytes(urllib.request.urlopen(url,timeout=25).read())
-            data=json.loads(path.read_text())
-            for median in data['medians']:
-                stroke(group,[[x+u/1024*size,y+(900-v)/1024*size] for u,v in median],color,2.5,True)
-            x+=size*1.06
+            paths=[[(u/1024,(900-v)/1024) for u,v in median] for median in json.loads(path.read_text())['medians']]
+            advance,width=1.06,2.5
+        for path in paths:
+            points=smooth([[x+u*size,y+v*size] for u,v in path])
+            strokes.append({'points':points,'color':color,'width':width})
+        x+=advance*size
+    return x,strokes
+
+def text(group, content, x,y,size,color=INK):
+    x,strokes=text_strokes(content,x,y,size,color)
+    groups[group].extend(strokes)
     return x
 
 def line(group,a,b,color=INK,width=3): stroke(group,[list(a),list(b)],color,width)
@@ -219,6 +226,11 @@ glyphs.update({
  'σ':(.75,[[[.65,.28],[.33,.28],[.13,.44],[.15,.69],[.36,.80],[.56,.66],[.56,.43],[.33,.28]]]),
  'τ':(.68,[[[.07,.30],[.61,.29]],[[.38,.30],[.29,.69],[.43,.80]]]),
  'φ':(.81,[[[.40,.26],[.17,.34],[.10,.58],[.32,.77],[.59,.72],[.70,.48],[.56,.28],[.40,.26]],[[.48,.05],[.30,1.04]]]),
+ 'ν':(.72,[[[.12,.28],[.18,.58],[.27,.79],[.48,.61],[.61,.36],[.62,.26]]]),
+ 'Ψ':(.90,[[[.11,.17],[.16,.40],[.29,.55],[.46,.58],[.62,.52],[.74,.38],[.79,.17]],[[.46,.06],[.45,.86]]]),
+ 'κ':(.71,[[[.18,.26],[.11,.81]],[[.59,.27],[.18,.54],[.57,.81]]]),
+ 'ℓ':(.56,[[[.06,.64],[.33,.36],[.45,.14],[.43,.05],[.34,.08],[.24,.25],[.16,.55],[.17,.74],[.31,.82],[.47,.72]]]),
+ 'ξ':(.72,[[[.55,.08],[.28,.08],[.16,.22],[.28,.35],[.53,.34]],[[.48,.35],[.21,.43],[.13,.60],[.29,.76],[.56,.78],[.61,.93],[.46,1.04],[.25,1.02]]]),
  'ω':(.90,[[[.17,.27],[.08,.58],[.18,.77],[.37,.72],[.45,.43],[.42,.73],[.65,.78],[.79,.56],[.75,.26]]]),
  'Δ':(.81,[[[.06,.82],[.43,.09],[.74,.82],[.06,.82]]]),
  'Σ':(.78,[[[.69,.11],[.11,.11],[.42,.45],[.08,.82],[.67,.82]]]),
@@ -237,6 +249,14 @@ glyphs.update({
  '∥':(.52,[[[.16,.04],[.16,.94]],[[.38,.04],[.38,.94]]]),
  '∂':(.74,[[[.18,.12],[.35,.05],[.54,.13],[.64,.33],[.59,.59],[.42,.80],[.22,.79],[.11,.64],[.16,.43],[.33,.32],[.51,.37],[.61,.49]]]),
  "'":(.26,[[[.15,.08],[.09,.29]]]),
+ ':':(.30,[[[.15,.34],[.16,.35]],[[.14,.72],[.15,.73]]]),
+ ';':(.32,[[[.15,.34],[.16,.35]],[[.17,.72],[.10,.91]]]),
+ '?':(.62,[[[.10,.28],[.22,.14],[.42,.15],[.52,.31],[.42,.44],[.31,.52],[.29,.61]],[[.28,.80],[.29,.81]]]),
+ '!':(.30,[[[.17,.12],[.14,.61]],[[.14,.80],[.15,.81]]]),
+ '…':(.82,[[[.13,.52],[.14,.53]],[[.40,.52],[.41,.53]],[[.67,.52],[.68,.53]]]),
+ '“':(.48,[[[.17,.11],[.11,.28]],[[.36,.10],[.30,.27]]]),
+ '”':(.48,[[[.17,.10],[.11,.28]],[[.36,.11],[.30,.27]]]),
+ '—':(.96,[[[.04,.51],[.91,.51]]]),
 })
-for alias,target in [('（','('),('）',')'),('、',','),('，',','),('．','.')]:glyphs[alias]=glyphs[target]
+for alias,target in [('（','('),('）',')'),('、',','),('，',','),('．','.'),('；',';'),('：',':'),('？','?'),('！','!'),('‘',"'"),('’',"'")]:glyphs[alias]=glyphs[target]
 

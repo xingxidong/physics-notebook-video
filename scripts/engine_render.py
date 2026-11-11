@@ -46,12 +46,13 @@ def native_scene(page,project,engine):
         dependencies[name]=hashlib.sha256(p.read_bytes()).hexdigest()
     return {**spec,'source':str(source),'source_sha256':hashlib.sha256(source.read_bytes()).hexdigest(),'dependency_sha256':dependencies}
 
-def render(project,data,font,width,engine,runtime=None):
+def render(project,data,font,width,engine,runtime=None,preview=False,audio_file=None):
     from course import digest,paper,write_json
-    if data['draft']:raise ValueError('Final video requires measured audio')
+    if data['draft'] and not preview:raise ValueError('Final video requires measured audio')
+    if preview and (not data['draft'] or not audio_file):raise ValueError('Preview needs a draft timeline and its own silent audio')
     project=Path(project).resolve();runtime=runtime_path(runtime);info=versions(engine,runtime)
     root=project/'cache'/'video'/engine;root.mkdir(parents=True,exist_ok=True)
-    sources=[ROOT/'scripts/engine_render.py',ROOT/'scripts/models.py',ROOT/'scripts/pursuit.py',ROOT/'scripts/cards.py',ROOT/'scripts/course.py',ROOT/'scripts/layout.py',ROOT/'scripts/components.py']
+    sources=[ROOT/'scripts/engine_render.py',ROOT/'scripts/models.py',ROOT/'scripts/pursuit.py',ROOT/'scripts/cards.py',ROOT/'scripts/course.py',ROOT/'scripts/layout.py',ROOT/'scripts/components.py',ROOT/'scripts/scene_events.py']
     sources += list((ROOT/'scripts/motion_canvas').glob('*')) if engine=='motion-canvas' else [ROOT/'scripts/manim_renderer.py']
     fingerprint=digest(b''.join(p.read_bytes() for p in sorted(sources) if p.is_file())+font.read_bytes())
     keys=[];new=reused=0
@@ -85,9 +86,9 @@ def render(project,data,font,width,engine,runtime=None):
         if int(probe.get('nb_frames',0))!=page['frames']:raise RuntimeError(f'{engine}: expected {page["frames"]} frames, got {probe.get("nb_frames")}')
         part.replace(target);new+=1;print(f'{engine}: rendered {page["id"]}',flush=True)
     listing=root/'segments.txt';listing.write_text('\n'.join(f"file '{key}.mp4'" for key in keys))
-    final=project/f'video-{engine}.mp4'
-    subprocess.run(['ffmpeg','-loglevel','error','-y','-f','concat','-safe','0','-i',str(listing),'-i',str(project/'narration.wav'),'-c:v','copy','-c:a','aac','-b:a','128k','-shortest','-movflags','+faststart',str(final)],check=True)
-    shutil.copy2(final,project/'video.mp4')
+    final=project/(f'draft-preview-{engine}.mp4' if preview else f'video-{engine}.mp4')
+    subprocess.run(['ffmpeg','-loglevel','error','-y','-f','concat','-safe','0','-i',str(listing),'-i',str(audio_file or project/'narration.wav'),'-c:v','copy','-c:a','aac','-b:a','128k','-shortest','-movflags','+faststart',str(final)],check=True)
+    if not preview:shutil.copy2(final,project/'video.mp4')
     return {'video_new':new,'video_reused':reused,'renderer':engine,'renderer_versions':info,'video_file':str(final)}
 
 def setup(runtime):

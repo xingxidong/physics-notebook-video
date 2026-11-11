@@ -1,14 +1,27 @@
 """Review concrete narration patterns before speech synthesis; no AI-authorship score."""
 import argparse,json,re,statistics
 from pathlib import Path
+from classroom_language import review_narration
+from pronunciation import LISTEN_TERMS, matched_pronunciations
 
 SYMBOL_PHRASES=('带下标零的时间','带下标零的质量字母','普通的时间字母','质量字母')
 META_PHRASES=('整道推导都围绕','连成了一条线','接下来我们将','通过以上分析我们可以看出','两个物理量已经配上了')
 PAUSE_REASONS={'phrase','read_formula','observe_motion','think','transition'}
 
-def inspect_script(lesson):
+def inspect_script(lesson, backend=None):
     cues=[c for p in lesson.get('pages',[]) for c in p.get('cues',[])];warnings=[]
+    speech=lesson.get('speech',{})
+    backend=backend or speech.get('backend','glm')
+    pronunciation=[]
     for c in cues:
+        text=c.get('tts','')
+        try:
+            terms=matched_pronunciations(text,speech.get('minimax_pronunciation'),c.get('minimax_pronunciation'))
+        except ValueError as exc:
+            raise ValueError(f'{c["id"]}: {exc}') from exc
+        listen=[word for word in LISTEN_TERMS if word in text]
+        if terms or listen:
+            pronunciation.append({'cue':c['id'],'terms':terms,'listen_for':listen})
         for phrase in SYMBOL_PHRASES+META_PHRASES:
             if phrase in c.get('tts',''):warnings.append({'code':'indirect-or-meta-language','cue':c['id'],'message':f'直接说物理量或运算，改写“{phrase}”。'})
         reason=c.get('pause_reason')
@@ -18,7 +31,9 @@ def inspect_script(lesson):
     lengths=[len(re.sub(r'\s','',c.get('tts',''))) for c in cues]
     if len(lengths)>=6 and min(lengths)>80 and statistics.pstdev(lengths)/max(1,statistics.mean(lengths))<.18:
         warnings.append({'code':'uniform-paragraphs','message':'连续长段长度接近；按实际思考与指图动作重新分组，保留必要推导。'})
+    warnings.extend(review_narration(cues))
     return {'status':'review' if warnings else 'pass','cues':len(cues),'warnings':warnings,
+            'pronunciation':{'backend':backend,'apply_dictionary':backend=='minimax','cues':pronunciation},
             'meaning':'具体文稿与停顿检查线索，不证明真人感；还需实际观看和试听。'}
 
 def main():

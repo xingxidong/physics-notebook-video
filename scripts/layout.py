@@ -57,6 +57,7 @@ def expand_actions(actions,spec):
                 out.append({'type':'arrow','from':[x-18,previous_y+18],'to':[x-18,y-8],'width':1.8,'color':raw.get('connector_color','muted'),'zone':zone_name,'allow_overlap':True,'transform_group':raw.get('id')})
             action={k:v for k,v in raw.items() if k not in ('type','steps','start_line','line_gap','connect','connector_color','at','id')}
             action.update(step);action.update(type='math',x=x,y=y,zone=zone_name,transform_group=raw.get('id'),transform_step=index)
+            if 'id' not in action and raw.get('id'):action['id']=f'{raw["id"]}-step-{index+1}'
             if index==0 and 'at' in raw and 'at' not in action:action['at']=raw['at']
             out.append(action);previous_y=y
     return out

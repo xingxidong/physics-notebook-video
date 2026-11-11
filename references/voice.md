@@ -57,7 +57,23 @@
 
 v0.9 新课使用 `speech.delivery_profile:"classroom"` 与本地 `trim_edges:true`。旧课未选择时继续沿用既有角色参数。显式教学停顿用 `pause_reason` 记录，裁切后的词时间同步用于字幕与落笔。构建会在正式 TTS 前生成 `delivery-report.json`，也可单独运行 `scripts/delivery.py PROJECT`。
 
-口播在语音计划中另存 `tts`，公式用 `latex`，原书面表达放在 lesson cue 的 `text`。多音字先通过自然措辞或该后端的发音功能处理。试听关注数字、字母串、希腊字母、单位和分式。
+口播在语音计划中另存 `tts`，公式用 `latex`，原书面表达放在 lesson cue 的 `text`。试听关注多音字、数字、字母串、希腊字母、单位和分式。
+
+### 物理术语和多音字
+
+MiniMax 配音自动查物理术语词表。读音按整词配置，例如“相位”读 `xiang4 wei4`，“相长干涉”读 `xiang1 zhang3 gan1 she4`。原句仍用汉字。程序把匹配到的读音另传给 MiniMax 的 [`pronunciation_dict.tone`](https://platform.minimax.io/docs/api-reference/speech-t2a-http)，所以字幕、讲义和板书沿用原字。
+
+课程级读音配置放在 `lesson.json` 或 `speech-plan.json` 的 `speech` 下。
+
+```json
+{"speech":{"backend":"minimax","minimax_pronunciation":{"载荷":"zai4 he4"}}}
+```
+
+单段读音配置可写在 `speech-plan.json` 对应 cue 的 `minimax_pronunciation`。优先级依次为内置、课程、单段，后者覆盖前者。每个汉字对应一个带声调数字的拼音，以空格分开，轻声用 `5`。词条值为 `null` 时交由合成器按原句处理，整份设置为 `false` 时清空该层继承的词表。遇到同一个词在两处读法不同时，把两处放在不同口播段，分别指定读音。
+
+配音前运行 `python3 SKILL/scripts/delivery.py PROJECT`。在 `delivery-report.json` 的 `pronunciation.cues` 中可查看每段命中的拼音与建议试听的词。已配音项目可用 `timeline.json` 定位到具体段落，试听关键术语。GLM、豆包、Edge 或真人录音也可用报告找出试听位置。修正这类配音时按选用后端的读音能力处理，或者调整口语句子的上下文。
+
+读音配置进入命中段落的音频缓存键。改词表后重新构建，读音配置没变的音频段复用缓存。配音返回的词序能对应原句时用词级时间。返回文本与原句不同的段落沿用原句并使用估算时间，画面与字幕仍使用汉字。实际声调以试听为准。
 
 ### 本地公式口语化
 
@@ -121,11 +137,13 @@ python3 SKILL/scripts/voice_clone.py --project PROJECT --apply-voice-id PhysicsT
 
 流程包含高通、轻压缩和响度统一，输出时通过补齐与裁切保持时间轴长度。设置 `"audio_mastering":false` 可保留原始合成声音。处理结果按音频内容和参数缓存。
 
-每次正式构建生成 `voice-report.json`，记录峰值、均方根电平、削波比例、长静音、逐 cue 口语密度、词级时间覆盖率和文稿提示。普通构建保留警告继续交付；发布前可执行：
+每次正式构建生成 `voice-report.json`，记录电平、停顿、口语密度、词级时间覆盖率、文稿提示和术语审查。`terminology.items` 列出多音字和常用物理术语出现的段落、上下文、参考读音和视频时间。配音请求记录可用时，也列出实际传给 MiniMax 的拼音。词级时间与原句对齐时定位到词，其他情况提供整段时间。文稿命中明确的术语错字会另列为警告。
 
 ```sh
 python3 SKILL/scripts/course.py voice-check PROJECT --strict
 ```
+
+审查成片时，按报告定位“相位”“相乘”“感应电动势”等词，听实际声调和术语是否读完整。`pending_listening` 表示待试听。需要单听一段时运行 `python3 SKILL/scripts/course.py voice-check PROJECT --listen CUE_ID`，从本地配音裁取该段。用 `minimax_pronunciation` 修正读音或改正文稿后，再听新生成的对应段落。光学术语“散射”的参考读音可查[《重编国语辞典修订本》](https://dict.revised.moe.edu.tw/dictView.jsp?ID=144947&la=0&powerMode=0)。
 
 ## 时间戳与成本
 

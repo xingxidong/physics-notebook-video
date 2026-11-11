@@ -4,6 +4,7 @@ Paid services are used only when explicitly selected in the lesson or CLI.
 """
 import asyncio,base64,hashlib,json,os,re,shutil,subprocess,urllib.request,urllib.error,uuid,wave
 from pathlib import Path
+from pronunciation import matched_pronunciations, minimax_dictionary
 
 DEFAULTS={'glm':'chuichui','doubao':'zh_male_youyoujunzi_uranus_bigtts','minimax':'Chinese (Mandarin)_Gentleman','edge':'zh-CN-YunxiNeural','user':''}
 KEYS={'glm':'GLM_API_KEY','doubao':'DOUBAO_API_KEY','minimax':'MINIMAX_API_KEY'}
@@ -80,6 +81,10 @@ def synth(project,cfg,cue):
     model=cfg.get('model') or env.get('MINIMAX_MODEL','speech-2.8-hd') if backend=='minimax' else cfg.get('model','')
     signature={'backend':backend,'voice':voice,'model':model,'speed':speed,'pitch':pitch,'volume':volume,'tts':text,'adapter':2}
     signature.update(resource_id=cfg.get('resource_id',env.get('DOUBAO_RESOURCE_ID','seed-tts-2.0')),host=env.get('MINIMAX_API_HOST','https://api.minimaxi.com'),emotion=cue.get('emotion'))
+    matches = (matched_pronunciations(text, cfg.get('minimax_pronunciation'), cue.get('minimax_pronunciation'))
+               if backend == 'minimax' else {})
+    if matches:
+        signature['pronunciation_dict'] = minimax_dictionary(matches)
     if backend=='user':
         if not audio_path:raise ValueError(f'Cue {cue["id"]} needs an explicit audio file')
         source=(project/audio_path).resolve();signature['source_sha256']=hashlib.sha256(source.read_bytes()).hexdigest()
@@ -112,6 +117,7 @@ def synth(project,cfg,cue):
         host=env.get('MINIMAX_API_HOST','https://api.minimaxi.com').rstrip('/')
         if not host.startswith('https://'):raise ValueError('MiniMax endpoint must use HTTPS')
         payload={'model':model,'text':text,'stream':False,'voice_setting':{'voice_id':voice,'speed':speed,'vol':volume,'pitch':_minimax_pitch(pitch)},'audio_setting':{'format':'mp3','sample_rate':32000,'bitrate':128000,'channel':1},'subtitle_enable':True,'subtitle_type':'word','output_format':'hex'}
+        if matches:payload['pronunciation_dict']=signature['pronunciation_dict']
         if cue.get('emotion'):payload['voice_setting']['emotion']=cue['emotion']
         raw,url=parse_minimax(json.loads(http(host+'/v1/t2a_v2',payload,{'Authorization':'Bearer '+env['MINIMAX_API_KEY']})))
         if url and url.startswith('https://'):
@@ -121,6 +127,12 @@ def synth(project,cfg,cue):
                 for segment in subs:
                     for w in segment.get('timestamped_words',[segment]):words.append({'text':w.get('word',w.get('text','')),'start':w.get('time_begin',0)/1000,'end':w.get('time_end',0)/1000})
             except (OSError,ValueError):words=[]
+        if matches and words:
+            def comparable(value):
+                return ''.join(c.lower() for c in value if c.isalnum())
+            if comparable(''.join(w['text'] for w in words)) != comparable(text):
+                # Estimated anchors and captions can use the original wording.
+                words=[]
     if not raw:raise RuntimeError('Speech service returned empty audio')
     temp=cache/(key+'.input.'+ext);part=cache/(key+'.part.wav');temp.write_bytes(raw)
     try:

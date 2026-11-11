@@ -26,7 +26,7 @@ CLASSROOM_ROLES={
     'transition':{'speed':1.04,'pause_before':.04,'pause_after':.15},
     'explain':{'speed':1.00,'pause_before':.04,'pause_after':.25},
 }
-DELIVERY_FIELDS=('tts','tts_parts','role','speed','pitch','volume','emotion','pause_before','pause_after','pause','pause_reason','emphasis')
+DELIVERY_FIELDS=('tts','tts_parts','role','speed','pitch','volume','emotion','pause_before','pause_after','pause','pause_reason','emphasis','minimax_pronunciation')
 
 def _safe_sidecar(project,value):
     path=(project/value).resolve()

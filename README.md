@@ -1,10 +1,38 @@
 # 物理逐笔板书视频技能
 
-版本：0.9.0。面向支持 Agent Skills 和本地命令的 Agent 宿主，制作带中文配音的物理讲解视频。
+版本 0.11.0。面向支持 Agent Skills 和本地命令的 Agent 宿主，制作带中文配音的物理讲解视频。
+
+## 选择课型
+
+| 课型 | 适用内容 | 课堂推进 |
+|---|---|---|
+| [习题课](references/problem-workflow.md) | 指定题目、题解或习题集 | 题面入屏，演示题设过程，结合主图和辅助图逐步推导 |
+| [新授课](references/concept-lesson.md) | 新概念、定律或教材章节 | 观察与对照，引出关系，逐笔写完整结论，给出思考和应用 |
+
+两种课型共用一个安装包。直接对 Agent 说“使用 $physics-notebook-video，把这道题做成习题课”或“使用 $physics-notebook-video，讲一节关于电场强度的新授课”。也可从两个可编辑示例开始：
+
+~~~sh
+python3 scripts/course.py init exercise-demo --kind problem
+python3 scripts/course.py init concept-demo --kind concept
+~~~
+
+习题课载入追逐运动示例，新授课载入电场强度示例。各自用 `build PROJECT --draft` 查看布局与落笔顺序。两种课型继续使用同一套板书笔迹、动画引擎、配音缓存和导出命令。
+
+## 制作能力
 
 已完成并实测：中文与公式逐笔书写、图文推导、MiniMax 与 Edge 配音、同步字幕、Motion Canvas 和 Manim 渲染、页面缓存、批量导出，以及 TikZ 与板书 PDF。0.6 新增八类参数化物理图形组件；0.7 默认固定画面、取消公式行间连接箭头，加入滑块接触检查、组件附着点和书写时长控制。当前完整视频流程在 macOS 上验证；Windows、Linux 的完整安装流程尚未验证。
 
 模板默认采用固定画面、无逐页标题的笔记本样式和自然课堂口播。MiniMax 音色优先读取本机已配置的默认值。使用者可指定其他样式与音色。
+
+0.10.6 为概念课增加完整结论板书。定义和定律关联实际手写动作，时间轴检查全部写出后的保留时间。见 [知识点结论板书](references/knowledge-board.md)。
+
+0.10.5 加强课堂口播改写。配音前报告引用具体原句，提示套话、重复段首、句中断点和密集报数。配音后报告提供回听位置。见 [课堂表达与节奏](references/classroom-delivery.md)。
+
+0.10.4 将多音字、常用物理术语和已知术语错字加入成片配音审查。报告标出试听位置，`voice-check --listen` 可从现有配音截取指定段落。见 [质量报告](references/voice.md#本地母带与质量报告)。
+
+0.10.3 加入 MiniMax 物理术语读音词表，支持按课程或口播段补充。配音前报告列出匹配项，修改读音时复用其他音频段。见 [物理术语和多音字](references/voice.md#物理术语和多音字)。
+
+0.10.2 的板书公式与图中讲解用的汉字标注采用逐笔手写。视频内字幕使用同一套手写笔迹，LaTeX 作为可编辑公式源。物理状态按配音关键词变化，概念课记录推导关联。见 [语义场景与逐笔公式](references/semantic-scenes.md)。
 
 0.9.0 加入课堂节奏配置、配音前文稿检查、教学停顿用途和本地音频首尾空白处理。词时间戳随裁切同步移动，原始配音缓存继续保留。新课直接按图讲物理，减少绕行符号描述与统一长段；详细写法见 [课堂表达与节奏](references/classroom-delivery.md)。实际语感通过成片试听与观看确定。
 
@@ -104,7 +132,7 @@ MINIMAX_API_HOST=https://api.minimax.cn
 
 成片为 `lesson-demo/video-captioned.mp4`。需要先试另一种配音时，可在 `init` 中选择 `--backend edge`；Edge 需要联网。
 
-## 日常使用
+## 习题课的资料与用法
 
 请同时提供题目和参考解答，图片、PDF、文字均可。只有题目时，Agent 也会独立求解。原件先登记，再将识别后的题干、参考解答和逐步推导转成课程源：
 

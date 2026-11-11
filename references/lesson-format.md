@@ -2,7 +2,9 @@
 
 ## 入口与产物
 
-讲题新流程使用 `kind:"problem"`，登记题目与解答，在页面 `problem` 中显示识别后的文字，并配置情景动画和 `derivation_steps`。见 [题目与解答工作流](problem-workflow.md)。`--example pursuit` 提供可直接构建的完整小例子。
+习题课使用 `kind:"problem"`，登记题目与解答，在页面 `problem` 中显示识别后的文字，并配置情景动画和 `derivation_steps`。`course.py init PROJECT --kind problem` 载入追逐运动示例。见[习题课工作流](problem-workflow.md)。
+
+新授课使用 `kind:"concept"`，将观察、对照、推导、正式结论和应用编排成实际口播与板书，用 `knowledge_points` 关联应抄录的内容。`course.py init PROJECT --kind concept` 载入电场强度示例。见[新授课工作流](concept-lesson.md)。
 
 题面 `problem.text` 的正文中使用 `$v_D$`、`$\frac{dr}{dt}$` 等 LaTeX 公式，由 XeLaTeX 排版；完整转写、公式审阅记录与可编辑 `.tex` 一起保留。下文的 LaTeX 子集说明针对逐笔板书解析器，题面由实际 TeX 编译器处理。
 
@@ -68,7 +70,7 @@ python3 SKILL/scripts/course.py layout-check PROJECT --strict
 
 数字可写为参数表达式，例如 `"=cx+r"`、`"=R*cos(pi/6)"`。表达式支持基本算术和 sin/cos/tan/sqrt/exp/log/asin/acos/atan。plot 的 expr 使用数学变量 x；横向为正，图像纵轴向上，screen_y = origin_y - scale_y*f(x)。分段曲线用多条 plot，共享同一原点与比例。
 
-LaTeX 子集：分式、上下标、向量、单位法线、时间导数点号、绝对值、根式、积分、常用希腊字母、sin/cos/tan/ln/exp。示例：`\\frac{Q}{4\\pi\\varepsilon_0r^2}`、`\\vec E`、`\\dot d`、`v_0^2`、`\\sqrt{2gh}`、`R|v_0|`。根式可用于分式内部。复杂矩阵、伸缩定界符和多行对齐需扩展布局后再使用；遇到未支持命令或字形会具体报出位置。
+LaTeX 子集：分式、上下标、向量、单位法线、时间导数点号、绝对值、根式、积分、常用希腊字母、sin/cos/tan/ln/exp。示例：`\\frac{Q}{4\\pi\\varepsilon_0r^2}`、`\\vec E`、`\\dot d`、`v_0^2`、`\\sqrt{2gh}`、`R|v_0|`。根式可用于分式内部。这些是手写解析器支持的子集。板书公式统一由笔尖逐笔写出。遇到未支持的结构或字形，补充手写布局和笔画，或改成数学等价的逐行板书。
 
 也可直接写公式树：`["row","E(r)=",["frac","Q",["row","4π",["sub","ε","0"],["sup","r","2"]]]]`。支持 row、frac、sup、sub、vec、hat、sqrt。
 
@@ -110,4 +112,10 @@ v0.8 讲题项目另保留 `input-manifest.json`、输入原件、识别转写�
 
 ## 字幕
 
-正式视频生成后运行 `python3 SKILL/scripts/captions.py PROJECT --burn`，输出 `subtitles.srt`、`subtitles.ass` 与 `video-captioned.mp4`。字幕优先使用词级时间，保留口播中的原始标点。含 libass 的 FFmpeg 直接排版；精简版 FFmpeg 使用 Pillow 字幕图层。目前 Pillow 路线沿用 macOS Songti 字体路径。字幕独立于原视频生成，调整字幕时复用全部板书与音频。
+正式视频生成后运行 `python3 SKILL/scripts/captions.py PROJECT --burn`，输出 `subtitles.srt`、`subtitles.ass` 与 `video-captioned.mp4`。字幕优先使用词级时间，保留口播中的原始标点。烧录字幕默认用与板书相同的手写路径，并复用 `cache/hanzi` 字形。每条字幕完整显示，方便跟读。需要标准排版时设置 `caption_style:"typeset"` 或传 `--style typeset`。字幕独立于原视频生成，调整字幕时复用全部板书与音频。
+
+## 0.10 概念课、公式与语义事件
+
+概念课用 `knowledge_points` 登记学生需要记下的正式定义、定律和结论，并关联实际文字与公式动作。构建后检查全部写出后的保留时间。字段和范例见 [知识点结论板书](knowledge-board.md)。
+
+新概念课使用 `kind:"concept"`。板书笔迹与物理状态支持配音关键词同步。完整字段、原生场景接入与推导记录见 [语义场景与逐笔公式](semantic-scenes.md)。

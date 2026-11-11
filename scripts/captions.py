@@ -2,19 +2,49 @@
 import argparse,json,math,re,subprocess
 from pathlib import Path
 
-def burn_pillow(source,target,root,events,W,H,duration):
-    """Portable caption overlay for FFmpeg installations without libass."""
+def handwritten_caption(text,width,height,cache):
+    """Draw one readable line with the same centerline glyphs as the board."""
+    from PIL import Image,ImageDraw
+    from course import paint
+    from ink import text_strokes
+    size=round(width/60)
+    _,strokes=text_strokes(text,0,0,size,'#fffef9',cache=cache)
+    scale=2
+    im=Image.new('RGBA',(width*scale,height*scale))
+    if not strokes:return im.resize((width,height))
+    points=[point for stroke in strokes for point in stroke['points']]
+    left,top=map(min,zip(*points));right,bottom=map(max,zip(*points))
+    fit=min(1,(width*.92)/(right-left+6),(height*.65)/(bottom-top+6))
+    line_w=(right-left)*fit;line_h=(bottom-top)*fit
+    x=(width-line_w)/2;y=height-round(width/107)-line_h
+    pad=round(size*.30);vertical_pad=round(size*.16)
+    box=[(x-pad)*scale,(y-vertical_pad)*scale,(x+line_w+pad)*scale,(y+line_h+vertical_pad)*scale]
+    ImageDraw.Draw(im).rounded_rectangle(box,radius=pad*scale/2,fill=(20,26,22,220))
+    for stroke in strokes:
+        placed={**stroke,'points':[(x+(u-left)*fit,y+(v-top)*fit) for u,v in stroke['points']]}
+        paint(im,placed,scale=scale)
+    return im.resize((width,height),Image.Resampling.LANCZOS)
+
+def burn_pillow(source,target,root,events,W,H,duration,*,handwriting=False):
+    """Overlay caption images on the finished board video."""
     from PIL import Image,ImageDraw,ImageFont
     folder=root/'cache'/'captions';folder.mkdir(parents=True,exist_ok=True)
-    strip_h=round(H/12);font=ImageFont.truetype('/System/Library/Fonts/Supplemental/Songti.ttc',round(W/60))
+    strip_h=round(H/12)
+    if handwriting:
+        cache=root/'cache'/'hanzi';cache.mkdir(parents=True,exist_ok=True)
+    else:
+        font=ImageFont.truetype('/System/Library/Fonts/Supplemental/Songti.ttc',round(W/60))
     blank=folder/'blank.png';Image.new('RGBA',(W,strip_h)).save(blank)
     frames=[(0.,blank)]
     for i,(s,e,text) in enumerate(events):
-        im=Image.new('RGBA',(W,strip_h));draw=ImageDraw.Draw(im)
-        box=draw.textbbox((0,0),text,font=font);tw,th=box[2]-box[0],box[3]-box[1]
-        x=(W-tw)/2;y=strip_h-round(H/60)-th
-        draw.rounded_rectangle((x-10,y-5,x+tw+10,y+th+5),radius=5,fill=(20,26,22,220))
-        draw.text((x-box[0],y-box[1]),text,font=font,fill='white')
+        if handwriting:
+            im=handwritten_caption(text,W,strip_h,cache)
+        else:
+            im=Image.new('RGBA',(W,strip_h));draw=ImageDraw.Draw(im)
+            box=draw.textbbox((0,0),text,font=font);tw,th=box[2]-box[0],box[3]-box[1]
+            x=(W-tw)/2;y=strip_h-round(H/60)-th
+            draw.rounded_rectangle((x-10,y-5,x+tw+10,y+th+5),radius=5,fill=(20,26,22,220))
+            draw.text((x-box[0],y-box[1]),text,font=font,fill='white')
         file=folder/f'{i:04d}.png';im.save(file);frames.extend([(s,file),(e,blank)])
     frames.append((duration,blank));frames.sort(key=lambda a:a[0]);listing=[]
     for i,(s,file) in enumerate(frames[:-1]):
@@ -72,7 +102,7 @@ def stamp(t,ass=False):
     return f'{h}:{m:02d}:{s:02d}.{rem:02d}' if ass else f'{h:02d}:{m:02d}:{s:02d},{rem:03d}'
 
 def main():
-    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('project');ap.add_argument('--burn',action='store_true');ap.add_argument('--output');a=ap.parse_args();root=Path(a.project).resolve();data=json.loads((root/'timeline.json').read_text());events=[]
+    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('project');ap.add_argument('--burn',action='store_true');ap.add_argument('--output');ap.add_argument('--style',choices=['handwriting','typeset']);a=ap.parse_args();root=Path(a.project).resolve();data=json.loads((root/'timeline.json').read_text());events=[]
     for p in data['pages']:
         for c in p['cues']:events.extend(chunks(c,p['start']+c['start']))
     events.sort()
@@ -88,11 +118,18 @@ def main():
     if a.burn:
         target=Path(a.output).resolve() if a.output else root/'video-captioned.mp4'
         if target==source:raise ValueError('Choose a different output filename from video.mp4')
-        filters=subprocess.check_output(['ffmpeg','-hide_banner','-filters'],text=True,stderr=subprocess.DEVNULL)
-        if re.search(r'\s+ass\s+V->V',filters):
-            # Use a relative subtitle filename so filter escaping is independent of project paths.
-            subprocess.run(['ffmpeg','-loglevel','error','-y','-i',str(source),'-vf','ass=subtitles.ass','-c:v','libx264','-preset','fast','-crf','19','-c:a','copy','-movflags','+faststart',str(target)],cwd=root,check=True)
-        else:burn_pillow(source,target,root,normalized,W,H,data['duration'])
+        lesson_path=root/'lesson.json'
+        lesson=json.loads(lesson_path.read_text()) if lesson_path.exists() else {}
+        style=a.style or lesson.get('caption_style','handwriting')
+        if style not in ('handwriting','typeset'):raise ValueError('caption_style must be handwriting or typeset')
+        if style=='handwriting':
+            burn_pillow(source,target,root,normalized,W,H,data['duration'],handwriting=True)
+        else:
+            filters=subprocess.check_output(['ffmpeg','-hide_banner','-filters'],text=True,stderr=subprocess.DEVNULL)
+            if re.search(r'\s+ass\s+V->V',filters):
+                # Use a relative subtitle filename so filter escaping is independent of project paths.
+                subprocess.run(['ffmpeg','-loglevel','error','-y','-i',str(source),'-vf','ass=subtitles.ass','-c:v','libx264','-preset','fast','-crf','19','-c:a','copy','-movflags','+faststart',str(target)],cwd=root,check=True)
+            else:burn_pillow(source,target,root,normalized,W,H,data['duration'])
         print(target)
     print(json.dumps({'caption_events':len(events),'srt':str(root/'subtitles.srt')},ensure_ascii=False))
 if __name__=='__main__':main()
