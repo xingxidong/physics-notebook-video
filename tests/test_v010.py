@@ -34,10 +34,55 @@ class SemanticSceneTests(unittest.TestCase):
 
 class ConceptCoverageTests(unittest.TestCase):
     def fixture(self):
-        return {'kind':'concept','title':'inductance','knowledge_points':[{'id':'identity','name':'Identity','page_id':'p','statement':'Identity holds.','statement_action_ids':['statement']}],
-          'pages':[{'id':'p','motion_not_applicable':'This board derives a fixed algebraic identity.',
-          'cues':[{'id':'c','tts':'The terms are equal.','actions':[{'id':'a','type':'math','latex':'x=x','x':200,'y':200},{'id':'statement','type':'text','text':'Identity holds.','x':200,'y':280}]}],
-          'derivation_steps':[{'id':'s','depends_on':[],'reason':'Identity','cue_id':'c','action_id':'a','result':'x=x'}]}]}
+        question='If x is three, what is the value on either side?'
+        return {
+            'kind':'concept','title':'identity',
+            'course_outline':{
+                'title':'identity','audience':'Algebra beginners','main_question':'Do the two expressions match?',
+                'target_minutes':1,'objectives':[{'id':'goal','outcome':'Recognize equal expressions.'}],
+                'units':[{'id':'identity-unit','focus':'The two sides match.','needs':[],
+                    'minutes':1,'objective_ids':['goal'],'opening':'Compare two expressions.',
+                    'no_diagram':'A symbolic identity is the whole example.','reasoning':'Both sides contain x.',
+                    'board_statement':'Identity holds.','application':{'question':question,'expected_answer':'Three.'},
+                    'handoff':'Apply the identity to the same value.'}],
+                'exit_checks':[{'objective_ids':['goal'],'question':question,'expected_answer':'Three.'}],
+            },
+            'knowledge_points':[{'id':'identity','name':'Identity','page_id':'p',
+                'statement':'Identity holds.','statement_action_ids':['statement']}],
+            'concept_units':[{'id':'identity-unit','focus':'The two sides match.',
+                'introduce_cue':'intro','explain_cue':'c','emphasize_cue':'emphasis','apply_cue':'application',
+                'knowledge_point_ids':['identity'],'scene_not_applicable':'This board derives a fixed algebraic identity.',
+                'questions':[{'cue':'application','answer_cue':'answer','text':question,'action_ids':['question']}]}],
+            'pages':[{'id':'p','motion_not_applicable':'This board derives a fixed algebraic identity.',
+                'cues':[
+                    {'id':'intro','tts':'Consider the two expressions.'},
+                    {'id':'c','tts':'They contain the same variable.',
+                     'actions':[{'id':'a','type':'math','latex':'x=x','x':200,'y':200}]},
+                    {'id':'emphasis','tts':'Both sides have the same value.',
+                     'actions':[{'id':'statement','type':'text','text':'Identity holds.','x':200,'y':280}]},
+                    {'id':'application','tts':question,
+                     'actions':[{'id':'question','type':'text','text':question,'x':200,'y':360,'size':20}]},
+                    {'id':'answer','tts':'Substitute three on both sides.'},
+                ],
+                'derivation_steps':[{'id':'s','depends_on':[],'reason':'Identity','cue_id':'c','action_id':'a','result':'x=x'}]}]
+        }
+
+    def test_new_concept_requires_every_stage_and_a_written_application(self):
+        mutations={
+            'concept-units-required': lambda s: s.pop('concept_units'),
+            'concept-unit-order': lambda s: s['concept_units'][0].pop('apply_cue'),
+            'concept-application-required': lambda s: s['concept_units'][0]['questions'].clear(),
+            'concept-question-visible': lambda s: s['pages'][0]['cues'][3]['actions'].clear(),
+        }
+        with tempfile.TemporaryDirectory() as d:
+            for code, mutate in mutations.items():
+                with self.subTest(code=code):
+                    source=self.fixture()
+                    source['concept_sequence_required']=False
+                    mutate(source)
+                    lesson,pages=compile_lesson(d,source)
+                    self.assertIn(code,{error['code'] for error in audit(d,lesson,pages)['errors']})
+
     def test_concepts_require_recorded_math_links(self):
         with tempfile.TemporaryDirectory() as d:
             l,p=compile_lesson(d,self.fixture());r=audit(d,l,p);self.assertEqual(r['status'],'pass');self.assertEqual(r['derivation_steps'],1)
@@ -58,9 +103,25 @@ class ConceptCoverageTests(unittest.TestCase):
     def test_formula_steps_links_resolve_to_expanded_actions(self):
         with tempfile.TemporaryDirectory() as d:
             source=self.fixture();p=source['pages'][0];p['layout']='full-derivation'
-            p['cues'][0]['actions']=[{'type':'formula_steps','id':'chain','steps':['x=x']},p['cues'][0]['actions'][1]]
+            p['cues'][1]['actions']=[{'type':'formula_steps','id':'chain','steps':['x=x']}]
             p['derivation_steps'][0]['action_id']='chain-step-1'
             l,pages=compile_lesson(d,source);self.assertEqual(audit(d,l,pages)['status'],'pass')
+
+    def test_concept_can_use_an_adaptive_teaching_route(self):
+        with tempfile.TemporaryDirectory() as d:
+            source=self.fixture();unit=source['concept_units'][0]
+            unit['stages']=[
+                {'purpose':'contrast','cue':'intro'},
+                {'purpose':'reason','cue':'c'},
+                {'purpose':'anchor','cue':'emphasis'},
+                {'purpose':'apply','cue':'application'},
+            ]
+            for key in ('introduce_cue','explain_cue','emphasize_cue','apply_cue'):
+                unit.pop(key)
+            l,pages=compile_lesson(d,source)
+            report=audit(d,l,pages)
+            self.assertEqual(report['status'],'pass',report)
+            self.assertEqual(report['concept_sequence']['units'][0]['stages'][0]['purpose'],'contrast')
 
     def test_silent_preview_preserves_final_assets_and_records_pending_review(self):
         import io

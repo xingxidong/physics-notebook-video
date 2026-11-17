@@ -260,3 +260,17 @@ glyphs.update({
 })
 for alias,target in [('（','('),('）',')'),('、',','),('，',','),('．','.'),('；',';'),('：',':'),('？','?'),('！','!'),('‘',"'"),('’',"'")]:glyphs[alias]=glyphs[target]
 
+# Inline question text can carry mathematical symbols alongside Chinese ink.
+for small, digit, vertical_offset in zip('⁰¹²³⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉',
+                                        '01234567890123456789',
+                                        [-.015]*10+[.47]*10):
+    advance, paths = glyphs[digit]
+    glyphs[small] = (.65*advance, [
+        [[.61*x, vertical_offset+.61*y] for x, y in path] for path in paths
+    ])
+
+glyphs.update({
+    '√': (.78, [[[.05,.52],[.21,.50],[.34,.80],[.53,.12],[.73,.12]]]),
+    '∝': (.90, [[[.82,.24],[.62,.36],[.42,.64],[.25,.72],[.12,.61],
+                  [.12,.40],[.25,.31],[.44,.36],[.65,.63],[.83,.72]]]),
+})

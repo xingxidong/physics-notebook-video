@@ -6,7 +6,7 @@ from pathlib import Path,PurePosixPath
 ROOT=Path(__file__).resolve().parents[1]
 NAME='physics-notebook-video'
 SKIP_DIRS={'.git','__pycache__','node_modules','cache','.runtime'}
-SKIP_FILES={'.env','runtime-local.json','.DS_Store'}
+SKIP_FILES={'.env','runtime-local.json','author-profile.local.json','.DS_Store'}
 LIMITS={
     'universal':(500,50*1024*1024,25*1024*1024),
     'claude':(500,50*1024*1024,25*1024*1024),
@@ -49,7 +49,7 @@ def destination(target,scope,project,explicit):
 def copy_install(dest,update):
     if dest==ROOT.resolve():raise ValueError('Source and destination are the same directory')
     if dest.exists() and not update:raise ValueError(f'{dest} already exists; use --update to merge an update')
-    preserved=[name for name in ('.env','runtime-local.json') if (dest/name).exists()]
+    preserved=[name for name in ('.env','runtime-local.json','author-profile.local.json') if (dest/name).exists()]
     dest.mkdir(parents=True,exist_ok=True)
     copied=0
     for src,rel in source_files():

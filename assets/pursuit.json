@@ -21,7 +21,8 @@
         {"id":"constant-x","type":"math","latex":"v_F\\dot x=\\frac{d}{dt}(v_Fx)","x":665,"y":545,"size":25,"color":"green","at":{"word":"水平差那一项"},"write_seconds":3.5}
       ]},
       {"id":"combine","role":"conclusion","tts":"最后，两个导数相加，合成和的导数。这样就得到最下面这条关系。加权系数的选择，是为了让角度项相消；而把常量放进导数里，靠的是两个速率恒定。","actions":[{"id":"combined-derivative","type":"math","latex":"\\frac{d}{dt}(v_Dr+v_Fx)=v_F^2-v_D^2","x":665,"y":605,"size":27,"color":"red","at":{"word":"合成"},"write_seconds":5}]},
-      {"id":"finish","role":"physical_meaning","tts":"继续看左边。绿点的速度方向始终指着蓝点，最后两点重合。这时，距离和水平差都等于零，这就是追上时的末状态。","actions":[]}
+      {"id":"finish","role":"physical_meaning","tts":"继续看左边。绿点的速度方向始终指着蓝点，最后两点重合。这时，距离和水平差都等于零，这就是追上时的末状态。","actions":[]},
+      {"id":"recap","role":"conclusion","tts":"回看这条推导。先沿视线和水平方向写出两个变化率，再分别乘上另一个速率，让余弦项相消。两个速率恒定，才能把它们移进时间导数，得到这一条与夹角无关的关系。","actions":[]}
     ],
     "derivation_steps":[
       {"id":"s1","depends_on":[],"reason":"沿视线作相对速度投影","cue_id":"radial","action_id":"r-projection","result":"\\dot r=v_F\\cos\\theta-v_D"},
@@ -33,5 +34,24 @@
       {"id":"s7","depends_on":["s4"],"reason":"vF为常量，常量可移入时间导数","cue_id":"constants","action_id":"constant-x","result":"v_F\\dot x=\\frac{d}{dt}(v_Fx)"},
       {"id":"s8","depends_on":["s5","s6","s7"],"reason":"代入两个乘积的导数，并用导数对加法的线性性质合并","cue_id":"combine","action_id":"combined-derivative","result":"\\frac{d}{dt}(v_Dr+v_Fx)=v_F^2-v_D^2"}
     ]
-  }]
+  }],
+  "closure": {
+    "recap_cues": ["recap"],
+    "visible_action_ids": ["r-projection", "x-projection", "combined-derivative"],
+    "points": [
+      {"kind":"model", "text":"以两点间距和水平领先量描述追逐过程。"},
+      {"kind":"key_step", "text":"交叉乘速率后相加，使共同的余弦投影相消。"},
+      {"kind":"result", "text":"得到不含夹角的加权导数关系。"}
+    ]
+  },
+  "lesson_arc": {
+    "entry_question": "怎样把不断改变的追逐夹角从两个变化率中消去？",
+    "beats": [
+      {"id":"model","purpose":"model","cue_ids":["setup","motion"],"student_question":"追逐过程里哪两个量最值得跟踪？","visual_ids":["scene:p01"],"scene_change":"蓝点匀速前进，绿点始终转向目标，图上留下间距、水平差和夹角。","takeaway":"用间距 r 和水平领先量 x 描述两点的相对位置。"},
+      {"id":"projections","purpose":"derive","cue_ids":["radial","horizontal"],"student_question":"沿视线和水平方向，两个量各怎样变化？","visual_ids":["r-projection","x-projection"],"scene_change":"在同一运动图旁写出视线投影和水平投影。","takeaway":"两个导数都含有同一个余弦项。"},
+      {"id":"cancel","purpose":"reason","cue_ids":["weights","sum","constants"],"student_question":"怎样让共同的余弦项消失，并合成一个导数？","visual_ids":["multiply-r","multiply-x","cancel-angle","constant-r"],"scene_change":"两式交叉乘速率后相加，余弦项划去，常量移进导数。","takeaway":"权重来自让投影项系数相等且符号相反。"},
+      {"id":"anchor","purpose":"anchor","cue_ids":["combine","finish"],"student_question":"得到的关系在追上时刻说明什么？","visual_ids":["combined-derivative","scene:p01"],"scene_change":"合并出最终导数关系，运动图继续到两点重合。","takeaway":"这条关系不再含夹角，可直接连接初末状态。"},
+      {"id":"recap","purpose":"recap","cue_ids":["recap"],"student_question":"整条推导的关键选择是什么？","visual_ids":["r-projection","x-projection","combined-derivative"],"scene_change":"保留两条投影式和最终关系，顺着消项路线回看。","takeaway":"先投影，再加权消项，最后利用速率恒定合成导数。"}
+    ]
+  }
 }

@@ -11,6 +11,11 @@ PRESETS={
         },
         'line_gap':58,'padding':12,
     },
+    'lesson-board':{
+        'zones':{'question':[145,102,1025,89], 'diagram':[145,198,455,317],
+                 'derivation':[625,198,545,317], 'conclusion':[145,533,1025,112]},
+        'line_gap':51,'padding':9,'item_gap':9,'flow':'measured',
+    },
     'full-derivation':{
         'zones':{
             'context':[145,110,1025,115],
@@ -34,6 +39,14 @@ def page_spec(value):
         x,y,w,h=map(float,rect)
         if w<=0 or h<=0 or x<120 or y<95 or x+w>1200 or y+h>655:raise ValueError(f'Layout zone {name} leaves the writing area')
         spec['zones'][name]=[x,y,w,h]
+    if spec.get('flow') not in (None, 'measured'):
+        raise ValueError('layout.flow only supports measured')
+    for field in ('carry','prewritten','checkpoints','motion_boxes'):
+        if field in spec and not isinstance(spec[field],list):
+            raise ValueError(f'layout.{field} must be a list')
+    for field in ('carry','prewritten'):
+        if any(not isinstance(key,str) or not key for key in spec.get(field,[])):
+            raise ValueError(f'layout.{field} contains action or group IDs')
     return spec
 
 def _xy(zone,line,gap,padding,dx=0,dy=0):return zone[0]+padding+dx,zone[1]+padding+line*gap+dy
@@ -48,6 +61,7 @@ def expand_actions(actions,spec):
         if not isinstance(steps,list) or not steps:raise ValueError('formula_steps needs a non-empty steps list')
         zone_name=raw.get('zone','derivation');zone=spec['zones'].get(zone_name)
         if zone is None:raise ValueError(f'Unknown formula_steps zone {zone_name!r}')
+        first=len(out)
         start=int(raw.get('start_line',0));gap=float(raw.get('line_gap',spec['line_gap']));padding=float(spec.get('padding',12));previous_y=None
         for index,value in enumerate(steps):
             step={'latex':value} if isinstance(value,str) else copy.deepcopy(value)
@@ -60,6 +74,13 @@ def expand_actions(actions,spec):
             if 'id' not in action and raw.get('id'):action['id']=f'{raw["id"]}-step-{index+1}'
             if index==0 and 'at' in raw and 'at' not in action:action['at']=raw['at']
             out.append(action);previous_y=y
+        if spec.get('flow')=='measured' and not raw.get('connect'):
+            from board_flow import equality_offset
+            expanded=out[first:]
+            for action,dx in zip(expanded,equality_offset(expanded)):
+                action.pop('x')
+                action.pop('y')
+                action['_align_dx']=dx
     return out
 
 def place_action(raw,spec,state,anchors=None):
@@ -70,7 +91,11 @@ def place_action(raw,spec,state,anchors=None):
     if zone_name and spec is None:raise ValueError(f'Action uses zone {zone_name!r} without page.layout')
     zone=spec['zones'].get(zone_name) if spec and zone_name else None
     if zone_name and zone is None:raise ValueError(f'Unknown layout zone {zone_name!r}')
-    if action['type'] in ('text','math') and not action.get('attach_to') and zone and ('x' not in action or 'y' not in action):
+    automatic = action['type'] in ('text','math') and not action.get('attach_to') and zone
+    if automatic and spec.get('flow')=='measured' and 'x' not in action and 'y' not in action and not action.get('relative_to'):
+        action['_flow']=True
+        return action
+    if automatic and ('x' not in action or 'y' not in action):
         line=int((place or {}).get('line',state.get(zone_name,0)));state[zone_name]=max(state.get(zone_name,0),line+1)
         x,y=_xy(zone,line,float((place or {}).get('line_gap',spec['line_gap'])),float(spec.get('padding',12)),float((place or {}).get('dx',0)),float((place or {}).get('dy',0)))
         action.setdefault('x',x);action.setdefault('y',y)
@@ -118,10 +143,16 @@ def _intersection(a,b):
 
 def audit_page(page):
     spec=page.get('layout');items=[];warnings=[]
-    for cue in page['cues']:
-        for block in cue['blocks']:
-            box=_bbox(block)
-            if box:items.append({'cue':cue['id'],'action':block['action'],'type':block.get('kind'),'zone':block.get('zone'),'bbox':[round(x,1) for x in box],'allow_overlap':block.get('allow_overlap',False)})
+    all_blocks=[(cue['id'],block) for cue in page['cues'] for block in cue['blocks']]
+    all_blocks[:0]=[('carry',block) for block in page.get('carry_blocks',[])]
+    for cue_id,block in all_blocks:
+        box=_bbox(block)
+        if box:
+            items.append({'cue':cue_id,'action':block['action'],'id':block.get('id'),
+                          'type':block.get('kind'),'zone':block.get('zone'),
+                          'bbox':[round(x,1) for x in box],'allow_overlap':block.get('allow_overlap',False)})
+            if spec and spec.get('flow')=='measured' and block.get('kind') in ('text','math') and block.get('size',32)<22:
+                warnings.append({'code':'small-writing','message':f'{cue_id}:{block["action"]} 在横屏手机缩略图中字号偏小。','items':[items[-1]]})
     readable=[x for x in items if x['type'] in ('text','math','charge') and not x['allow_overlap']]
     for i,a in enumerate(readable):
         for b in readable[i+1:]:
@@ -139,7 +170,8 @@ def audit_lesson(pages):
         warnings.extend({'page':page['id'],**w} for w in report['warnings'])
         if page.get('problem_id'):problems.setdefault(page['problem_id'],[]).append(page['id'])
     for problem,ids in problems.items():
-        if len(ids)>1:warnings.append({'code':'problem-spans-pages','problem_id':problem,'pages':ids,'message':f'Problem {problem} spans {len(ids)} pages'})
+        managed={p['id'] for p in pages if p.get('layout',{}).get('carry')}
+        if len(ids)>1 and not all(key in managed for key in ids[1:]):warnings.append({'code':'problem-spans-pages','problem_id':problem,'pages':ids,'message':f'Problem {problem} spans {len(ids)} pages'})
     return {'status':'pass' if not warnings else 'attention','pages':reports,'warnings':warnings}
 
 def focus_state(page,t):

@@ -1,0 +1,521 @@
+{
+  "title": "位移式的量纲检查",
+  "kind": "concept",
+  "camera": "static",
+  "show_titles": false,
+  "renderer": "notebook",
+  "review_required": true,
+  "handout": "讲义.md",
+  "course_outline": {
+    "planning_version": 2,
+    "title": "位移式的量纲检查",
+    "audience": "高中物理入门",
+    "main_question": "为什么候选位移式的两项要先做量纲检查？",
+    "target_minutes": 2,
+    "prior_knowledge": [
+      {
+        "id": "base",
+        "description": "速度和加速度的定义"
+      }
+    ],
+    "objectives": [
+      {
+        "id": "choose-length",
+        "outcome": "能从候选项中选出与位移量纲一致的一项"
+      }
+    ],
+    "units": [
+      {
+        "id": "dimensions",
+        "focus": "判断相加两项的量纲",
+        "key_point": "相加的两项具有相同量纲",
+        "difficulty": {
+          "obstacle": "容易把加速度乘时间当成位移",
+          "treatment": "先保留原式，逐项约掉时间量纲，再比较乘一次与乘两次的结果"
+        },
+        "needs": [
+          "base"
+        ],
+        "objective_ids": [
+          "choose-length"
+        ],
+        "minutes": 2,
+        "stage_minutes": {
+          "introduce": 0.4,
+          "explain": 0.6,
+          "emphasize": 0.6,
+          "apply": 0.4
+        },
+        "board_pages": [
+          {
+            "id": "p01",
+            "goal": "同页写出小车图、候选式及两项的量纲"
+          },
+          {
+            "id": "p02",
+            "goal": "带着同一小车图和两式比较时间幂次，再给出结论",
+            "from_page": "p01"
+          }
+        ],
+        "opening": "从小车的候选位移式开始。",
+        "intro_question": "候选式 x=v₀t+at 的两项量纲相同吗？",
+        "diagram": {
+          "scene": "画向右运动的小车和初始速度方向",
+          "labels": [
+            "A",
+            "B",
+            "v₀",
+            "a",
+            "t",
+            "x"
+          ]
+        },
+        "reasoning": "先比较速度乘时间、加速度乘时间得到的量纲，再用时间平方配平长度量纲。",
+        "board_statement": "相加的物理量具有相同量纲。",
+        "application": {
+          "question": "从 at、at² 中选出具有长度量纲的一项？",
+          "expected_answer": "at² 的时间平方约去，量纲为长度。"
+        },
+        "handoff": "用相同办法检查新的运动关系。"
+      }
+    ],
+    "exit_checks": [
+      {
+        "objective_ids": [
+          "choose-length"
+        ],
+        "question": "从 at、at² 中选出具有长度量纲的一项？",
+        "expected_answer": "加速度的量纲乘时间平方等于长度。"
+      }
+    ]
+  },
+  "pages": [
+    {
+      "id": "p01",
+      "title": "比较小车候选式的两项",
+      "layout": {
+        "preset": "lesson-board",
+        "checkpoints": [
+          {
+            "cue": "compare",
+            "at": "end",
+            "visible": [
+              "prompt",
+              "cart",
+              "candidate",
+              "initial",
+              "acceleration"
+            ]
+          }
+        ]
+      },
+      "motion_not_applicable": "量纲比较只使用沿轨道的起点、方向和经历的时间，保留初始示意图。",
+      "cues": [
+        {
+          "id": "question",
+          "tts": "看左边的小车。它从 A 出发，初速度和加速度都朝右。我们想求用时小写 t 内的位移。右边有一条候选式，先检查相加的这两项。候选式 x=v₀t+at 的两项量纲相同吗？",
+          "actions": [
+            {
+              "type": "text",
+              "id": "prompt",
+              "text": "候选式 x=v₀t+at 的两项量纲相同吗？",
+              "zone": "question",
+              "size": 26
+            },
+            {
+              "type": "line",
+              "from": [
+                168,
+                407
+              ],
+              "to": [
+                580,
+                407
+              ],
+              "color": "muted",
+              "board_group": "cart"
+            },
+            {
+              "type": "rect",
+              "x": 218,
+              "y": 364,
+              "w": 74,
+              "h": 36,
+              "color": "ink",
+              "board_group": "cart"
+            },
+            {
+              "type": "rect",
+              "x": 442,
+              "y": 364,
+              "w": 74,
+              "h": 36,
+              "color": "muted",
+              "board_group": "cart"
+            },
+            {
+              "type": "arrow",
+              "from": [
+                254,
+                275
+              ],
+              "to": [
+                370,
+                275
+              ],
+              "color": "blue",
+              "board_group": "cart"
+            },
+            {
+              "type": "math",
+              "id": "v-label",
+              "latex": "v_0",
+              "x": 280,
+              "y": 246,
+              "size": 24,
+              "zone": "diagram",
+              "color": "blue",
+              "board_group": "cart",
+              "teaching_role": "context"
+            },
+            {
+              "type": "arrow",
+              "from": [
+                254,
+                335
+              ],
+              "to": [
+                370,
+                335
+              ],
+              "color": "red",
+              "board_group": "cart"
+            },
+            {
+              "type": "math",
+              "id": "a-label",
+              "latex": "a",
+              "x": 289,
+              "y": 306,
+              "size": 24,
+              "zone": "diagram",
+              "color": "red",
+              "board_group": "cart",
+              "teaching_role": "context"
+            },
+            {
+              "type": "math",
+              "id": "A-label",
+              "latex": "A",
+              "x": 244,
+              "y": 418,
+              "size": 24,
+              "zone": "diagram",
+              "color": "ink",
+              "board_group": "cart",
+              "teaching_role": "context"
+            },
+            {
+              "type": "math",
+              "id": "B-label",
+              "latex": "B",
+              "x": 467,
+              "y": 418,
+              "size": 24,
+              "zone": "diagram",
+              "color": "ink",
+              "board_group": "cart",
+              "teaching_role": "context"
+            },
+            {
+              "type": "arrow",
+              "from": [
+                255,
+                478
+              ],
+              "to": [
+                480,
+                478
+              ],
+              "color": "green",
+              "board_group": "cart"
+            },
+            {
+              "type": "math",
+              "id": "x-label",
+              "latex": "x",
+              "x": 355,
+              "y": 453,
+              "size": 24,
+              "zone": "diagram",
+              "color": "green",
+              "board_group": "cart",
+              "teaching_role": "context"
+            },
+            {
+              "type": "math",
+              "id": "t-label",
+              "latex": "t",
+              "x": 355,
+              "y": 484,
+              "size": 24,
+              "zone": "diagram",
+              "color": "ink",
+              "board_group": "cart",
+              "teaching_role": "context"
+            }
+          ],
+          "role": "observe",
+          "pause": 0.35
+        },
+        {
+          "id": "compare",
+          "tts": "先看第一项。速度的量纲是长度除以时间，再乘一份时间，得到长度。第二项用的是加速度，分母原来有时间的平方。乘了一份时间，分母里还剩一份时间。第二项得的是速度量纲。",
+          "actions": [
+            {
+              "type": "text",
+              "id": "candidate-heading",
+              "text": "待检式",
+              "zone": "derivation",
+              "size": 24,
+              "color": "red"
+            },
+            {
+              "type": "math",
+              "id": "candidate",
+              "latex": "x=v_0t+at",
+              "zone": "derivation",
+              "size": 32,
+              "teaching_role": "context"
+            },
+            {
+              "type": "math",
+              "id": "initial",
+              "latex": "[v_0t]=\\frac{L}{T}\\cdot T=L",
+              "zone": "derivation",
+              "size": 31
+            },
+            {
+              "type": "math",
+              "id": "acceleration",
+              "latex": "[at]=\\frac{L}{T^2}\\cdot T=\\frac{L}{T}",
+              "zone": "derivation",
+              "size": 31
+            },
+            {
+              "type": "text",
+              "id": "difference",
+              "text": "左项是长度，右项是速度。",
+              "zone": "conclusion",
+              "size": 27,
+              "emphasis": true
+            }
+          ],
+          "role": "derive",
+          "pause": 0.35
+        }
+      ],
+      "derivation_steps": [
+        {
+          "id": "length-from-speed",
+          "cue_id": "compare",
+          "action_id": "initial",
+          "result": "[v_0t]=\\frac{L}{T}\\cdot T=L",
+          "reason": "将速度量纲与时间量纲相乘",
+          "depends_on": []
+        },
+        {
+          "id": "speed-from-acceleration",
+          "cue_id": "compare",
+          "action_id": "acceleration",
+          "result": "[at]=\\frac{L}{T^2}\\cdot T=\\frac{L}{T}",
+          "reason": "将加速度量纲与时间量纲相乘",
+          "depends_on": []
+        }
+      ]
+    },
+    {
+      "id": "p02",
+      "title": "从量纲判断时间的幂次",
+      "layout": {
+        "preset": "lesson-board",
+        "carry": [
+          "cart",
+          "candidate-heading",
+          "candidate",
+          "initial",
+          "acceleration"
+        ],
+        "checkpoints": [
+          {
+            "cue": "repair",
+            "visible": [
+              "cart",
+              "candidate-heading",
+              "candidate",
+              "initial",
+              "acceleration",
+              "fix-length",
+              "statement"
+            ]
+          }
+        ]
+      },
+      "motion_not_applicable": "沿用同一辆小车的起点和方向，逐行比较两种时间因子的量纲。",
+      "cues": [
+        {
+          "id": "repair",
+          "tts": "第一项是长度，第二项是速度。两项的量纲需要先配平。相加的物理量具有相同量纲。让加速度乘时间的平方，分母的时间平方就约掉了。这一步找出时间的幂次，位移式的数值系数由运动规律确定。",
+          "actions": [
+            {
+              "type": "math",
+              "id": "fix-length",
+              "latex": "[at^2]=\\frac{L}{T^2}\\cdot T^2=L",
+              "zone": "derivation",
+              "size": 31,
+              "emphasis": true
+            },
+            {
+              "type": "text",
+              "id": "statement",
+              "text": "相加的物理量具有相同量纲。",
+              "zone": "conclusion",
+              "size": 28,
+              "emphasis": true
+            }
+          ],
+          "role": "conclusion",
+          "pause": 0.35
+        },
+        {
+          "id": "try",
+          "tts": "换一个问法。给出加速度乘时间和加速度乘时间平方，选一个具有长度量纲的量。把问题写在上面。",
+          "actions": [
+            {
+              "type": "text",
+              "id": "try-prompt",
+              "text": "从 at、at² 中选出具有长度量纲的一项？",
+              "zone": "question",
+              "size": 26
+            }
+          ],
+          "role": "observe",
+          "pause": 0.35
+        },
+        {
+          "id": "answer",
+          "tts": "选加速度乘时间的平方。看右边最后一式，时间的平方约去，留下长度。图里的位移也要用长度量纲来度量。",
+          "actions": [],
+          "role": "conclusion",
+          "pause": 0.35
+        }
+      ],
+      "derivation_steps": [
+        {
+          "id": "length-from-acceleration",
+          "cue_id": "repair",
+          "action_id": "fix-length",
+          "result": "[at^2]=\\frac{L}{T^2}\\cdot T^2=L",
+          "reason": "用时间的平方约去加速度量纲分母的时间平方",
+          "depends_on": []
+        }
+      ]
+    }
+  ],
+  "knowledge_points": [
+    {
+      "id": "sum-units",
+      "name": "",
+      "page_id": "p02",
+      "statement": "相加的物理量具有相同量纲。",
+      "statement_action_ids": [
+        "statement"
+      ],
+      "formula_action_ids": [
+        "fix-length"
+      ]
+    }
+  ],
+  "concept_units": [
+    {
+      "id": "dimensions",
+      "focus": "判断相加两项的量纲",
+      "introduce_cue": "question",
+      "explain_cue": "compare",
+      "emphasize_cue": "repair",
+      "apply_cue": "try",
+      "knowledge_point_ids": [
+        "sum-units"
+      ],
+      "questions": [
+        {
+          "cue": "question",
+          "answer_cue": "compare",
+          "text": "候选式 x=v₀t+at 的两项量纲相同吗？",
+          "action_ids": [
+            "prompt"
+          ]
+        },
+        {
+          "cue": "try",
+          "answer_cue": "answer",
+          "text": "从 at、at² 中选出具有长度量纲的一项？",
+          "action_ids": [
+            "try-prompt"
+          ]
+        }
+      ],
+      "scene_labels": [
+        {
+          "page_id": "p01",
+          "action_id": "v-label",
+          "first_use_cue": "compare"
+        },
+        {
+          "page_id": "p01",
+          "action_id": "a-label",
+          "first_use_cue": "compare"
+        },
+        {
+          "page_id": "p01",
+          "action_id": "A-label",
+          "first_use_cue": "compare"
+        },
+        {
+          "page_id": "p01",
+          "action_id": "t-label",
+          "first_use_cue": "compare"
+        },
+        {
+          "page_id": "p01",
+          "action_id": "x-label",
+          "first_use_cue": "compare"
+        },
+        {
+          "page_id": "p01",
+          "action_id": "B-label",
+          "first_use_cue": "compare"
+        }
+      ]
+    }
+  ],
+  "closure": {
+    "recap_cues": ["answer"],
+    "visible_action_ids": ["fix-length"],
+    "points": [
+      {"kind":"opening_question", "text":"回到开头的候选位移式，逐项检查量纲。"},
+      {"kind":"conclusion", "text":"相加的物理量量纲相同，加速度项应带时间的平方。"},
+      {"kind":"application", "text":"遇到候选公式时，先用量纲找出时间幂次。"}
+    ]
+  },
+  "lesson_arc": {
+    "entry_question": "候选位移式里的两项能直接相加吗？",
+    "beats": [
+      {"id":"question","purpose":"orient","cue_ids":["question"],"student_question":"位移候选式的两项量纲是否相同？","visual_ids":["prompt","candidate"],"scene_change":"小车、已知量和候选式同时呈现，问题逐笔写在板书上。","takeaway":"先把待检验的两项摆在同一处。"},
+      {"id":"compare","purpose":"reason","cue_ids":["compare"],"student_question":"速度乘时间与加速度乘时间各得到什么量纲？","visual_ids":["initial","acceleration","difference"],"scene_change":"两项分别展开，长度和速度量纲并列出现。","takeaway":"候选式第二项少了一份时间。"},
+      {"id":"anchor","purpose":"anchor","cue_ids":["repair"],"student_question":"怎样把候选式改成量纲正确的形式？","visual_ids":["fix-length","statement"],"scene_change":"在加速度项补上时间平方，并写出量纲相同才能相加。","takeaway":"加速度项应乘时间平方。"},
+      {"id":"apply","purpose":"apply","cue_ids":["try"],"student_question":"在两个候选量中，哪一个具有长度量纲？","visual_ids":["try-prompt"],"scene_change":"新问题写在原式旁边，保留量纲推理的线索。","takeaway":"应用仍从加速度的时间幂次开始。"},
+      {"id":"recap","purpose":"recap","cue_ids":["answer"],"student_question":"怎样用量纲快速判断公式结构？","visual_ids":["fix-length"],"scene_change":"保留修正后的公式，回到长度量纲这一条依据。","takeaway":"量纲检查先找每一项最终表示的物理量。"}
+    ]
+  }
+}

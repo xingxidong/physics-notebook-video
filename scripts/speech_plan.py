@@ -26,7 +26,7 @@ CLASSROOM_ROLES={
     'transition':{'speed':1.04,'pause_before':.04,'pause_after':.15},
     'explain':{'speed':1.00,'pause_before':.04,'pause_after':.25},
 }
-DELIVERY_FIELDS=('tts','tts_parts','role','speed','pitch','volume','emotion','pause_before','pause_after','pause','pause_reason','emphasis','minimax_pronunciation')
+DELIVERY_FIELDS=('tts','tts_parts','role','speed','pitch','volume','emotion','pause_before','pause_after','pause','pause_reason','emphasis','minimax_pronunciation','speech_group')
 
 def _safe_sidecar(project,value):
     path=(project/value).resolve()
@@ -88,6 +88,21 @@ def apply(project,lesson):
             resolved.append({'id':cid,**{k:original[k] for k in ('role','tts','speed','pitch','volume','emotion','pause_before','pause') if k in original},'emphasis':emphasis})
     unknown=sorted(set(entries)-used)
     if unknown:raise ValueError(f'Speech plan refers to unknown cue ids: {unknown}')
+    # A speech_group is one continuous teacher thought.  Only adjacent cues may
+    # share it, so the recorded take never has to be cut and resumed later.
+    for page in lesson.get('pages',[]):
+        closed=set();active=None;chars=0
+        for cue in page.get('cues',[]):
+            group=cue.get('speech_group')
+            if group is not None and (not isinstance(group,str) or not group.strip()):
+                raise ValueError(f'{cue["id"]}: speech_group must be a non-empty name')
+            if group != active:
+                if active is not None:closed.add(active)
+                active=group;chars=0
+            if group is not None:
+                if group in closed:raise ValueError(f'{cue["id"]}: speech_group must stay in one continuous run')
+                chars+=len(_clean(cue['tts']))
+                if chars>220:raise ValueError(f'{cue["id"]}: one speech_group keeps to about 220 spoken characters')
     return lesson,{'source':path.name if path else 'lesson.json','resolved':resolved,'roles':roles,'delivery_profile':profile}
 
 def externalize(lesson):

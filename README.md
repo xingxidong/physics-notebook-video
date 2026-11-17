@@ -1,6 +1,20 @@
 # 物理逐笔板书视频技能
 
-版本 0.11.1。面向支持 Agent Skills 和本地命令的 Agent 宿主，制作带中文配音的物理讲解视频。
+版本 0.17.0。面向支持 Agent Skills 和本地命令的 Agent 宿主，制作带中文配音的物理讲解视频。
+
+0.17.0 把课堂编排升级为可审阅的“教学拍”：每一拍记录学生问题、画面依据、画面变化和本步结论，支持从观察、反例、对照、模型或推导进入，不套固定四段式。连续的相邻推理可用 `speech_group` 一次配音，减少逐句重新起音的机械感。
+
+0.16.2 将课程收束设为正式教学结构：总结回扣模型或开场问题、关键依据和结果或应用，教案直接展示总结设计。构建前还会检查总结开始时，学生能否看到它指向的模型、关键式和结论。
+
+0.16.1 支持用 `layout.prewritten` 在开讲前呈现完整模型。备课加入总结口播，收尾时沿用图和结论板书。
+
+0.16.0 加入[统一制作检查](references/quality-workflow.md)：习题课重点关联实际板书，按教学段比较时长；所有布局参与可见性检查，配音严格检查包含句内疑似卡壳、段间空档和术语试听。`quality-check` 汇总具体问题与尚需观看试听的范围。本地作者信息随安装保留，通用安装包不携带个人作者配置。
+
+## 教案审阅与交付
+
+新课先走 [人审教案](references/review-workflow.md)。`review-plan` 输出完整讲稿、重难点和板书预览。人确认当前版本后登记 `approve-plan`，再制作视频。最终交付视频、学生讲义和可编辑配图。片头可按课程指定作者信息，或从本机作者配置读取。
+
+两个课型都可用 `estimate-duration` [估算课长](references/duration-planning.md)，教案并列显示教学预算与按讲稿推算的时长。配音检查分开提醒句内疑似卡壳和段与段之间的空档，`voice-check --listen CUE_ID --context` 导出相邻语句供连续回听。
 
 ## 选择课型
 
@@ -16,7 +30,7 @@ python3 scripts/course.py init exercise-demo --kind problem
 python3 scripts/course.py init concept-demo --kind concept
 ~~~
 
-习题课载入追逐运动示例，新授课载入电场强度示例。各自用 `build PROJECT --draft` 查看布局与落笔顺序。两种课型继续使用同一套板书笔迹、动画引擎、配音缓存和导出命令。完整结论在讲解中写完，学生可自行暂停记笔记。
+习题课载入追逐运动示例，新授课载入位移式的量纲检查示例。各自用 `build PROJECT --draft` 查看布局与落笔顺序。两种课型继续使用同一套板书笔迹、动画引擎、配音缓存和导出命令。完整结论在讲解中写完，学生可自行暂停记笔记。
 
 ## 制作能力
 
@@ -118,7 +132,7 @@ python3 -m venv .venv
 
 打开 `lesson-demo/preview.html` 或 `contact-sheet.png`。这一步使用自带示例和估算时长，供安装与版面检查。
 
-正式配音前，将技能中的 `.env.example` 复制为 `lesson-demo/.env`，在本地填入自己的 MiniMax API Key：
+教案经人确认后，将技能中的 `.env.example` 复制为 `lesson-demo/.env`，在本地填入自己的 MiniMax API Key：
 
 ```dotenv
 MINIMAX_API_KEY=自己的密钥
@@ -128,6 +142,8 @@ MINIMAX_API_HOST=https://api.minimax.cn
 然后生成正式视频：
 
 ```sh
+# 先生成教案，等审阅者明确确认后记录 approve-plan。
+.venv/bin/python "$PHYSICS_SKILL/scripts/course.py" review-plan lesson-demo
 .venv/bin/python "$PHYSICS_SKILL/scripts/course.py" build lesson-demo --video --renderer motion-canvas --width 1920
 .venv/bin/python "$PHYSICS_SKILL/scripts/captions.py" lesson-demo --burn
 ```
@@ -173,6 +189,8 @@ python3 "$PHYSICS_SKILL/scripts/course.py" component-check components-demo --str
 python3 "$PHYSICS_SKILL/scripts/course.py" init pursuit-demo --example pursuit --backend minimax
 python3 "$PHYSICS_SKILL/scripts/course.py" teaching-check pursuit-demo
 python3 "$PHYSICS_SKILL/scripts/course.py" build pursuit-demo --draft
+# 先生成教案，等审阅者明确确认后记录 approve-plan。
+python3 "$PHYSICS_SKILL/scripts/course.py" review-plan pursuit-demo
 python3 "$PHYSICS_SKILL/scripts/course.py" build pursuit-demo --video --renderer motion-canvas --width 1920
 ```
 

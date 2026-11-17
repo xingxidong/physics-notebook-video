@@ -4,7 +4,7 @@
 
 习题课使用 `kind:"problem"`，登记题目与解答，在页面 `problem` 中显示识别后的文字，并配置情景动画和 `derivation_steps`。`course.py init PROJECT --kind problem` 载入追逐运动示例。见[习题课工作流](problem-workflow.md)。
 
-新授课使用 `kind:"concept"`，将观察、对照、推导、正式结论和应用编排成实际口播与板书，用 `knowledge_points` 关联应抄录的内容。`course.py init PROJECT --kind concept` 载入电场强度示例。见[新授课工作流](concept-lesson.md)。
+新授课先完成[整课编排](course-planning.md)，将编排内嵌在 `course_outline` 或引用项目内的 JSON，再使用 `kind:"concept"`，将观察、对照、推导、正式结论和应用编排成实际口播与板书，用 `knowledge_points` 关联应抄录的内容。`course.py init PROJECT --kind concept` 载入位移式的量纲检查示例。见[新授课工作流](concept-lesson.md)。
 
 题面 `problem.text` 的正文中使用 `$v_D$`、`$\frac{dr}{dt}$` 等 LaTeX 公式，由 XeLaTeX 排版；完整转写、公式审阅记录与可编辑 `.tex` 一起保留。下文的 LaTeX 子集说明针对逐笔板书解析器，题面由实际 TeX 编译器处理。
 
@@ -82,6 +82,26 @@ LaTeX 子集：分式、上下标、向量、单位法线、时间导数点号�
 
 语音服务有词级时间戳时优先使用实际数据；缺少时按文本位置估算，并将 `anchor_quality` 标记为 estimated-word。GLM 当前适配提供真实段长；Edge、豆包及 MiniMax 依可用返回值提供词级信息。长推导拆成有教学意义的句群，在关键步骤后留出看图时间。
 
+## 课程收束
+
+习题课和新授课都设置 `closure`。它不是机械口号，而是教案中可审阅的一小段收束设计。`recap_cues` 指向课程末尾连续的 `role:"conclusion"` 口播，`visible_action_ids` 指向总结开始时仍在板书上的模型、关键式或结论。构建前会检查这些笔迹是否真的可见。
+
+```json
+{
+  "closure": {
+    "recap_cues": ["recap-model", "recap-method", "recap-result"],
+    "visible_action_ids": ["main-diagram", "key-relation", "final-result"],
+    "points": [
+      {"kind":"model", "text":"回到图中的研究对象和受力或约束"},
+      {"kind":"key_step", "text":"指出使推导走通的关系或方法"},
+      {"kind":"result", "text":"说清最终所求和它的物理意义"}
+    ]
+  }
+}
+```
+
+习题课的三个 `kind` 固定为 `model`、`key_step`、`result`。新授课改为 `opening_question`、`conclusion`、`application`。总结时不再新开空白页，也不重复整段计算。让学生同时看到图、关键关系和结论，在几句自然语言里把这一课的线索接起来。
+
 ## 批量与恢复
 
 ```json
@@ -118,4 +138,4 @@ v0.8 讲题项目另保留 `input-manifest.json`、输入原件、识别转写�
 
 概念课用 `knowledge_points` 登记学生需要记下的正式定义、定律和结论，并关联实际文字与公式动作。构建后检查全部写出后的保留时间。字段和范例见 [知识点结论板书](knowledge-board.md)。
 
-新概念课使用 `kind:"concept"`。板书笔迹与物理状态支持配音关键词同步。完整字段、原生场景接入与推导记录见 [语义场景与逐笔公式](semantic-scenes.md)。
+新概念课使用 `kind:"concept"`，编写 `concept_units`，把引入、讲解、强调、应用检查、板书提问与图中量的标注关联到各 cue。字段见[新授课工作流](concept-lesson.md)。板书笔迹与物理状态支持配音关键词同步。完整字段、原生场景接入与推导记录见 [语义场景与逐笔公式](semantic-scenes.md)。

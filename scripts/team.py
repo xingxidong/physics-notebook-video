@@ -41,6 +41,29 @@ def validate_plan(plan):
         raise ValueError(f'Section targets total {total:g} minutes, course target is {float(course["target_minutes"]):g}')
     return course,sections
 
+def check_outline_assignments(plan, plan_file, course, sections):
+    from course_outline import load_outline, validate
+    outline=load_outline(Path(plan_file).resolve().parent, plan.get('course_outline'))
+    errors=validate(outline)
+    if errors:
+        raise ValueError('课程编排错误：'+'；'.join(error['message'] for error in errors))
+    if abs(outline['target_minutes']-float(course['target_minutes']))>.05:
+        raise ValueError('课程编排与团队计划的总时长须一致。')
+    units={unit['id']:unit for unit in outline['units']}
+    assigned=[]
+    for section in sections:
+        ids=section.get('unit_ids')
+        if not isinstance(ids,list) or not ids or any(not isinstance(key,str) or key not in units for key in ids):
+            raise ValueError(f'{section["id"]}: unit_ids 须引用已编排的教学段。')
+        weight=sum(units[key]['minutes'] for key in ids)
+        if abs(weight-float(section['target_minutes']))>.05:
+            raise ValueError(f'{section["id"]}: 教学段时长须与章节预计时长一致。')
+        assigned.extend(ids)
+    if assigned!=list(units):
+        raise ValueError('所有章节的 unit_ids 须依次覆盖课程编排中的教学段。')
+    return outline
+
+
 def paths(project):
     project=Path(project).resolve();team=project/'team'
     return project,team,team/'course-contract.json',team/'manifest.json'
@@ -49,6 +72,7 @@ def init(project,plan_file):
     project,team,contract_path,manifest_path=paths(project)
     if team.exists():raise ValueError(f'{team} already exists; keep the current work packages or choose a new project')
     plan=read_json(plan_file);course,sections=validate_plan(plan)
+    outline=check_outline_assignments(plan,plan_file,course,sections) if course.get('kind')=='concept' else None
     from engine_render import local_config
     local_speech=(local_config().get('speech_defaults') or {}).get('minimax',{})
     speech=course.get('speech') or {**DEFAULT_SPEECH,**local_speech}
@@ -60,6 +84,7 @@ def init(project,plan_file):
     }
     for key in ('font','parameters','kind','input_manifest'):
         if key in course:lesson[key]=course[key]
+    if outline:lesson['course_outline']=outline
     contract={
         'schema_version':1,'course':course,'lesson':lesson,
         'audience':plan.get('audience',''),'teaching_goal':plan.get('teaching_goal',''),
@@ -72,6 +97,7 @@ def init(project,plan_file):
     team.mkdir(parents=True)
     write_json(contract_path,contract)
     skill_root=Path(__file__).resolve().parents[1]
+    units_by_id={unit['id']:unit for unit in outline['units']} if outline else {}
     for index,section in enumerate(sections,1):
         sid=section['id'];folder=team/'sections'/sid;prefix=f's{index:02d}-'
         source_inputs=section.get('source_files',[])
@@ -79,19 +105,34 @@ def init(project,plan_file):
         assignment={
             'schema_version':1,'section_id':sid,'order':index,'page_prefix':prefix,
             'title':section['title'],'target_minutes':section['target_minutes'],
-            'brief':section.get('brief',''),'project_root':str(project),'skill_root':str(skill_root),
+            'brief':section.get('brief',''),'kind':lesson.get('kind'),'project_root':str(project),'skill_root':str(skill_root),
             'source_files_input':source_inputs,'source_files':source_files,
             'bridge_in':section.get('bridge_in',''),'bridge_out':section.get('bridge_out',''),
             'symbols':contract['symbols'],'page_policy':contract['page_policy'],
             'audience':contract['audience'],'teaching_goal':contract['teaching_goal'],
         }
         manifest['sections'].append({'id':sid,'order':index,'title':section['title'],'target_minutes':section['target_minutes'],'page_prefix':prefix,'folder':f'team/sections/{sid}','bridge_in':section.get('bridge_in',''),'bridge_out':section.get('bridge_out','')})
+        if outline:
+            manifest['sections'][-1]['unit_ids']=section['unit_ids']
+            assignment['main_question']=outline['main_question']
+            assignment['planned_units']=[units_by_id[key] for key in section['unit_ids']]
+            if index==len(sections):
+                assignment['exit_checks']=outline['exit_checks']
         write_json(folder/'assignment.json',assignment)
         validate_cmd=' '.join(shlex.quote(x) for x in [sys.executable,str(Path(__file__).resolve()),'validate',str(project)])
-        prompt=f"""你负责课程的章节 `{sid}`：{section['title']}。\n\n读取本目录的 assignment.json 和其中列出的绝对路径原始资料，只在本目录写 fragment.json、讲义片段与 TikZ。你与其他 Agent 同时工作，不要修改、移动或撤销其他目录中的文件。保持共同符号表；需要新符号时记录在 handoff.md，交给主 Agent 更新课程合同。每个板书页尽量完成一个完整问题或概念单元，设置 problem_id，并按 page_policy 采用一页一题语义布局；确需跨页时写明 continuation_reason。主图在本页保持原位，优先复用 references/components.md 中与题型匹配的参数化物理组件，推导使用 formula_steps。默认固定画面，公式逐行出现；力、位移等物理方向保留箭头。受力线和标签用 attach_to 跟随组件的 block_center，结果用 write_seconds 提前写完并留观看时间。每页同时完成物理推导、自然口播、板书动作与配图。不要调用正式 TTS，不要写项目根目录的 lesson.json。\n\n完成后可直接运行：\n\n```sh\n{validate_cmd}\n```\n\n主 Agent 负责最终合并。\n"""
+        concept=lesson.get('kind')=='concept'
+        page_instructions=(
+            '每个板书页尽量完成一个知识点的图、推导和结论，确需跨页时写明 continuation_reason。'
+            if concept else
+            '每个板书页尽量完成一个完整问题，设置 problem_id，并按 page_policy 采用一页一题语义布局，确需跨页时写明 continuation_reason。'
+        )
+        prompt=f"""你负责课程的章节 `{sid}`：{section['title']}。\n\n读取本目录的 assignment.json 和其中列出的绝对路径原始资料，只在本目录写 fragment.json、讲义片段与 TikZ。你与其他 Agent 同时工作，不要修改、移动或撤销其他目录中的文件。保持共同符号表；需要新符号时记录在 handoff.md，交给主 Agent 更新课程合同。{page_instructions}主图在本页保持原位，优先复用 references/components.md 中与题型匹配的参数化物理组件，推导使用 formula_steps。默认固定画面，公式逐行出现；力、位移等物理方向保留箭头。受力线和标签用 attach_to 跟随组件的 block_center，结果用 write_seconds 提前写完并留观看时间。每页同时完成物理推导、自然口播、板书动作与配图。不要调用正式 TTS，不要写项目根目录的 lesson.json。\n\n完成后可直接运行：\n\n```sh\n{validate_cmd}\n```\n\n主 Agent 负责最终合并。\n"""
         (folder/'AGENT_PROMPT.md').write_text(prompt)
         with (folder/'AGENT_PROMPT.md').open('a') as handle:
-            handle.write('\n讲题补充：读取登记的题目与参考解答，数学表达式转写为 LaTeX 并逐式对照原件，保留上下标、分式、向量及积分范围；题目正文中的变量也使用行内 LaTeX。复核后的题目进入页面 problem，以 XeLaTeX 排版。物理情景用模型或原生引擎实际运动。按 references/problem-workflow.md 为各中间式记录 derivation_steps，逐次交代乘系数、消项、合成导数、积分和初末条件。参考答案的省略步骤在本段补全，主 Agent 审阅物理与数学理由。\n')
+            if concept:
+                handle.write('\n新授课：按 references/concept-lesson.md 在 fragment.json 交付 concept_units、knowledge_points 和 pages。按 assignment.json 中已审核的 planned_units 写稿。每个新知识点须按引入、讲解、强调、应用检查的固定顺序完整编排。提问写在板书上，图中参与解释和推导的量逐一标清。页码、口播和正式结论通过 ID 关联。\n')
+            else:
+                handle.write('\n讲题补充：读取登记的题目与参考解答，数学表达式转写为 LaTeX 并逐式对照原件，保留上下标、分式、向量及积分范围；题目正文中的变量也使用行内 LaTeX。复核后的题目进入页面 problem，以 XeLaTeX 排版。物理情景用模型或原生引擎实际运动。按 references/problem-workflow.md 为各中间式记录 derivation_steps，逐次交代乘系数、消项、合成导数、积分和初末条件。参考答案的省略步骤在本段补全，主 Agent 审阅物理与数学理由。\n')
     write_json(manifest_path,manifest)
     print(json.dumps({'project':str(project),'sections':len(sections),'target_minutes':course['target_minutes'],'team_dir':str(team)},ensure_ascii=False))
 
@@ -102,6 +143,11 @@ def load_team(project):
 def inspect_team(project,deep=False):
     project,team,contract,manifest=load_team(project);errors=[];warnings=[];details=[];seen=set();all_pages=[];all_cues=[];seconds=0
     symbols=contract.get('symbols',{});policy=contract.get('page_policy',{})
+    lesson=dict(contract['lesson'])
+    collect_concepts=lesson.get('kind')=='concept'
+    if collect_concepts:
+        lesson.setdefault('concept_units',[])
+        lesson.setdefault('knowledge_points',[])
     for item in sorted(manifest.get('sections',[]),key=lambda x:x['order']):
         sid=item['id'];fragment_path=team/'sections'/sid/'fragment.json'
         detail={'id':sid,'fragment':str(fragment_path),'status':'missing','pages':0,'cues':0,'estimated_minutes':0,'bridge_in':{'contract':item.get('bridge_in',''),'fragment':''},'bridge_out':{'contract':item.get('bridge_out',''),'fragment':''}}
@@ -110,6 +156,20 @@ def inspect_team(project,deep=False):
         try:fragment=read_json(fragment_path)
         except ValueError as e:errors.append(str(e));detail['status']='invalid';details.append(detail);continue
         detail['status']='ready'
+        if collect_concepts:
+            planned_ids=item.get('unit_ids')
+            source_units=fragment.get('concept_units',[])
+            if planned_ids is not None and (
+                not isinstance(source_units,list) or
+                [unit.get('id') for unit in source_units if isinstance(unit,dict)]!=planned_ids
+            ):
+                errors.append(f'{sid}: 课程片段须按编排顺序完成分配的教学段。')
+            for field in ('concept_units','knowledge_points'):
+                records=fragment.get(field,[])
+                if not isinstance(records,list):
+                    errors.append(f'{sid}: {field} must be an array')
+                    continue
+                lesson[field]=[*lesson[field],*(r for r in records if r not in lesson[field])]
         if fragment.get('section_id')!=sid:errors.append(f'{sid}: fragment.section_id must match its assignment')
         for key in ('bridge_in','bridge_out'):
             detail[key]['fragment']=fragment.get(key,'')
@@ -154,7 +214,7 @@ def inspect_team(project,deep=False):
             from layout import audit_lesson
             from components import audit_components
             from teaching import audit as audit_teaching
-            validation_lesson=dict(contract['lesson']);validation_lesson['pages']=all_pages
+            validation_lesson={**lesson,'pages':all_pages}
             _,compiled=compile_lesson(project,validation_lesson);layout_report=audit_lesson(compiled);component_report=audit_components(compiled)
             warnings.extend('layout: '+x['message'] for x in layout_report['warnings'])
             warnings.extend('component: '+x['message'] for x in component_report['warnings'])
@@ -166,7 +226,7 @@ def inspect_team(project,deep=False):
     target=float(contract['course']['target_minutes']);minimum=float(contract['course'].get('minimum_minutes',target));estimated=seconds/60
     if estimated<minimum*.72:warnings.append(f'Course estimate {estimated:.1f} min is far below minimum {minimum:g} min')
     report={'ok':not errors,'errors':errors,'warnings':warnings,'duration_ready':estimated>=minimum*.85,'course_check':course_check,'sections':details,'pages':len(all_pages),'cues':len(all_cues),'estimated_minutes':round(estimated,2),'target_minutes':target,'minimum_minutes':minimum}
-    return project,team,contract,manifest,all_pages,report
+    return project,team,{**contract,'lesson':lesson},manifest,all_pages,report
 
 def validate(project,strict_duration=False):
     *_,report=inspect_team(project,deep=True)

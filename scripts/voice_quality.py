@@ -30,25 +30,72 @@ def _review_joins(pages, pauses):
     """Use measured silence to locate joins worth hearing as a pair."""
     starts = [pause['start'] for pause in pauses]
     findings = []
-    for page in pages:
-        offset = page.get('start', 0)
-        cues = page['cues']
-        for before, after in zip(cues, cues[1:]):
-            if before.get('pause_reason') in TEACHING_PAUSES or after.get('pause_reason') in TEACHING_PAUSES:
-                continue
-            join = offset + (before['end'] + after['start']) / 2
-            index = bisect_right(starts, join) - 1
-            if index < 0:
-                continue
-            pause = pauses[index]
-            if join >= pause['end'] or pause['duration'] >= 1.8:
-                continue
-            findings.append({
-                'code': 'audible-cue-gap', 'cue': after['id'], 'related_cues': [before['id'], after['id']],
-                'start': pause['start'], 'end': pause['end'], 'quiet_seconds': pause['duration'],
-                'message': '这两段之间有一段实测静音。连着回听，判断这个停顿能否让学生跟上当前思路。',
-            })
+    cues = _absolute_cues(pages)
+    for before, after in zip(cues, cues[1:]):
+        gap = max(0, after['start']-before['end'])
+        purpose = before.get('pause_reason') in TEACHING_PAUSES or after.get('pause_reason') in TEACHING_PAUSES
+        join = (before['end'] + after['start']) / 2
+        index = bisect_right(starts, join) - 1
+        if index < 0:
+            continue
+        pause = pauses[index]
+        if join >= pause['end'] or pause['duration'] < .85 or (purpose and pause['duration'] <= gap+.35):
+            continue
+        findings.append({
+            'code': 'audible-cue-gap', 'cue': after['id'], 'related_cues': [before['id'], after['id']],
+            'start': pause['start'], 'end': pause['end'], 'quiet_seconds': pause['duration'],
+            'message': '连着听相邻两段，确认是否在一句话讲完前断开，还是自然换气或转场。',
+        })
     return findings
+
+def _absolute_cues(pages):
+    return [{**cue, 'start': page.get('start',0) + cue['start'], 'end': page.get('start',0) + cue['end']}
+            for page in pages for cue in page['cues']]
+
+def _review_inside(cues, pauses):
+    starts = [cue['start'] for cue in cues]
+    findings = []
+    for pause in pauses:
+        index = bisect_right(starts, pause['start']) - 1
+        if index < 0:
+            continue
+        cue = cues[index]
+        if pause['start'] < cue['start'] + .15 or pause['end'] > cue['end'] - .15:
+            continue
+        findings.append({
+            'code': 'in-cue-hesitation', 'cue': cue['id'], 'start': pause['start'], 'end': pause['end'],
+            'quiet_seconds': pause['duration'],
+            'message': '句群中出现实测静音。回听是否卡在术语、数值或因果关系中间；正常语义停顿保留。',
+        })
+    return findings
+
+def _listening_checks(cues, findings):
+    if not cues:
+        return []
+    selections = {}
+    def add(cue, reason):
+        selections.setdefault(cue['id'], []).append(reason)
+    add(cues[0], '开场：是否直接指向本课要看的图、量或问题')
+    candidates = [cue for cue in cues if cue.get('role') in ('derive', 'explain','key_turn','model')]
+    add(max(candidates or cues, key=lambda c: c['end'] - c['start']),
+        '最长的讲解或推导：回听术语、逻辑连接、语速和落笔')
+    add(cues[-1], '收束：检查结论读法、前一句的衔接和句尾')
+    for cue in cues:
+        if cue.get('role')=='key_turn':
+            add(cue,'关键转折：重点词、推导依据与眼前图式是否连贯')
+    groups={}
+    for cue in cues:
+        if cue.get('speech_group'):
+            groups.setdefault(cue['speech_group'],[]).append(cue)
+    for group,items in groups.items():
+        add(items[0],f'连续讲述组「{group}」：连听整段，确认句间没有重新起句或机械停顿')
+    for row in findings:
+        if row.get('cue'):
+            selections.setdefault(row['cue'], []).append(row.get('code','physics-term')+('：'+row['term'] if row.get('term') else ''))
+    return [{'cue': cue['id'], 'start': round(cues[max(0,i-1)]['start'],3),
+             'end': round(cues[min(len(cues)-1,i+1)]['end'],3),
+             'reasons': list(dict.fromkeys(selections[cue['id']]))}
+            for i,cue in enumerate(cues) if cue['id'] in selections]
 
 def audit(project,data=None):
     project=Path(project);wav_path=project/'narration.wav'
@@ -62,10 +109,13 @@ def audit(project,data=None):
     if _db(peak)>-0.8:warnings.append({'code':'peak-high','message':'峰值距离满刻度不足 0.8 dB。'})
     if clip>.0001:warnings.append({'code':'clipping','message':f'削波样本比例为 {clip:.4%}。'})
     if _db(rms)<-34:warnings.append({'code':'level-low','message':'全片平均电平偏低。'})
-    pauses=_silences(samples,rate,min_seconds=.85)
+    pauses=_silences(samples,rate,min_seconds=.65)
     long_silence=[span for span in pauses if span['duration']>=1.8];planned=[]
     for span in long_silence:
-        intentional=any(c.get('pause_reason') in TEACHING_PAUSES and span['start']<=p.get('start',0)+c['end']<=span['end'] for p in data['pages'] for c in p['cues'])
+        intentional=any(c.get('pause_reason') in TEACHING_PAUSES
+                        and span['start']<=p.get('start',0)+c['end']<=span['end']
+                        and span['duration']<=c.get('pause',0)+.35
+                        for p in data['pages'] for c in p['cues'])
         if intentional:planned.append(span)
         else:warnings.append({'code':'long-silence','message':f'{span["start"]:.2f}—{span["end"]:.2f} 秒存在较长静音。'})
     formula_re=re.compile(r'[\\{}_^]|\b(?:frac|sqrt|vec|dot)\b')
@@ -80,35 +130,40 @@ def audit(project,data=None):
         timed+=bool(cue.get('words'))
     terminology,spelling_warnings=inspect_terminology(data)
     warnings.extend(spelling_warnings)
-    timed_script = []
-    for page in data['pages']:
-        offset = page.get('start', 0)
-        for cue in page['cues']:
-            timed_script.append({**cue, 'start': offset + cue['start'], 'end': offset + cue['end']})
+    timed_script = _absolute_cues(data['pages'])
+    classroom = review_narration(timed_script)+_review_joins(data['pages'],pauses)+_review_inside(timed_script,pauses)
+    listening = _listening_checks(timed_script, [*classroom,*warnings,*terminology['items']])
+    audio_attention=any(row['code'] in ('in-cue-hesitation','audible-cue-gap') for row in classroom)
     report={
-        'status':'pass' if not warnings else 'attention','duration':round(len(samples)/rate,3),'sample_rate':rate,
+        'status':'attention' if warnings or audio_attention else 'pass','duration':round(len(samples)/rate,3),'sample_rate':rate,
         'peak_dbfs':round(_db(peak),2),'rms_dbfs':round(_db(rms),2),'clipping_ratio':round(clip,7),
         'long_silences':long_silence,'planned_silences':planned,'cues':len(cues),'word_timing_coverage':round(timed/max(1,len(cues)),3),
         'warnings':warnings,'terminology':terminology,
-        'classroom_delivery':review_narration(timed_script)+_review_joins(data['pages'],pauses),
+        'classroom_delivery':classroom,'listening_checks':listening,
     }
     (project/'voice-report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2));return report
 
-def export_listening_clip(project, cue_id):
+def export_listening_clip(project, cue_id, context=False):
     """Extract one whole cue from the already mastered narration for audition."""
     project = Path(project)
     data = json.loads((project / 'timeline.json').read_text())
+    all_cues = _absolute_cues(data['pages']) if context else []
     for page_index, page in enumerate(data['pages'], 1):
         for cue_index, cue in enumerate(page['cues'], 1):
             if cue['id'] != cue_id:
                 continue
             offset = page.get('start', 0)
-            output = project / 'review-audio' / f'cue-{page_index:03d}-{cue_index:03d}.wav'
+            suffix = '-context' if context else ''
+            output = project / 'review-audio' / f'cue-{page_index:03d}-{cue_index:03d}{suffix}.wav'
             output.parent.mkdir(exist_ok=True)
             with wave.open(str(project / 'narration.wav'), 'rb') as source:
                 rate = source.getframerate()
-                start = max(0, round((offset + cue['start'] - .2) * rate))
-                end = min(source.getnframes(), round((offset + cue['end'] + .2) * rate))
+                begin, finish = offset + cue['start'], offset + cue['end']
+                if context:
+                    i = next(i for i, item in enumerate(all_cues) if item['id'] == cue_id)
+                    begin, finish = all_cues[max(0,i-1)]['start'],all_cues[min(len(all_cues)-1,i+1)]['end']
+                start = max(0, round((begin - .2) * rate))
+                end = min(source.getnframes(), round((finish + .2) * rate))
                 source.setpos(start)
                 with wave.open(str(output), 'wb') as clip:
                     clip.setparams(source.getparams())
@@ -119,6 +174,9 @@ def export_listening_clip(project, cue_id):
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('project');p.add_argument('--strict',action='store_true');a=p.parse_args()
     report=audit(a.project);print(json.dumps(report,ensure_ascii=False))
-    if a.strict and report['warnings']:raise SystemExit(1)
+    if a.strict and strict_findings(report):raise SystemExit(1)
+
+def strict_findings(report):
+    return [*report.get('warnings',[]),*report.get('classroom_delivery',[])]
 
 if __name__=='__main__':main()

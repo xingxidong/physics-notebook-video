@@ -142,3 +142,53 @@ def synth(project,cfg,cue):
     with wave.open(str(wav)) as w:duration=w.getnframes()/w.getframerate()
     d={'duration':duration,'words':words,'signature':signature};meta.write_text(json.dumps(d,ensure_ascii=False))
     d.update(file=str(wav),cache_hit=False);return d
+
+
+def split_group(audio, texts):
+    """Split one naturally spoken take at cue boundaries.
+
+    Continuous groups are optional.  When the provider returns word timings that
+    exactly cover the grouped text, split only at a word boundary.  A provider
+    without reliable timings keeps the same take but uses character-weighted
+    timing for the board; it never invents word anchors.
+    """
+    clean=lambda value:''.join(char.lower() for char in value if char.isalnum())
+    normalized=[clean(text) for text in texts]
+    joined=''.join(normalized)
+    words=audio.get('words',[])
+    joined_words=''.join(clean(word.get('text','')) for word in words)
+    boundaries=[]
+    if words and joined and joined_words==joined:
+        targets=[];used=0
+        for value in normalized[:-1]:
+            used+=len(value);targets.append(used)
+        consumed=0;word_boundaries=[];valid=True
+        for target in targets:
+            while consumed < target and len(word_boundaries) < len(words):
+                word=words[len(word_boundaries)]
+                consumed+=len(clean(word.get('text','')))
+                word_boundaries.append(word)
+            if consumed != target or not word_boundaries:
+                valid=False;break
+            boundary=word_boundaries[-1].get('end')
+            if not isinstance(boundary,(int,float)):
+                valid=False;break
+            boundaries.append(float(boundary))
+        if not valid:boundaries=[]
+    if not boundaries and len(normalized)>1:
+        total=max(1,sum(len(value) for value in normalized));used=0
+        for value in normalized[:-1]:
+            used+=len(value);boundaries.append(audio['duration']*used/total)
+        words=[]
+    spans=list(zip([0.,*boundaries],[*boundaries,audio['duration']]))
+    result=[]
+    for start,end,text in zip((a for a,_ in spans),(b for _,b in spans),normalized):
+        selected=[]
+        if words:
+            selected=[{**word,'start':max(0.,word['start']-start),'end':min(end-start,word['end']-start)}
+                      for word in words if word['start']>=start-.0001 and word['end']<=end+.0001]
+            if ''.join(clean(word['text']) for word in selected)!=text:
+                selected=[]
+        result.append({'start':start,'end':end,'duration':end-start,'words':selected,
+                       'timing':'provider-word' if selected else 'estimated-group'})
+    return result

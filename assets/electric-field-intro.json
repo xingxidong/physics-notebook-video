@@ -10,8 +10,14 @@
       "page_id": "p01",
       "name_action_id": "field-name",
       "statement": "电场中某点的电场强度等于放在该点的正试探电荷所受电场力与其电荷量的比值。",
-      "statement_action_ids": ["field-definition-1", "field-definition-2", "field-definition-3"],
-      "formula_action_ids": ["field-definition"]
+      "statement_action_ids": [
+        "field-definition-1",
+        "field-definition-2",
+        "field-definition-3"
+      ],
+      "formula_action_ids": [
+        "field-definition"
+      ]
     }
   ],
   "pages": [
@@ -23,50 +29,246 @@
         {
           "id": "observe-first",
           "role": "observe",
-          "tts": "固定一个正的源电荷。在右边这个位置，放一个很小的正试探电荷。它受到向右的电场力。",
+          "tts": "红色的 Q 是源电荷。右边这个位置离它的距离是 r，放一个很小的正试探电荷 q 一。蓝箭头画它受到的电场力，向右，记作 F 一。",
           "actions": [
-            {"type": "charge", "center": [220, 207], "label": "Q", "color": "red", "size": 26},
-            {"type": "dashed_line", "from": [240, 207], "to": [370, 207], "color": "muted"},
-            {"type": "charge", "center": [390, 207], "label": "", "color": "blue", "size": 23},
-            {"type": "math", "latex": "q_1", "teaching_role": "context", "x": 377, "y": 235, "size": 26},
-            {"type": "arrow", "from": [409, 207], "to": [474, 207], "color": "blue", "at": {"word": "向右"}},
-            {"type": "math", "latex": "F_1", "teaching_role": "context", "x": 430, "y": 161, "size": 26, "color": "blue"}
-          ]
+            {
+              "type": "charge",
+              "center": [
+                220,
+                207
+              ],
+              "label": "Q",
+              "color": "red",
+              "size": 26,
+              "id": "source-charge-label"
+            },
+            {
+              "type": "dashed_line",
+              "from": [
+                240,
+                207
+              ],
+              "to": [
+                370,
+                207
+              ],
+              "color": "muted"
+            },
+            {
+              "type": "charge",
+              "center": [
+                390,
+                207
+              ],
+              "label": "",
+              "color": "blue",
+              "size": 23
+            },
+            {
+              "type": "math",
+              "latex": "q_1",
+              "teaching_role": "context",
+              "x": 377,
+              "y": 235,
+              "size": 26,
+              "id": "test-q1-label"
+            },
+            {
+              "type": "arrow",
+              "from": [
+                409,
+                207
+              ],
+              "to": [
+                474,
+                207
+              ],
+              "color": "blue",
+              "at": {
+                "word": "向右"
+              }
+            },
+            {
+              "type": "math",
+              "latex": "F_1",
+              "teaching_role": "context",
+              "x": 430,
+              "y": 161,
+              "size": 26,
+              "color": "blue",
+              "id": "test-f1-label"
+            },
+            {
+              "type": "math",
+              "id": "distance-r1",
+              "latex": "r",
+              "teaching_role": "context",
+              "x": 302,
+              "y": 218,
+              "size": 23
+            }
+          ],
+          "text": "红色的 Q 是源电荷。右边这个位置离它的距离是 r，放一个很小的正试探电荷 q 一。蓝箭头画它受到的电场力，向右，记作 F 一。"
         },
         {
           "id": "predict",
           "role": "key_turn",
-          "tts": "位置保持不变，把试探电荷的电荷量加倍。电场力会怎样变？",
+          "tts": "距离还是 r，把试探电荷量加倍。电场力会怎样变？",
           "pause": 2.5,
           "pause_reason": "think",
           "actions": [
-            {"type": "charge", "center": [220, 351], "label": "Q", "color": "red", "size": 26},
-            {"type": "dashed_line", "from": [240, 351], "to": [370, 351], "color": "muted"},
-            {"type": "charge", "center": [390, 351], "label": "", "color": "blue", "size": 23},
-            {"type": "math", "latex": "q_2=2q_1", "teaching_role": "context", "x": 377, "y": 379, "size": 26}
-          ]
+            {
+              "type": "charge",
+              "center": [
+                220,
+                351
+              ],
+              "label": "Q",
+              "color": "red",
+              "size": 26
+            },
+            {
+              "type": "dashed_line",
+              "from": [
+                240,
+                351
+              ],
+              "to": [
+                370,
+                351
+              ],
+              "color": "muted"
+            },
+            {
+              "type": "charge",
+              "center": [
+                390,
+                351
+              ],
+              "label": "",
+              "color": "blue",
+              "size": 23
+            },
+            {
+              "type": "math",
+              "latex": "q_2=2q_1",
+              "teaching_role": "context",
+              "x": 377,
+              "y": 379,
+              "size": 26,
+              "id": "test-q2-label"
+            },
+            {
+              "type": "math",
+              "id": "distance-r2",
+              "latex": "r",
+              "teaching_role": "context",
+              "x": 302,
+              "y": 362,
+              "size": 23
+            },
+            {
+              "type": "text",
+              "id": "field-intro-question",
+              "text": "试探电荷量加倍，电场力怎样变？",
+              "x": 665,
+              "y": 96,
+              "size": 23,
+              "color": "blue"
+            }
+          ],
+          "text": "距离还是 r，把试探电荷量加倍。电场力会怎样变？"
         },
         {
           "id": "compare",
           "role": "derive",
           "tts": "库仑定律里，源电荷和距离都一样，力的大小正好也加倍。把每次的力除以试探电荷的电荷量，就得到同一个比值。",
           "actions": [
-            {"type": "arrow", "from": [409, 351], "to": [539, 351], "color": "blue"},
-            {"type": "math", "id": "force-doubles", "latex": "F_2=2F_1", "x": 430, "y": 305, "size": 26, "color": "blue"},
-            {"type": "math", "id": "same-ratio", "latex": "\\frac{F_1}{q_1}=\\frac{F_2}{q_2}", "x": 665, "y": 133, "size": 30, "at": {"word": "把每次的力"}}
+            {
+              "type": "arrow",
+              "from": [
+                409,
+                351
+              ],
+              "to": [
+                539,
+                351
+              ],
+              "color": "blue"
+            },
+            {
+              "type": "math",
+              "id": "force-doubles",
+              "latex": "F_2=2F_1",
+              "x": 430,
+              "y": 305,
+              "size": 26,
+              "color": "blue"
+            },
+            {
+              "type": "math",
+              "id": "same-ratio",
+              "latex": "\\frac{F_1}{q_1}=\\frac{F_2}{q_2}",
+              "x": 665,
+              "y": 133,
+              "size": 30,
+              "at": {
+                "word": "把每次的力"
+              }
+            }
           ]
         },
         {
           "id": "define",
           "role": "conclusion",
-          "tts": "这个比值描述的就是这个位置的电场。我们把它叫作电场强度。取放在这一点的正试探电荷，用它所受的电场力除以电荷量，方向也就沿着这个力。",
+          "tts": "这个比值描述的是图上同一个位置的电场，叫电场强度。我们把定义写完整。取正试探电荷，它所受的力除以电荷量，就是这一点的电场强度，方向沿正试探电荷的受力方向。",
           "actions": [
-            {"type": "text", "id": "field-name", "text": "电场强度", "x": 665, "y": 235, "size": 29, "color": "blue", "write_seconds": 2.1},
-            {"type": "text", "id": "field-definition-1", "text": "电场中某点的电场强度等于", "x": 665, "y": 288, "size": 25},
-            {"type": "text", "id": "field-definition-2", "text": "放在该点的正试探电荷所受", "x": 665, "y": 327, "size": 25},
-            {"type": "text", "id": "field-definition-3", "text": "电场力与其电荷量的比值。", "x": 665, "y": 366, "size": 25},
-            {"type": "math", "id": "field-definition", "latex": "\\vec E=\\frac{\\vec F}{q}", "x": 665, "y": 435, "size": 38, "color": "blue", "write_seconds": 2.6}
-          ]
+            {
+              "type": "text",
+              "id": "field-name",
+              "text": "电场强度",
+              "x": 665,
+              "y": 235,
+              "size": 29,
+              "color": "blue",
+              "write_seconds": 2.1
+            },
+            {
+              "type": "text",
+              "id": "field-definition-1",
+              "text": "电场中某点的电场强度等于",
+              "x": 665,
+              "y": 288,
+              "size": 25
+            },
+            {
+              "type": "text",
+              "id": "field-definition-2",
+              "text": "放在该点的正试探电荷所受",
+              "x": 665,
+              "y": 327,
+              "size": 25
+            },
+            {
+              "type": "text",
+              "id": "field-definition-3",
+              "text": "电场力与其电荷量的比值。",
+              "x": 665,
+              "y": 366,
+              "size": 25
+            },
+            {
+              "type": "math",
+              "id": "field-definition",
+              "latex": "\\vec E=\\frac{\\vec F}{q}",
+              "x": 665,
+              "y": 435,
+              "size": 38,
+              "color": "blue",
+              "write_seconds": 2.6
+            }
+          ],
+          "text": "这个比值描述的是图上同一个位置的电场，叫电场强度。我们把定义写完整。取正试探电荷，它所受的力除以电荷量，就是这一点的电场强度，方向沿正试探电荷的受力方向。"
         },
         {
           "id": "apply-predict",
@@ -75,9 +277,45 @@
           "pause": 2.5,
           "pause_reason": "think",
           "actions": [
-            {"type": "charge", "center": [220, 530], "label": "Q", "color": "red", "size": 26},
-            {"type": "charge", "center": [390, 530], "label": "", "sign": -1, "color": "blue", "size": 23},
-            {"type": "math", "latex": "q<0", "teaching_role": "context", "x": 362, "y": 559, "size": 25}
+            {
+              "type": "charge",
+              "center": [
+                220,
+                530
+              ],
+              "label": "Q",
+              "color": "red",
+              "size": 26
+            },
+            {
+              "type": "charge",
+              "center": [
+                390,
+                530
+              ],
+              "label": "",
+              "sign": -1,
+              "color": "blue",
+              "size": 23
+            },
+            {
+              "type": "math",
+              "latex": "q<0",
+              "teaching_role": "context",
+              "x": 362,
+              "y": 559,
+              "size": 25,
+              "id": "negative-charge-label"
+            },
+            {
+              "type": "text",
+              "id": "field-apply-question",
+              "text": "换成负试探电荷，受力朝哪边？",
+              "x": 665,
+              "y": 502,
+              "size": 23,
+              "color": "blue"
+            }
           ]
         },
         {
@@ -85,20 +323,247 @@
           "role": "physical_meaning",
           "tts": "电场仍然向右。电场强度乘以负的电荷量，力的方向就反过来，指向左边的源电荷。",
           "actions": [
-            {"type": "arrow", "from": [409, 530], "to": [507, 530], "color": "blue"},
-            {"type": "math", "latex": "\\vec E", "teaching_role": "context", "x": 441, "y": 477, "size": 27, "color": "blue"},
-            {"type": "math", "id": "force-from-field", "latex": "\\vec F=q\\vec E", "x": 665, "y": 558, "size": 32, "color": "red"},
-            {"type": "arrow", "from": [372, 530], "to": [286, 530], "color": "red", "at": {"word": "反过来"}},
-            {"type": "math", "latex": "\\vec F", "teaching_role": "context", "x": 314, "y": 477, "size": 27, "color": "red"}
+            {
+              "type": "arrow",
+              "from": [
+                409,
+                530
+              ],
+              "to": [
+                507,
+                530
+              ],
+              "color": "blue"
+            },
+            {
+              "type": "math",
+              "latex": "\\vec E",
+              "teaching_role": "context",
+              "x": 441,
+              "y": 477,
+              "size": 27,
+              "color": "blue",
+              "id": "field-arrow-label"
+            },
+            {
+              "type": "math",
+              "id": "force-from-field",
+              "latex": "\\vec F=q\\vec E",
+              "x": 665,
+              "y": 558,
+              "size": 32,
+              "color": "red"
+            },
+            {
+              "type": "arrow",
+              "from": [
+                372,
+                530
+              ],
+              "to": [
+                286,
+                530
+              ],
+              "color": "red",
+              "at": {
+                "word": "反过来"
+              }
+            },
+            {
+              "type": "math",
+              "latex": "\\vec F",
+              "teaching_role": "context",
+              "x": 314,
+              "y": 477,
+              "size": 27,
+              "color": "red",
+              "id": "force-arrow-label"
+            }
           ]
         }
       ],
       "derivation_steps": [
-        {"id": "force-scale", "depends_on": [], "reason": "库仑定律给出同一位置处力的大小正比于正试探电荷的电荷量。", "cue_id": "compare", "action_id": "force-doubles", "result": "F_2=2F_1"},
-        {"id": "ratio", "depends_on": ["force-scale"], "reason": "将加倍的力除以加倍的电荷量，约去公因数二。", "cue_id": "compare", "action_id": "same-ratio", "result": "\\frac{F_1}{q_1}=\\frac{F_2}{q_2}"},
-        {"id": "definition", "depends_on": ["ratio"], "reason": "用正试探电荷所受电场力与其电荷量的比值定义该点的电场强度。", "cue_id": "define", "action_id": "field-definition", "result": "\\vec E=\\frac{\\vec F}{q}"},
-        {"id": "apply", "depends_on": ["definition"], "reason": "在同一位置，电荷量的符号决定电场力相对电场的方向。", "cue_id": "apply-answer", "action_id": "force-from-field", "result": "\\vec F=q\\vec E"}
+        {
+          "id": "force-scale",
+          "depends_on": [],
+          "reason": "库仑定律给出同一位置处力的大小正比于正试探电荷的电荷量。",
+          "cue_id": "compare",
+          "action_id": "force-doubles",
+          "result": "F_2=2F_1"
+        },
+        {
+          "id": "ratio",
+          "depends_on": [
+            "force-scale"
+          ],
+          "reason": "将加倍的力除以加倍的电荷量，约去公因数二。",
+          "cue_id": "compare",
+          "action_id": "same-ratio",
+          "result": "\\frac{F_1}{q_1}=\\frac{F_2}{q_2}"
+        },
+        {
+          "id": "definition",
+          "depends_on": [
+            "ratio"
+          ],
+          "reason": "用正试探电荷所受电场力与其电荷量的比值定义该点的电场强度。",
+          "cue_id": "define",
+          "action_id": "field-definition",
+          "result": "\\vec E=\\frac{\\vec F}{q}"
+        },
+        {
+          "id": "apply",
+          "depends_on": [
+            "definition"
+          ],
+          "reason": "在同一位置，电荷量的符号决定电场力相对电场的方向。",
+          "cue_id": "apply-answer",
+          "action_id": "force-from-field",
+          "result": "\\vec F=q\\vec E"
+        }
       ]
     }
-  ]
+  ],
+  "concept_units": [
+    {
+      "id": "electric-field-intro",
+      "focus": "同一位置的电场强度等于正试探电荷所受电场力与其电荷量的比值",
+      "introduce_cue": "observe-first",
+      "explain_cue": "compare",
+      "emphasize_cue": "define",
+      "apply_cue": "apply-predict",
+      "knowledge_point_ids": [
+        "electric-field"
+      ],
+      "questions": [
+        {
+          "cue": "predict",
+          "answer_cue": "compare",
+          "text": "试探电荷量加倍，电场力怎样变？",
+          "action_ids": [
+            "field-intro-question"
+          ]
+        },
+        {
+          "cue": "apply-predict",
+          "answer_cue": "apply-answer",
+          "text": "换成负试探电荷，受力朝哪边？",
+          "action_ids": [
+            "field-apply-question"
+          ]
+        }
+      ],
+      "scene_labels": [
+        {
+          "page_id": "p01",
+          "action_id": "source-charge-label",
+          "first_use_cue": "observe-first"
+        },
+        {
+          "page_id": "p01",
+          "action_id": "test-q1-label",
+          "first_use_cue": "observe-first"
+        },
+        {
+          "page_id": "p01",
+          "action_id": "test-f1-label",
+          "first_use_cue": "observe-first"
+        },
+        {
+          "page_id": "p01",
+          "action_id": "distance-r1",
+          "first_use_cue": "observe-first"
+        },
+        {
+          "page_id": "p01",
+          "action_id": "distance-r2",
+          "first_use_cue": "predict"
+        },
+        {
+          "page_id": "p01",
+          "action_id": "test-q2-label",
+          "first_use_cue": "predict"
+        },
+        {
+          "page_id": "p01",
+          "action_id": "force-doubles",
+          "first_use_cue": "compare"
+        },
+        {
+          "page_id": "p01",
+          "action_id": "negative-charge-label",
+          "first_use_cue": "apply-predict"
+        },
+        {
+          "page_id": "p01",
+          "action_id": "field-arrow-label",
+          "first_use_cue": "apply-answer"
+        },
+        {
+          "page_id": "p01",
+          "action_id": "force-arrow-label",
+          "first_use_cue": "apply-answer"
+        }
+      ]
+    }
+  ],
+  "course_outline": {
+    "title": "电场强度的定义",
+    "audience": "已学过库仑定律和力的方向的学生",
+    "main_question": "怎样用试探电荷描述某一点的电场？",
+    "target_minutes": 1.25,
+    "prior_knowledge": [
+      {
+        "id": "coulomb-law",
+        "description": "距离和源电荷固定时，电场力随试探电荷量改变。"
+      }
+    ],
+    "objectives": [
+      {
+        "id": "field-direction",
+        "outcome": "能定义电场强度，并据电荷正负判断受力方向。"
+      }
+    ],
+    "units": [
+      {
+        "id": "electric-field-intro",
+        "focus": "同一位置的电场强度等于正试探电荷所受电场力与其电荷量的比值",
+        "needs": [
+          "coulomb-law"
+        ],
+        "minutes": 1.25,
+        "objective_ids": [
+          "field-direction"
+        ],
+        "opening": "对比固定位置先后放入的两个正试探电荷。",
+        "intro_question": "试探电荷量加倍，电场力怎样变？",
+        "diagram": {
+          "scene": "同一源电荷与观察位置，比较两次受力，再换负试探电荷。",
+          "labels": [
+            "源电荷 Q",
+            "到观察点的距离 r",
+            "试探电荷 q_1 和 q_2",
+            "受力箭头 F_1 和 F_2",
+            "电场方向 E"
+          ]
+        },
+        "reasoning": "保持距离和源电荷固定，用库仑定律说明受力与电荷量同比增加。",
+        "board_statement": "电场中某点的电场强度等于放在该点的正试探电荷所受电场力与其电荷量的比值。",
+        "application": {
+          "question": "换成负试探电荷，受力朝哪边？",
+          "expected_answer": "电场仍向右，负电荷所受电场力向左。"
+        },
+        "handoff": "回到开场的观察位置，用电场方向和电荷正负解释受力。"
+      }
+    ],
+    "exit_checks": [
+      {
+        "objective_ids": [
+          "field-direction"
+        ],
+        "question": "换成负试探电荷，受力朝哪边？",
+        "expected_answer": "负电荷所受电场力与电场方向相反。"
+      }
+    ]
+  }
 }

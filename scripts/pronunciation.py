@@ -3,6 +3,7 @@ import re
 
 
 PHYSICS_PINYIN = {
+    '长度': 'chang2 du4',
     '相位': 'xiang4 wei4',
     '相角': 'xiang4 jiao3',
     '同相': 'tong2 xiang4',

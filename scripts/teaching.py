@@ -104,7 +104,54 @@ def audit(project,lesson,pages):
     from knowledge_board import inspect_sources
     knowledge_notes,knowledge_errors=inspect_sources(lesson,pages)
     errors.extend(knowledge_errors)
+    from concept_units import check as check_concept_units
+    concept_order,concept_errors=check_concept_units(lesson,pages)
+    errors.extend(concept_errors)
+    from course_outline import check_lesson as check_outline
+    outline_report,outline_errors=check_outline(project,lesson,pages)
+    errors.extend(outline_errors)
+    from lesson_arc import check as check_arc
+    arc_report=check_arc(lesson,pages)
+    errors.extend(arc_report['errors'])
+    # A lesson needs a deliberate ending, not merely the last line of a derivation.
+    # The source records what the recap returns to and which on-screen work stays
+    # visible while it is spoken.  The board checker verifies the latter on the
+    # measured timeline.
+    # Legacy course sources remain readable.  Courses made with the current
+    # workflow set review_required during init, and closure_required is an
+    # explicit opt-in for an older source being upgraded.
+    if (required or concept) and (lesson.get('review_required') or lesson.get('closure_required') or 'closure' in lesson):
+        closure=lesson.get('closure')
+        if not isinstance(closure,dict):
+            error('closure-required','补充 closure：在最后保留一段总结，回扣本课模型或问题、关键依据和结果，并写出总结时可见的板书。')
+        else:
+            recap=closure.get('recap_cues')
+            visible=closure.get('visible_action_ids')
+            points=closure.get('points')
+            known_cues=[cue['id'] for page in pages for cue in page['cues']]
+            if not isinstance(recap,list) or not recap or any(not isinstance(item,str) or item not in known_cues for item in recap):
+                error('closure-cues','closure.recap_cues 须列出实际存在的总结 cue。')
+            else:
+                ordered=[cue['id'] for page in pages for cue in page['cues']]
+                positions=[ordered.index(item) for item in recap]
+                if positions!=sorted(positions) or positions[-1]!=len(ordered)-1:
+                    error('closure-at-end','总结 cue 按课程顺序列出，并以整课最后一个 cue 自然收束。')
+                for cue_id in recap:
+                    cue=next(cue for page in pages for cue in page['cues'] if cue['id']==cue_id)
+                    if cue.get('role')!='conclusion':
+                        error('closure-role',f'{cue_id}: 总结段使用 role:"conclusion"，以便配音按收束语气处理。')
+            if not isinstance(visible,list) or not visible or any(not isinstance(item,str) or not item for item in visible):
+                error('closure-visible','closure.visible_action_ids 须列出总结时学生仍能看到的题图、关键式或结论板书。')
+            if not isinstance(points,list):
+                error('closure-points','closure.points 须写出本课总结要回扣的三个教学点。')
+            else:
+                kinds={item.get('kind') for item in points if isinstance(item,dict) and isinstance(item.get('text'),str) and item['text'].strip()}
+                required_kinds={'model','key_step','result'} if required else {'opening_question','conclusion','application'}
+                missing=required_kinds-kinds
+                if missing:
+                    labels='、'.join(sorted(missing))
+                    error('closure-content',f'closure.points 缺少 {labels}。总结要回到具体模型或开场问题，说清关键依据，再落到结论或用法。')
     status='attention' if errors or warnings else 'pass' if required or concept or motion_count or step_count else 'not_applicable'
     return {'kind':lesson.get('kind'),'status':status,'required':required or concept,'source_intake_required':required,'structural_checks_only':True,'physics_correctness':'not_evaluated_by_this_checker','coverage':coverage,
             'recognized_problem_pages':sum(bool(p.get('problem_card')) for p in pages),'problem_checks':groups,
-            'motion_scenes':motion_count,'derivation_steps':step_count,'knowledge_notes':knowledge_notes,'errors':errors,'warnings':warnings}
+            'motion_scenes':motion_count,'derivation_steps':step_count,'knowledge_notes':knowledge_notes,'concept_sequence':concept_order,'course_outline':outline_report,'lesson_arc':arc_report,'errors':errors,'warnings':warnings}

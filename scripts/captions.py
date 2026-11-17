@@ -57,8 +57,17 @@ def chunks(cue,base,limit=28):
     words=cue.get('words',[]);source=cue['tts'];clean=lambda s:''.join(c.lower() for c in s if c.isalnum())
     indices=[i for i,c in enumerate(source) if c.isalnum()];joined=''.join(clean(w['text']) for w in words)
     if not words:
-        pieces=[source[i:i+limit] for i in range(0,len(source),limit)]
-        return [(base+(cue['end']-cue['start'])*i/len(pieces),base+(cue['end']-cue['start'])*(i+1)/len(pieces),s) for i,s in enumerate(pieces)]
+        boundaries=[match.end() for match in re.finditer(r'[，。！？；：]+',source)]
+        duration=cue['end']-cue['start']
+        events=[]
+        start=0
+        while start<len(source):
+            cap=min(start+limit,len(source))
+            choices=[end for end in boundaries if start+limit//2<=end<=cap]
+            end=choices[-1] if cap<len(source) and choices else cap
+            events.append((base+duration*start/len(source),base+duration*end/len(source),source[start:end].strip()))
+            start=end
+        return events
     exact=joined==clean(source)
     if exact and indices:
         # Prefer spoken clause boundaries so a caption does not start halfway through a phrase.
