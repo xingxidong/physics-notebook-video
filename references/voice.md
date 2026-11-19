@@ -59,6 +59,12 @@ v0.9 新课使用 `speech.delivery_profile:"classroom"` 与本地 `trim_edges:tr
 
 口播在语音计划中另存 `tts`，公式用 `latex`，原书面表达放在 lesson cue 的 `text`。试听关注多音字、数字、字母串、希腊字母、单位和分式。
 
+### 变量、字母和单位
+
+板书写“横坐标记作 x”，声音里的 x 读英语字母名 /ɛks/。大小写保留在课文和字幕中。变量、由多个点命名的几何对象、下标和单位先分清，再用带上下文的真实课文试听。
+
+`delivery-report.json` 的 `pronunciation.cues` 列出待试听的字母和术语。成片的 `voice-report.json` 按句给出对应时间。重点回听字母首次出现、推导中连续出现的变量和曾经读错的字母。单个字母或中文词听着正常后，再听整句的连读与停顿。
+
 ### 物理术语和多音字
 
 MiniMax 配音自动查物理术语词表。读音按整词配置，例如“相位”读 `xiang4 wei4`，“相长干涉”读 `xiang1 zhang3 gan1 she4`。原句仍用汉字。程序把匹配到的读音另传给 MiniMax 的 [`pronunciation_dict.tone`](https://platform.minimax.io/docs/api-reference/speech-t2a-http)，所以字幕、讲义和板书沿用原字。
@@ -143,7 +149,7 @@ python3 SKILL/scripts/voice_clone.py --project PROJECT --apply-voice-id PhysicsT
 python3 SKILL/scripts/course.py voice-check PROJECT --strict
 ```
 
-审查成片时，按报告定位“相位”“相乘”“感应电动势”等词，听实际声调和术语是否读完整。`pending_listening` 表示待试听。需要单听一段时运行 `python3 SKILL/scripts/course.py voice-check PROJECT --listen CUE_ID`，从本地配音裁取该段。用 `minimax_pronunciation` 修正读音或改正文稿后，再听新生成的对应段落。光学术语“散射”的参考读音可查[《重编国语辞典修订本》](https://dict.revised.moe.edu.tw/dictView.jsp?ID=144947&la=0&powerMode=0)。
+审查成片时，按报告定位“长度”“伸长”“相位”“相乘”“感应电动势”等词，听实际声调和术语是否读完整。按词和上下文分别核对“长度”的 cháng、“相位”的 xiàng 和“相乘”的 xiāng。词表之外出现的新术语，也要回听首次出现与关键结论，确认稳定后才加入共用词表。`pending_listening` 表示待试听。运行 `python3 SKILL/scripts/course.py voice-check PROJECT --listen CUE_ID --context` 可裁取本段和相邻句。修正词表或口播后，重合成并回听这些片段。光学术语“散射”的参考读音可查[《重编国语辞典修订本》](https://dict.revised.moe.edu.tw/dictView.jsp?ID=144947&la=0&powerMode=0)。
 
 ## 时间戳与成本
 
@@ -156,3 +162,13 @@ python3 SKILL/scripts/course.py voice-check PROJECT --strict
 2026-11-09 更新：MiniMax 已通过用户账户实际调用，25 秒温润男声试听已被用户接受。后续本系列采用 `speech-2.8-hd`、`Chinese (Mandarin)_Gentleman`；本课 `.env` 使用 `MINIMAX_API_HOST=https://api.minimax.cn`。电偶极层课程已取得全部 18 段音频和 1342 条词级时间数据。GLM、豆包仍保持未实测状态。
 
 参考：[edulab共享TTS](https://github.com/wy51ai/edulab/blob/805fdc5dd6bdf942290a7791924bf0ee08f26632/skills/edu-math-video/shared/tts.py)、[GLM-TTS技术报告](https://arxiv.org/abs/2512.14291)、[MiniMax官方API控制台](https://solutions.minimax.cn/debug/speech)、[火山引擎官方示例](https://github.com/bytedance/agentkit-samples/blob/main/skills/byted-text-to-speech/scripts/text_to_speech.py)。
+
+## 变量和物理术语怎样发音
+
+“用 x 表示压缩量”有两件事要讲给学生。先读出字母 x，再告诉学生它对应哪段长度。公式里的 x、y、F、m 都按字母名念；下标和平方另读。课文中写“力”“半径”“质量”就照原文念。“线段 AB”“三角形 ABC”会按点名逐个读出字母。组合单位宜在口播中写全，例如“米每秒”。函数名与英文单词保留完整。
+
+技能在中英文混合口播里用英文 `ex` 提示 x 的字母音 /ɛks/。y 的目标音为 /waɪ/。中文音色对英文切换不稳定时，可以在该句用 `"symbol_readings":{"x":"艾克斯"}` 试读。这个写法是中文近音，交付前用最终音色听完整句子。旧版中用量名替代字母的配置在重新编译时自动恢复为字母名。字幕和板书保留源字符。
+
+中文按完整术语选音。例如“长度”的长读 cháng，“增长”的长读 zhǎng，“相位”的相读 xiàng，“相乘”的相读 xiāng。MiniMax 按词接收带声调的拼音。本地音色走 `user` 后端时，先运行 `python3 SKILL/scripts/delivery.py PROJECT`，从 `delivery-report.json` 的 `tts_inputs` 取每句。内含可直接用于合成的 `text`，以及字母目标音 `letters` 和词级拼音 `pinyin`。只接受纯文本的本地引擎会在输入中看到“常度”“向位”等同音提示。支持原文与发音标注分离的后端可取 `script` 和对应标注。配音专用写法留在音频输入层，教案、字幕与板书显示原文。若某个本地音色还会错读其他词，在 `speech.plain_pronunciation` 保存试听过的同音提示，例如 `{"重合":"崇合"}`。该音色的跨课默认词表可保存在本机 `runtime-local.json` 的 `speech_defaults.user.plain_pronunciation`，新建本地配音课时会自动载入。句段同名字段可覆盖词条，值设为 `null` 可在该句恢复原词。
+
+试听时连听“令 x 表示弹簧的压缩量”“把 x 的平方代进去”“长度增长了多少”“两列波的相位相同”。用 `course.py voice-check PROJECT --term-reel` 从当前音轨截取实测片段，按索引复听对应原句。发现字母混读或声调读错，修正输入后重新合成并回听该句所在的配音组。

@@ -3,7 +3,7 @@ name: physics-notebook-video
 description: 将物理题或教材制作为电子笔记本式逐笔板书视频。习题课从题面、情景动画和配图推导讲到结果；新授课从现象和对照讲到完整定义、定律与应用。支持中文配音、可编辑 LaTeX 和 TikZ、Manim、Motion Canvas 及本地批量导出。
 metadata:
   author: xingxidong
-  version: "0.17.0"
+  version: "0.18.1"
   standard: agentskills.io
   icon: assets/icon.png
   requirements: Python 3.11+, FFmpeg, Chinese font; XeLaTeX/xeCJK and PyMuPDF for problem text; Node.js 20+/Chrome for Motion Canvas; TeX/dvisvgm for Manim
@@ -29,7 +29,9 @@ metadata:
 
 ## 人审教案与学生讲义
 
-备课先按[课堂时长编排](references/duration-planning.md)判断讲多久，适用于习题课和新授课。用学生基础、解题或知识主线、难点、落笔与必要观察分配时间，先报告建议范围和各段理由。用户给过时长则保留设定；保留必讲步骤，通过取舍例题、改编或拆课调整。教案同时给出完整口播时间轴的估算，成片记录实测时长。
+新授课与习题课的学生讲义均按[讲义编写与排版](references/handouts.md)制作：使用 LaTeX 排版、TikZ 配图。交付编译后的 PDF、LaTeX 主文件及所引用的 TikZ 源码。两类讲义在提交审阅和交付前都做最后一轮语言复读，尤其重读最后一节和末段。去掉“本题的主线”等编排用语，用具体物理结论、图中关系或结果的实际含义收尾。检查实际 PDF 的图文衔接、重点层次和分页。
+
+备课先按[课堂时长编排](references/duration-planning.md)判断讲多久，适用于习题课和新授课。用学生基础、解题或知识主线、难点、落笔与必要观察分配时间，先报告建议范围和各段理由。用户要求长讲时，在教案上列出要加的先修知识、应展开的推导、读图或模型对照，以及相应的教学目的。全课保持自然语速和正常书写速度，禁止用整体降速、延长落笔或增加空白凑时长。新增内容仍不足以支撑目标时，给出按当前内容估算的实际时长。成片记录实测时长。加长版在对应教学段填写 `extension.outcome` 和 `extension.used_in`，教案分别列出原有内容和新增内容的预计用时。有原版正式时间轴时，用 `duration_plan.reference_timeline` 对比两版相同句子和相同笔迹的用时。
 
 新项目设置 `review_required:true`。先用[人审与交付流程](references/review-workflow.md)给用户看完整教案、逐页板书和动画预览。教案写出重点、难点及讲法、应用检查、完整口播与片头。收到对当前版本的明确确认后记录反馈，再合成正式配音和视频。改动讲稿、板书、动画源、片头或已提交的讲义时重新出教案。交付包含视频和学生讲义。
 
@@ -62,11 +64,11 @@ python3 SKILL/scripts/course.py build PROJECT --draft
 
 在教案里设计独立的总结段，不把最后一个推导句当成结尾。课程源填写 `closure`，列出总结时仍可见的题图、关键式或结论板书，以及实际的总结 cue。习题课回扣模型、关键一步和最终所求；新授课回到开场问题、完整结论和可用的情境。总结 cue 排在整课末尾，沿用正课图和结论板书，等最后一句自然收住再结束。格式见[课程收束](references/lesson-format.md#课程收束)。
 
-教案包含口播检查原句。正式配音前运行 `scripts/delivery.py PROJECT`，逐项读懂提示并修改实际影响理解的句子。文字保留正常术语，读音在语音层按词覆盖。沿用用户已选的音色和供应商，配置从本地读取。配音后按 `voice-report.json` 的试听清单连听开场、难点、结论、多音字及疑似卡壳；用 `course.py voice-check PROJECT --listen CUE_ID --context` 带前后句定位。连读关系或断句不顺先改口播再配该段；保留自然停顿并复用其余配音。音色、语调和重音由实际试听判断。
+教案包含口播检查原句。正式配音前运行 `scripts/delivery.py PROJECT`，核对变量、单位、字母与多音字的预期读法。文字保留正常术语，读音在语音层按词覆盖，先试听本课音色下的代表句。配音后按 `voice-report.json` 的试听清单连听开场、难点、结论、字母和中文多音字，核实实际声音与自然书写节奏。用 `course.py voice-check PROJECT --listen CUE_ID --context` 带前后句定位。读音、连读或断句需要调整时，只重配并复听受影响的段落。讲稿中的字母按字母名朗读。拉丁字母 x、X 都读 /ɛks/，板书、字幕、教案保留原符号。量名写入另外的解释，例如“用 x 表示压缩量”。首次出现、连读多个符号及含下标的公式都要用最终音色试听。中文多音字按完整词匹配读音并检查冲突。正式检查从本课实际音轨截取字母和多音词的试听合辑。读音修正方法见[教师口播与配音](references/voice.md)。
 
 ## 渲染与交付
 
-成片后运行 `course.py quality-check PROJECT --stage final`，修复并回听相关片段。自动报告保留尚需观看与试听的事项，交付时说明实际完成的检查及待处理项。
+成片后运行 `course.py quality-check PROJECT --stage final`，交付烧录字幕版时用 `--video-file video-captioned.mp4` 指向交付件。以报告中的原尺寸公式帧、落笔帧和动画时间点复看小字、细线和运动轮廓，分别记录画面码率与音频码率。修复并回听相关片段。自动报告保留尚需观看与试听的事项，交付时说明实际完成的检查及待处理项。
 
 ```sh
 python3 SKILL/scripts/course.py build PROJECT --video --renderer motion-canvas --width 1920

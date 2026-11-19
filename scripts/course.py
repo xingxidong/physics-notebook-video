@@ -195,7 +195,7 @@ def anchor(at,cue,audio):
             used+=length
     return locate(text)/max(1,len(text))*audio['duration']+offset,'estimated-word'
 
-def schedule(cue,audio):
+def schedule(cue,audio,*,classroom=False):
     blocks=[block for block in cue['blocks'] if not block.get('prewritten')];n=len(blocks)
     if not n:return []
     weights=[sum(max(8,sum(math.dist(a,b) for a,b in zip(e['points'],e['points'][1:])))**.7+9 for e in b['strokes']) or 1 for b in blocks]
@@ -209,16 +209,24 @@ def schedule(cue,audio):
         t=begin
         for j in range(left,right):
             span=(end-begin)*weights[j]/sum(weights[left:right]);block=blocks[j];strokes=block['strokes']
-            writing_span=min(span,block['write_seconds']) if block.get('write_seconds') is not None else span
             sw=[max(8,sum(math.dist(a,b) for a,b in zip(e['points'],e['points'][1:])))**.7+9 for e in strokes];cursor=t
+            writing_span=span
+            if block.get('write_seconds') is not None:
+                writing_span=min(writing_span,block['write_seconds'])
+            if classroom:
+                # Speech can continue over a finished line. Size the pen action
+                # by the amount of ink at the notebook's reference resolution.
+                writing_span=min(writing_span,max(.18,sum(sw)/240))
             for e,w in zip(strokes,sw):
                 dt=writing_span*w/sum(sw);event=copy.deepcopy(e);event.update(start=cursor,end=cursor+dt*.88,cue=cue['id'],action=j,board_id=block.get('id'),board_group=block.get('board_group'),anchor_quality=qualities.get(j,'sequence'),component_id=block.get('component_id'),component_name=block.get('component_name'),component_part=block.get('component_part'));events.append(event);cursor+=dt
-            t+=span
+            t += writing_span if classroom else span
     return events
 
 def prepare(project,lesson,pages,args):
     from voice import synth,DEFAULTS,split_group
+    from pronunciation import display_words
     cfg=copy.deepcopy(lesson.get('speech',{'backend':'glm'}))
+    classroom=lesson.get('_speech_plan_meta',{}).get('delivery_profile')=='classroom'
     if args.backend:
         if args.backend!=cfg.get('backend'):cfg['voice']=DEFAULTS[args.backend]
         cfg['backend']=args.backend
@@ -245,8 +253,9 @@ def prepare(project,lesson,pages,args):
         if args.draft:
             for cue in p['cues']:
                 pace=pacing.get(p['id'])
-                seconds=(sum(ch.isalnum() for ch in cue['tts'])/(pace*cue.get('speed',1))
-                         if pace else len(cue['tts'])/4.2)
+                spoken = cue.get('spoken_tts', cue['tts'])
+                seconds=(sum(ch.isalnum() for ch in spoken)/(pace*cue.get('speed',1))
+                         if pace else len(spoken)/4.2)
                 records.append((cue,{'duration':max(1.2,seconds),'words':[],'file':None},None,
                                 cue['pause_before'],cue['pause'],None))
         else:
@@ -256,27 +265,31 @@ def prepare(project,lesson,pages,args):
                 members=[cue];index+=1
                 if group:
                     while index<len(p['cues']) and p['cues'][index].get('speech_group')==group:
-                        members.append(p['cues'][index]);index+=1
+                        following = p['cues'][index]
+                        if cfg.get('backend') == 'minimax' and following.get('minimax_pronunciation') != cue.get('minimax_pronunciation'):
+                            break
+                        members.append(following);index+=1
                     if cfg.get('backend')=='user':
                         raise ValueError(f'{cue["id"]}: speech_group is unavailable with user-supplied audio files')
-                    grouped={**cue,'id':'speech-group-'+group,'tts':' '.join(member['tts'] for member in members)}
+                    spoken_texts = [member.get('spoken_tts', member['tts']) for member in members]
+                    grouped={**cue,'id':'speech-group-'+group,'tts':' '.join(spoken_texts)}
                     audio=synth(project,cfg,grouped);voice_hits+=bool(audio['cache_hit']);voice_new+=not audio['cache_hit']
                     with wave.open(audio['file']) as w:clip=w.readframes(w.getnframes())
                     edge_report=None
                     if cfg.get('trim_edges',False):
                         from audio_edges import trim
                         clip,audio,edge_report=trim(clip,audio,SR,cfg['trim_edges'])
-                    pieces=split_group(audio,[member['tts'] for member in members])
+                    pieces=split_group(audio,spoken_texts)
                     for member,piece_index,piece in zip(members,range(len(members)),pieces):
                         start=round(piece['start']*SR)*2;stop=round(piece['end']*SR)*2
                         segment={'duration':piece['duration'],'words':piece['words'],'file':audio['file'],
-                                 'group':group,'timing':piece['timing']}
+                                 'group':group,'timing':piece['timing'],'signature':audio.get('signature',{})}
                         records.append((member,segment,clip[start:stop],
                                         member['pause_before'] if piece_index==0 else 0,
                                         member['pause'] if piece_index==len(members)-1 else 0,
                                         edge_report if piece_index==0 else None))
                     continue
-                audio=synth(project,cfg,cue);voice_hits+=bool(audio['cache_hit']);voice_new+=not audio['cache_hit']
+                audio=synth(project,cfg,{**cue,'tts':cue.get('spoken_tts',cue['tts'])});voice_hits+=bool(audio['cache_hit']);voice_new+=not audio['cache_hit']
                 with wave.open(audio['file']) as w:clip=w.readframes(w.getnframes())
                 edge_report=None
                 if cfg.get('trim_edges',False):
@@ -287,8 +300,10 @@ def prepare(project,lesson,pages,args):
             pcm.extend(b'\0'*round(pause_before*SR)*2)
             # Quantise start to exact audio samples for every playback/export path.
             local=len(pcm)/(2*SR)
-            for e in schedule(cue,audio):e.update(start=e['start']+local,end=e['end']+local);events.append(e)
-            delivery={k:cue[k] for k in ('role','speed','pitch','volume','emotion','emphasis','pause_reason','speech_group') if k in cue}
+            if cue.get('symbol_readings'):
+                audio = {**audio, 'words': display_words(cue['tts'], cue['symbol_readings'], audio.get('words', []))}
+            for e in schedule(cue,audio,classroom=classroom):e.update(start=e['start']+local,end=e['end']+local);events.append(e)
+            delivery={k:cue[k] for k in ('role','speed','pitch','volume','emotion','emphasis','pause_reason','speech_group','spoken_tts','symbol_readings') if k in cue}
             cues.append({'id':cue['id'],'text':cue['text'],'tts':cue['tts'],'start':local,'end':local+audio['duration'],'pause_before':pause_before,'pause':pause_after,'timing':'estimated' if args.draft else 'measured','words':audio.get('words',[]),**delivery})
             tone_entries=audio.get('signature',{}).get('pronunciation_dict',{}).get('tone',[])
             if tone_entries:cues[-1]['minimax_tone_entries']=tone_entries
@@ -481,7 +496,7 @@ def run_build(project,args):
         from lesson_review import current_review
         data['review_sha256']=current_review(project,lesson)['fingerprint']
     with wave.open(str(project/'narration.wav'),'wb') as w:w.setnchannels(1);w.setsampwidth(2);w.setframerate(SR);w.writeframes(pcm)
-    prosody={'version':1,'source':data['speech_plan_source'],'speech':data['speech'],'cues':[{k:c[k] for k in ('id','role','tts','speed','pitch','volume','emotion','emphasis','pause_before','pause') if k in c} for p in data['pages'] for c in p['cues']]}
+    prosody={'version':1,'source':data['speech_plan_source'],'speech':data['speech'],'cues':[{k:c[k] for k in ('id','role','tts','spoken_tts','speed','pitch','volume','emotion','emphasis','pause_before','pause') if k in c} for p in data['pages'] for c in p['cues']]}
     write_json(project/'prosody.json',prosody)
     if not args.draft:
         from voice import master
@@ -523,6 +538,7 @@ def main():
     quality=subs.add_parser('quality-check',help='Check current lesson sources, pacing, layout and delivery with explicit review coverage')
     quality.add_argument('project');quality.add_argument('--stage',choices=('plan','final'),default='plan')
     quality.add_argument('--strict',action='store_true')
+    quality.add_argument('--video-file',help='Final MP4 to inspect (relative to project, or absolute)')
     approval=subs.add_parser('approve-plan',help='Record the reviewer’s approval of the current plan')
     approval.add_argument('project');approval.add_argument('--feedback',required=True)
     layout_check=subs.add_parser('layout-check',help='Audit semantic zones, overlaps and one-page problem policy');layout_check.add_argument('project');layout_check.add_argument('--strict',action='store_true')
@@ -530,6 +546,7 @@ def main():
     teaching_check=subs.add_parser('teaching-check',help='Check the selected lesson workflow, including visible derivations and concept notes');teaching_check.add_argument('project')
     voice_check=subs.add_parser('voice-check',help='Audit an existing narration.wav and timeline.json');voice_check.add_argument('project');voice_check.add_argument('--strict',action='store_true')
     voice_check.add_argument('--listen',metavar='CUE_ID',help='Extract a listening clip from the existing narration')
+    voice_check.add_argument('--term-reel',action='store_true',help='Export a WAV and index of letters and polyphonic terms from measured audio')
     voice_check.add_argument('--context',action='store_true',help='Include neighboring cues when using --listen')
     batch=subs.add_parser('batch');batch.add_argument('manifest');batch.add_argument('--jobs',type=int,choices=[1,2,3,4],default=2);batch.add_argument('--draft',action='store_true');batch.add_argument('--video',action='store_true');batch.add_argument('--backend',choices=['glm','doubao','minimax','edge','user']);batch.add_argument('--voice');batch.add_argument('--fps',type=int,choices=[12,24,30],default=24);batch.add_argument('--width',type=int,choices=[1280,1920],default=1280)
     subs.add_parser('doctor')
@@ -544,7 +561,9 @@ def main():
     args=parser.parse_args()
     if args.command=='quality-check':
         from lesson_quality import run
-        result=run(args.project,args.stage)
+        if args.video_file and args.stage != 'final':
+            parser.error('--video-file requires --stage final')
+        result=run(args.project,args.stage,video_file=args.video_file)
         print(json.dumps(result,ensure_ascii=False))
         if result['status']=='blocked' or (args.strict and result['findings']):sys.exit(1)
         return
@@ -590,8 +609,9 @@ def main():
         from engine_render import doctor
         print(json.dumps({'python':sys.executable,'Pillow':bool(importlib.util.find_spec('PIL')),'PyMuPDF':bool(importlib.util.find_spec('fitz')),'xelatex':shutil.which('xelatex') or ('/Library/TeX/texbin/xelatex' if Path('/Library/TeX/texbin/xelatex').exists() else None),'edge_tts':bool(importlib.util.find_spec('edge_tts')),'ffmpeg':shutil.which('ffmpeg'),'ffprobe':shutil.which('ffprobe'),'animation':doctor()},ensure_ascii=False));return
     if args.command=='voice-check':
-        from voice_quality import audit, export_listening_clip, strict_findings
+        from voice_quality import audit, export_listening_clip, export_term_reel, strict_findings
         report=audit(args.project)
+        if args.term_reel:report['term_reel']=export_term_reel(Path(args.project),report['terminology']['items'])
         if args.listen:report['listening_clip']=export_listening_clip(args.project,args.listen,args.context)
         print(json.dumps(report,ensure_ascii=False))
         if args.strict and strict_findings(report):sys.exit(1)
@@ -717,6 +737,9 @@ def main():
         local_speech=(local_config().get('speech_defaults') or {}).get(args.backend,{})
         data['speech']={'backend':args.backend,'voice':local_speech.get('voice',DEFAULTS[args.backend]),'speed':1.0,'audio_mastering':True,'delivery_profile':'classroom','trim_edges':True}
         if local_speech.get('model'):data['speech']['model']=local_speech['model']
+        for field in ('plain_pronunciation', 'minimax_pronunciation'):
+            if field in local_speech:
+                data['speech'][field] = local_speech[field]
         if example=='dimension-board':
             shutil.copy2(ROOT/'assets/examples/dimension-board/讲义.md',p/'讲义.md')
         if example=='pursuit':

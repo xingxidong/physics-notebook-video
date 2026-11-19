@@ -8,11 +8,6 @@ import argparse,json,re
 from pathlib import Path
 
 DEFAULT_LEXICON={
-    'E':'电场强度','F':'力','Q':'电荷量Q','q':'电荷量q','R':'半径R',
-    'r':'距离r','S':'面积S','t':'时间t','v':'速度v','a':'加速度a',
-    'g':'重力加速度g','m':'质量m','h':'高度h','x':'x','y':'y','d':'d',
-    'ε':'真空介电常数','θ':'角度西塔','φ':'角度斐','π':'圆周率',
-    'ρ':'电荷密度柔','λ':'线电荷密度拉姆达','σ':'面电荷密度西格玛',
     '∫':'积分','∮':'闭合积分','·':'乘','×':'乘','→':'趋向','∞':'无穷大',
 }
 OPERATORS={'=':'等于','+':'加','-':'减','/':'除以','<':'小于','>':'大于','≤':'小于等于','≥':'大于等于','≈':'约等于'}
@@ -32,6 +27,9 @@ def _complex(node):
     return isinstance(node,list) and node and (node[0] in ('frac','row') and len(_plain(node))>5)
 
 def _speak_token(token,lexicon):
+    from pronunciation import LETTER_IPA, GREEK
+    if token.upper() in LETTER_IPA or token.lower() in GREEK:
+        return token
     if token in lexicon:return lexicon[token]
     if token in OPERATORS:return OPERATORS[token]
     if token.isdigit():

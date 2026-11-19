@@ -50,19 +50,26 @@ def estimate(source):
             raise ValueError(f'{title} 的 pages 须为页 ID 列表。')
         if len(set(page_ids)) != len(page_ids) or seen.intersection(page_ids):
             raise ValueError(f'{title} 重复分配了板书页。')
+        extension = section.get('extension')
+        if extension is not None:
+            if not isinstance(extension, dict) or not page_ids:
+                raise ValueError(f'{title} 的 extension 须写出教学收获、用到它的步骤和对应板书页。')
+            extension = {key: required_text(extension, key) for key in ('outcome', 'used_in')}
         seen.update(page_ids)
         slow, fast = PACE[mode]
         low = max(visual, chars / fast) + extra
         high = max(visual, chars / slow) + extra
         nominal = max(visual, chars / ((fast + slow) / 2)) + extra
-        rows.append({'title': title, 'reason': reason, 'mode': mode, 'pages': page_ids,
+        rows.append({**({'extension': extension} if extension else {}), 'title': title, 'reason': reason, 'mode': mode, 'pages': page_ids,
                      'visual_seconds':visual, 'observe_seconds':extra,
                      'estimate_seconds': round(nominal, 1), 'range_seconds': [round(low, 1), round(high, 1)]})
     target = source.get('requested_minutes')
     if target is not None:
         target = number(target, '用户指定时长（分钟）', .01) * 60
     opening = number(source.get('opening_seconds', 3), '片头时间')
-    return {'status': 'planned', 'audience': audience, 'sections': rows, 'opening_seconds': opening,
+    base = opening + sum(row['estimate_seconds'] for row in rows if 'extension' not in row)
+    added = sum(row['estimate_seconds'] for row in rows if 'extension' in row)
+    return {'base_seconds': round(base, 1), 'extension_seconds': round(added, 1), 'status': 'planned', 'audience': audience, 'sections': rows, 'opening_seconds': opening,
             'recommended_seconds': round(opening + sum(r['estimate_seconds'] for r in rows)),
             'range_seconds': [round(opening + sum(r['range_seconds'][i] for r in rows)) for i in (0, 1)],
             'requested_seconds': target}
@@ -83,6 +90,48 @@ def page_paces(project, lesson):
     return {page: sum(PACE[row['mode']]) / 2 for row in plan['sections'] for page in row['pages']}
 
 
+def compare_pace(previous, current):
+    """Compare like-for-like recorded sentences and identical pen paths."""
+    if previous.get('draft') is not False:
+        raise ValueError('reference_timeline 应当是原版正式配音的时间轴。')
+
+    def collect(data):
+        cues, actions = {}, {}
+        for page in data['pages']:
+            for cue in page.get('cues', []):
+                spoken = cue.get('spoken_tts', cue.get('tts', ''))
+                if spoken.strip():
+                    cues[(cue['id'], spoken.strip())] = cue['end'] - cue['start']
+            for stroke in page.get('strokes', []):
+                if stroke['start'] < 0 or stroke['end'] <= stroke['start'] or not stroke.get('points'):
+                    continue
+                key = (page['id'], stroke.get('cue'), stroke.get('board_id') or stroke.get('action'))
+                actions.setdefault(key, []).append(stroke)
+        return cues, actions
+
+    old_cues, old_actions = collect(previous)
+    new_cues, new_actions = collect(current)
+    matched = old_cues.keys() & new_cues.keys()
+    voice_old = sum(old_cues[k] for k in matched)
+    voice_new = sum(new_cues[k] for k in matched)
+    pen_old = pen_new = 0
+    actions = 0
+    for key in old_actions.keys() & new_actions.keys():
+        before, after = old_actions[key], new_actions[key]
+        if len(before) != len(after) or any(a['points'] != b['points'] for a, b in zip(before, after)):
+            continue
+        actions += 1
+        pen_old += sum(s['end'] - s['start'] for s in before)
+        pen_new += sum(s['end'] - s['start'] for s in after)
+    issues = []
+    for name, before, after in [('相同讲稿的口播', voice_old, voice_new), ('相同笔迹的落笔', pen_old, pen_new)]:
+        if before >= 15 and after - before >= 3 and after > 1.1 * before:
+            issues.append(f'{name}累计从 {before:.1f} 秒变为 {after:.1f} 秒。对照两版回看；需要加长课程时，把时间用在新的解释、推导或应用。')
+    return {'matched_cues': len(matched), 'matched_actions': actions,
+            'spoken_seconds': [round(voice_old, 2), round(voice_new, 2)],
+            'ink_seconds': [round(pen_old, 2), round(pen_new, 2)], 'issues': issues}
+
+
 def report(project, lesson, timeline):
     total = round(timeline['duration'], 1)
     pages = [p for p in timeline['pages'] if p['id'] != 'opening-card']
@@ -91,20 +140,36 @@ def report(project, lesson, timeline):
         plan = {'status': 'from-script', 'sections': [], 'recommended_seconds': None,
                 'requested_seconds': None, 'range_seconds': None}
     else:
-        plan = estimate(load(project, source))
+        definition = load(project, source)
+        plan = estimate(definition)
+        if definition.get('reference_timeline') and not timeline.get('draft'):
+            from lesson_review import local_file
+            reference = local_file(project, definition['reference_timeline'])
+            if reference == (Path(project) / 'timeline.json').resolve():
+                raise ValueError('请使用单独保存的旧版正式时间轴对照节奏。')
+            plan['pace_comparison'] = compare_pace(json.loads(reference.read_text()), timeline)
         authored = [pid for r in plan['sections'] for pid in r['pages']]
         if authored != [p['id'] for p in pages]:
             raise ValueError('时长编排须按实际授课顺序把每个板书页分配到一个教学段。')
-    durations = {p['id']: p['duration'] for p in pages}
+    by_id = {page['id']: page for page in pages}
     for row in plan['sections']:
-        row['timeline_seconds'] = round(sum(durations[pid] for pid in row['pages']), 1)
+        section_pages = [by_id[pid] for pid in row['pages']]
+        row['timeline_seconds'] = round(sum(page['duration'] for page in section_pages), 1)
         row['issues'] = []
+        cues = [cue for page in section_pages for cue in page.get('cues', []) if cue.get('tts')]
+        spoken_seconds = sum(cue['end'] - cue['start'] for cue in cues)
+        if spoken_seconds > 0:
+            units = sum(sum(char.isalnum() for char in cue.get('spoken_tts', cue['tts'])) for cue in cues)
+            pace = units / spoken_seconds
+            row['spoken_units_per_second'] = round(pace, 2)
+            if spoken_seconds >= 30 and pace < .8 * PACE[row['mode']][0]:
+                row['issues'].append('本段口播密度偏低。连听常规讲解与推导，检查是否整体降速。需要增加课时，在自然速度下补具体教学内容。')
         actual=row['timeline_seconds']
         low,high=row['range_seconds']
         if actual < low-max(5,low*.1):
             row['issues'].append('本段短于预计讲解范围，查看推导中间步骤和完整结论能否讲完。')
         elif actual > high+max(8,high*.15):
-            row['issues'].append('本段长于预计讲解范围，复读是否重复铺垫、报式或归纳。')
+            row['issues'].append('本段长于预计讲解范围，检查重复讲述、语速、书写速度和空白时间。')
         if actual+2 < row['visual_seconds']+row['observe_seconds']:
             row['issues'].append('当前时间不足以容纳已规划的落笔或观察，复看实际动画节奏。')
     if not plan['sections']:
@@ -114,7 +179,7 @@ def report(project, lesson, timeline):
         from course_outline import load_outline
         if lesson.get('course_outline'):
             plan['outline_seconds'] = 60 * load_outline(project, lesson['course_outline'])['target_minutes']
-    issues = []
+    issues = list(plan.get('pace_comparison', {}).get('issues', []))
     for row in plan['sections']:
         issues.extend(row['title']+'：'+message for message in row.get('issues',[]))
     target = plan['requested_seconds'] or plan.get('outline_seconds')
@@ -124,7 +189,7 @@ def report(project, lesson, timeline):
     if span and (total < span[0] - 12 or total > span[1] + 12):
         issues.append('时间轴超出备课估算范围。对照分段时长检查口播、落笔和观察安排。')
     if span and target and (target < span[0] or target > span[1]):
-        issues.append('指定时长在当前讲法的常见范围之外。调整例题数量或拆课，保留主线推导。')
+        issues.append('指定时长在当前讲法的常见范围之外。用自然节奏补充有作用的先修、推导或应用，或调整例题数量和课次。')
     return {**plan, 'timeline_status': 'estimated' if timeline.get('draft') else 'measured',
             'timeline_seconds': total, 'issues': issues}
 
@@ -153,6 +218,15 @@ def markdown(info):
         current = clock(row['timeline_seconds']) if 'timeline_seconds' in row else '—'
         reason = row.get('reason', '—').replace('|', '／').replace('\n', ' ')
         lines.append(f'| {row["title"].replace("|", "／")} | {planned} | {current} | {reason} |')
+    if 'pace_comparison' in info:
+        comparison = info['pace_comparison']
+        lines.append(f'\n两版有 {comparison["matched_cues"]} 句相同口播，{comparison["matched_actions"]} 处相同落笔可直接比较。')
+    if any('extension' in row for row in info['sections']):
+        lines.extend(['', f'原有内容约 {clock(info["base_seconds"])}，新增教学内容约 {clock(info["extension_seconds"])}。'])
+        for row in info['sections']:
+            if 'extension' in row:
+                addition = row['extension']
+                lines.append(f'- {row["title"]}（{clock(row["estimate_seconds"])}）：{addition["outcome"]}。用在{addition["used_in"]}。板书页 {", ".join(row["pages"])}。')
     for issue in info.get('issues', []):
         lines.append(f'\n- {issue}')
     return '\n'.join(lines) + '\n'

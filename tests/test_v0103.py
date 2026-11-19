@@ -28,7 +28,7 @@ class PronunciationTests(unittest.TestCase):
             report = inspect_script(resolved)['pronunciation']
         self.assertTrue(report['apply_dictionary'])
         entry, = report['cues']
-        self.assertEqual(entry['terms'], {'切线': 'qie1 xian4', '电荷': 'dian4 he4',
+        self.assertEqual(entry['terms'], {'相乘': 'xiang1 cheng2', '切线': 'qie1 xian4', '电荷': 'dian4 he4',
                                           '相位': 'xiang4 wei4', '相长干涉': 'xiang1 zhang3 gan1 she4'})
         self.assertEqual(entry['listen_for'], ['相乘'])
         self.assertEqual(resolved['pages'][0]['cues'][0]['tts'], sentence)

@@ -2,7 +2,7 @@
 import math
 import re
 
-from pronunciation import LISTEN_TERMS, PHYSICS_PINYIN
+from pronunciation import term_pattern, LISTEN_TERMS, PHYSICS_PINYIN, spoken_symbols, symbol_reading
 
 
 PHYSICS_TERMS = {
@@ -47,17 +47,6 @@ SPELLING_FIXES = {
 BUILTIN_TERMS = frozenset(PHYSICS_TERMS) | POLYPHONIC_TERMS
 
 
-def term_pattern(terms):
-    alternatives = []
-    for term in sorted(terms, key=lambda value: (-len(value), value)):
-        pattern = re.escape(term)
-        if term in {'同相', '反相'}:
-            # In “不同相干条件”, 相干 is the word under review.
-            pattern += '(?!干)'
-        alternatives.append(pattern)
-    return re.compile('|'.join(alternatives))
-
-
 BUILTIN_PATTERN = term_pattern(BUILTIN_TERMS)
 
 
@@ -100,7 +89,7 @@ def inspect_terminology(data):
                     rules[term] = ' '.join(re.findall(r'\(([^()]+)\)', pronunciation))
             extra = rules.keys() - BUILTIN_TERMS
             pattern = term_pattern(BUILTIN_TERMS | extra) if extra else BUILTIN_PATTERN
-            matches = list(pattern.finditer(text))
+            matches = sorted([*pattern.finditer(text), *spoken_symbols(text)], key=lambda match: match.start())
             windows = _word_windows(cue, text) if matches else []
             for match in matches:
                 term = match.group()
@@ -112,6 +101,9 @@ def inspect_terminology(data):
                     categories.append('polyphonic')
                 if applied_rules:
                     categories.append('configured_pronunciation')
+                is_symbol = not categories
+                if is_symbol:
+                    categories.append('letter_or_symbol')
                 if windows:
                     offset = len(_clean(text[:match.start()]))
                     selected = windows[offset:offset + len(term)]
@@ -127,10 +119,15 @@ def inspect_terminology(data):
                         index = term.index(word)
                         expected = ' '.join(syllables[index:index + len(word)])
                         differs |= reading.replace('v', 'ü') != expected
+                if differs:
+                    warnings.append({'code':'term-tone-conflict','cue':cue['id'],'term':term,
+                                     'start':round(term_start,3),'end':round(term_end,3),
+                                     'message':f'“{term}”发送的读音与 {reference} 不同，请回听这一句。'})
                 occurrences.append({
                     'page': page_id, 'cue': cue['id'], 'term': term, 'categories': categories,
                     'context': text[max(0, match.start() - 20):match.end() + 20],
                     'reference_pinyin': reference, 'minimax_rules_sent': applied_rules,
+                    'reference_reading': symbol_reading(term) if is_symbol else reference,
                     'dictionary_differs': differs,
                     'start': round(term_start, 3), 'end': round(term_end, 3),
                     'timing': 'provider-word' if windows else 'cue', 'status': 'listen',
@@ -144,5 +141,6 @@ def inspect_terminology(data):
         'status': 'pending_listening' if occurrences else 'no_matches',
         'physics_term_occurrences': sum('physics_term' in item['categories'] for item in occurrences),
         'polyphonic_occurrences': sum('polyphonic' in item['categories'] for item in occurrences),
+        'symbol_occurrences': sum('letter_or_symbol' in item['categories'] for item in occurrences),
         'items': occurrences,
     }, warnings

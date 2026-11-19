@@ -78,7 +78,7 @@ LaTeX 子集：分式、上下标、向量、单位法线、时间导数点号�
 
 动作默认按顺序在本段配音中书写。`at:0.4` 表示该段实际时长的40%；`at:{"word":"场强","occurrence":1,"offset":0}` 表示对齐该关键词。关键词应出现在本段 tts 内，各动作的落点按书写顺序递增。
 
-文字、公式和普通图形动作可设置 `write_seconds`（0.1—30 秒）限制本次落笔时长。动作仍从 `at` 指定时刻开始，完成后保留在页面；其余口播继续播放。若下一个动作的时间锚点更早到来，会按可用时间完成。重要结论可以用 `"write_seconds":3.8` 提前写完，学生能够一边听物理意义，一边看完整公式。`formula_steps` 的每个 step 也支持此字段。
+文字、公式和普通图形动作可设置 `write_seconds`（0.1—30 秒）限制本次落笔时长。动作从 `at` 指定时刻开始，写完就留在原位，声音继续讲。`classroom` 模式还会按笔迹量限制每个动作的时长，让同一行在长讲解中保持正常书写速度。若下一个动作的时间锚点更早到来，会按可用时间完成。`formula_steps` 的每个 step 也支持此字段。
 
 语音服务有词级时间戳时优先使用实际数据；缺少时按文本位置估算，并将 `anchor_quality` 标记为 estimated-word。GLM 当前适配提供真实段长；Edge、豆包及 MiniMax 依可用返回值提供词级信息。长推导拆成有教学意义的句群，在关键步骤后留出看图时间。
 
@@ -110,7 +110,7 @@ LaTeX 子集：分式、上下标、向量、单位法线、时间导数点号�
 
 `course.py batch batch.json --video --jobs 2` 从批量文件所在目录解析路径，各课独立处理。`batch-report.json` 给出逐课结果。修改后再次运行，音频与每页视频按内容缓存，已完成资源直接复用。
 
-输出：preview.html、video.mp4、boards.pdf、pages/*.png、contact-sheet.png、tikz/*.tikz、tikz/boards.tex、timeline.json、narration.md、prosody.json、voice-report.json、layout-report.json、component-report.json、build-report.json。完整文字讲义由制作课程时另写 `讲义.md`，与题设、推导和图文解答相配合。
+输出：preview.html、video.mp4、boards.pdf、pages/*.png、contact-sheet.png、tikz/*.tikz、tikz/boards.tex、timeline.json、narration.md、prosody.json、voice-report.json、layout-report.json、component-report.json、build-report.json。新授课和习题课的完整学生讲义按[讲义编写与排版](handouts.md)另写 `讲义.tex` 与 TikZ 配图，编译并审阅 `学生讲义.pdf`。在课程源显式设置 `handout:"学生讲义.pdf"`，将实际 LaTeX/TikZ 源文件和依赖素材逐个列入 `review_assets`。交付 PDF 与可重新编译的源码；初始化的 Markdown 讲义作为写作草稿。
 
 v0.8 讲题项目另保留 `input-manifest.json`、输入原件、识别转写、参考解答或独立题解、`teaching-report.json`。正式题目视频使用 Motion Canvas 或 Manim；Notebook 继续用于排版草稿。物理运动与 cue 的分段播放见 [情景动画](scenario-animation.md)。
 

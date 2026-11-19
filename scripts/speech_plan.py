@@ -2,6 +2,7 @@
 import copy,json,re
 from pathlib import Path
 from oralize import render_parts
+from pronunciation import letter_bindings, resolve_readings
 
 ROLE_PRESETS={
     'legacy':{},
@@ -26,7 +27,7 @@ CLASSROOM_ROLES={
     'transition':{'speed':1.04,'pause_before':.04,'pause_after':.15},
     'explain':{'speed':1.00,'pause_before':.04,'pause_after':.25},
 }
-DELIVERY_FIELDS=('tts','tts_parts','role','speed','pitch','volume','emotion','pause_before','pause_after','pause','pause_reason','emphasis','minimax_pronunciation','speech_group')
+DELIVERY_FIELDS=('tts','tts_parts','role','speed','pitch','volume','emotion','pause_before','pause_after','pause','pause_reason','emphasis','minimax_pronunciation','plain_pronunciation','speech_group','symbol_readings')
 
 def _safe_sidecar(project,value):
     path=(project/value).resolve()
@@ -81,11 +82,17 @@ def apply(project,lesson):
             for key in DELIVERY_FIELDS:
                 if key in delivery and key!='tts':original[key]=delivery[key]
             original['tts']=delivery['tts'];original['pause']=delivery.get('pause_after',.7);original['pause_before']=delivery.get('pause_before',0)
+            names = letter_bindings(original['tts'], delivery.get('symbol_readings'))
+            original.pop('symbol_readings', None)
+            original.pop('spoken_tts', None)
+            if names:
+                original['symbol_readings'] = names
+                original['spoken_tts'] = resolve_readings(original['tts'], names)
             emphasis=delivery.get('emphasis',[])
             if not isinstance(emphasis,list) or any(not isinstance(x,str) for x in emphasis):raise ValueError(f'{cid}: emphasis must be a list of words')
             missing=[x for x in emphasis if _clean(x) not in _clean(original['tts'])]
             if missing:raise ValueError(f'{cid}: emphasis words are absent from narration: {missing}')
-            resolved.append({'id':cid,**{k:original[k] for k in ('role','tts','speed','pitch','volume','emotion','pause_before','pause') if k in original},'emphasis':emphasis})
+            resolved.append({'id':cid,**{k:original[k] for k in ('role','tts','spoken_tts','speed','pitch','volume','emotion','pause_before','pause') if k in original},'emphasis':emphasis})
     unknown=sorted(set(entries)-used)
     if unknown:raise ValueError(f'Speech plan refers to unknown cue ids: {unknown}')
     # A speech_group is one continuous teacher thought.  Only adjacent cues may

@@ -15,9 +15,9 @@ from layout import page_spec,expand_actions,place_action,focus_spec,focus_state,
 class VoiceV04Tests(unittest.TestCase):
     def test_formula_oralizer_handles_physics_structure(self):
         value=oralize_latex(r'E(r)=\frac{Q}{4\pi\varepsilon_0 r^2}')
-        self.assertIn('电场强度关于距离r的函数',value)
-        self.assertIn('分子是电荷量Q',value)
-        self.assertIn('距离r的平方',value)
+        self.assertIn('E关于r的函数',value)
+        self.assertIn('分子是Q',value)
+        self.assertIn('r的平方',value)
         self.assertNotIn('\\frac',value)
         self.assertEqual(render_parts(['所以，',{'latex':r'\vec F=q\vec E'},'。']).count('所以'),1)
 
@@ -31,7 +31,7 @@ class VoiceV04Tests(unittest.TestCase):
             project=Path(folder);(project/'speech-plan.json').write_text(json.dumps({'version':1,'cues':{'turn':{'role':'key_turn','tts_parts':['由图可得，',{'latex':r'v^2=2gh'},'。'],'emphasis':['由图可得']}}},ensure_ascii=False))
             clean['speech_plan']='speech-plan.json';merged,meta=apply(project,clean);cue=merged['pages'][0]['cues'][0]
             self.assertEqual(cue['role'],'key_turn');self.assertEqual(cue['speed'],.92);self.assertEqual(cue['pause_before'],.28)
-            self.assertIn('速度v的平方',cue['tts']);self.assertEqual(meta['source'],'speech-plan.json')
+            self.assertIn('v的平方',cue['tts']);self.assertEqual(meta['source'],'speech-plan.json')
 
     @unittest.skipUnless(shutil.which('ffmpeg'),'ffmpeg is required')
     def test_mastering_preserves_duration_and_audit_writes_report(self):

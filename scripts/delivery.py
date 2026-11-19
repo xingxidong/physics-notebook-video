@@ -2,7 +2,7 @@
 import argparse,json,re,statistics
 from pathlib import Path
 from classroom_language import review_narration
-from pronunciation import LISTEN_TERMS, matched_pronunciations
+from pronunciation import local_tts_text, PHYSICS_PINYIN, LISTEN_TERMS, matched_pronunciations, spoken_symbols, symbol_reading
 
 SYMBOL_PHRASES=('带下标零的时间','带下标零的质量字母','普通的时间字母','质量字母')
 META_PHRASES=('整道推导都围绕','连成了一条线','接下来我们将','通过以上分析我们可以看出','两个物理量已经配上了')
@@ -13,15 +13,25 @@ def inspect_script(lesson, backend=None):
     speech=lesson.get('speech',{})
     backend=backend or speech.get('backend','glm')
     pronunciation=[]
+    inputs=[]
     for c in cues:
         text=c.get('tts','')
         try:
-            terms=matched_pronunciations(text,speech.get('minimax_pronunciation'),c.get('minimax_pronunciation'))
+            terms=matched_pronunciations(c.get('spoken_tts', text),speech.get('minimax_pronunciation'),c.get('minimax_pronunciation'))
         except ValueError as exc:
             raise ValueError(f'{c["id"]}: {exc}') from exc
+        for term, reading in terms.items():
+            expected = PHYSICS_PINYIN.get(term)
+            if expected and expected != reading:
+                warnings.append({'code':'term-tone-conflict','cue':c['id'],
+                                 'message':f'“{term}”配置为 {reading}，物理词表读作 {expected}，配音前核对本句。'})
         listen=[word for word in LISTEN_TERMS if word in text]
-        if terms or listen:
-            pronunciation.append({'cue':c['id'],'terms':terms,'listen_for':listen})
+        symbols={match.group():symbol_reading(match.group()) for match in spoken_symbols(text)}
+        spoken = c.get('spoken_tts', text)
+        inputs.append({'cue': c['id'], 'text': local_tts_text(spoken, terms, speech.get('plain_pronunciation'), c.get('plain_pronunciation')) if backend == 'user' else spoken,
+                       'script':text, 'pinyin': terms, 'letters': symbols})
+        if terms or listen or symbols:
+            pronunciation.append({'cue':c['id'],'terms':terms,'listen_for':listen,'symbols':symbols})
         for phrase in SYMBOL_PHRASES+META_PHRASES:
             if phrase in c.get('tts',''):warnings.append({'code':'indirect-or-meta-language','cue':c['id'],'message':f'直接说物理量或运算，改写“{phrase}”。'})
         reason=c.get('pause_reason')
@@ -33,6 +43,7 @@ def inspect_script(lesson, backend=None):
         warnings.append({'code':'uniform-paragraphs','message':'连续长段长度接近；按实际思考与指图动作重新分组，保留必要推导。'})
     warnings.extend(review_narration(cues))
     return {'status':'review' if warnings else 'pass','cues':len(cues),'warnings':warnings,
+            'tts_inputs':inputs,
             'pronunciation':{'backend':backend,'apply_dictionary':backend=='minimax','cues':pronunciation},
             'meaning':'具体文稿与停顿检查线索，不证明真人感；还需实际观看和试听。'}
 

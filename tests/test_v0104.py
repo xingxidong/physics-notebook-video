@@ -22,7 +22,7 @@ class TerminologyReviewTests(unittest.TestCase):
                'words': words, 'minimax_tone_entries': ['相位/(xiang1)(wei4)']}
         data = {'pages': [{'id': 'p2', 'start': 20, 'cues': [cue]}]}
         review, warnings = inspect_terminology(data)
-        self.assertEqual(warnings, [])
+        self.assertEqual([w['code'] for w in warnings], ['term-tone-conflict'] * 2)
         self.assertEqual(review['status'], 'pending_listening')
         first, second = review['items']
         self.assertEqual((first['term'], first['start'], first['end']), ('相位差', 21.2, 21.9))

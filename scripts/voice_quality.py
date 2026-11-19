@@ -171,6 +171,61 @@ def export_listening_clip(project, cue_id, context=False):
             return str(output.resolve())
     raise ValueError(f'Cue not found in timeline: {cue_id}')
 
+def export_term_reel(project, items):
+    """Collect first occurrences of each distinct risky reading for one listening pass."""
+    folder = Path(project) / 'review-audio'
+    folder.mkdir(exist_ok=True)
+    seen = set()
+    intervals = []
+    for item in items:
+        if not {'letter_or_symbol', 'polyphonic', 'configured_pronunciation'}.intersection(item['categories']):
+            continue
+        signature = (item['term'], item['reference_reading'], tuple(sorted(item['minimax_rules_sent'].items())))
+        if signature in seen:
+            continue
+        seen.add(signature)
+        intervals.append((max(0, item['start'] - .65), item['end'] + .65, item))
+    clips = []
+    for start, end, item in sorted(intervals, key=lambda entry: entry[0]):
+        word = {'term': item['term'], 'reading': item['reference_reading'], 'cue': item['cue']}
+        if clips and start <= clips[-1]['source_end']:
+            clips[-1]['source_end'] = max(end, clips[-1]['source_end'])
+            clips[-1]['terms'].append(word)
+        else:
+            clips.append({'source_start': start, 'source_end': end, 'terms': [word]})
+    target = folder / 'term-reel.wav'
+    if clips:
+        import tempfile
+        with wave.open(str(Path(project) / 'narration.wav'), 'rb') as source, tempfile.TemporaryDirectory(dir=folder) as tmp:
+            rate = source.getframerate()
+            frames = source.getnframes()
+            pause = round(.35 * rate)
+            cursor = 0
+            partial = Path(tmp) / target.name
+            with wave.open(str(partial), 'wb') as out:
+                out.setparams(source.getparams())
+                for clip in clips:
+                    lo = round(clip['source_start'] * rate)
+                    hi = min(frames, round(clip['source_end'] * rate))
+                    if hi <= lo:
+                        raise ValueError('读音清单时间超出当前配音，请按同一版本重建时间轴。')
+                    source.setpos(lo)
+                    if cursor:
+                        out.writeframes(bytes(pause * source.getnchannels() * source.getsampwidth()))
+                        cursor += pause
+                    clip['reel_start'] = round(cursor / rate, 3)
+                    out.writeframes(source.readframes(hi - lo))
+                    cursor += hi - lo
+                    clip['source_end'] = round(hi / rate, 3)
+                    clip['reel_end'] = round(cursor / rate, 3)
+            partial.replace(target)
+    else:
+        target.unlink(missing_ok=True)
+    manifest = {'audio': str(target.resolve()) if clips else None, 'status': 'pending_listening' if clips else 'no_matches', 'clips': clips}
+    (folder / 'term-reel.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2))
+    return manifest
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('project');p.add_argument('--strict',action='store_true');a=p.parse_args()
     report=audit(a.project);print(json.dumps(report,ensure_ascii=False))

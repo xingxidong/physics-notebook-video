@@ -1,12 +1,46 @@
 """Local checks with concrete repair tasks, preserving unknowns that need viewing/listening."""
 import argparse
 import json
+import re
 import subprocess
 import wave
 from pathlib import Path
 
 
-def run(project,stage='plan',prepared=None):
+HANDOUT_PHRASES = (
+    '本题的主线', '本题主线', '本节的主线', '本课的主线', '知识闭环',
+    '回顾整题', '并不是说', '这不意味着', '这不代表', '这不表示', '不能据此认为',
+)
+
+
+def handout_language(project, lesson):
+    """Flag familiar editorial phrases in the authored LaTeX handout."""
+    findings = []
+    sources = {
+        source for source in lesson.get('review_assets', [])
+        if isinstance(source, str) and Path(source).suffix == '.tex'
+    }
+    default_source = project / '讲义.tex'
+    if default_source.is_file():
+        sources.add(default_source.name)
+    for source in sorted(sources):
+        path = project / source
+        if not path.is_file():
+            continue
+        for number, line in enumerate(path.read_text(encoding='utf-8').splitlines(), 1):
+            text = re.split(r'(?<!\\)%', line, maxsplit=1)[0]
+            for phrase in HANDOUT_PHRASES:
+                if phrase in text:
+                    findings.append({
+                        'code': 'handout-language',
+                        'file': source,
+                        'line': number,
+                        'message': f'{source} 第 {number} 行“{phrase}”：读前后文，改写为具体物理关系或删掉重复内容。',
+                    })
+    return findings, bool(sources)
+
+
+def run(project,stage='plan',prepared=None,video_file=None):
     from course import compile_lesson,digest,prepare,write_json
     from teaching import audit
     from layout import audit_lesson
@@ -84,30 +118,45 @@ def run(project,stage='plan',prepared=None):
         try:
             handout(project,lesson)
             coverage['handout']='file-present'
+            wording, scanned = handout_language(project, lesson)
+            if scanned:
+                add('handout', wording)
+                coverage['handout_language']='phrase-check'
+            manual.append('交付前复读学生版讲义的标题、图注和末段，以具体物理结论收尾。')
         except ValueError as exc:
             add('handout',[{'code':'handout-missing','message':str(exc)}],'error')
         if stage=='plan' and native_preview(project,lesson)=='':
             add('animation',[{'code':'preview-missing','message':'当前原生动画尚无对应预览，生成后查看接触、轨迹、方向和标注。'}])
         if stage=='final':
-            from voice_quality import audit as voice_audit,strict_findings
+            from voice_quality import audit as voice_audit,strict_findings,export_term_reel
             sound=voice_audit(project,timeline)
             add('voice',strict_findings(sound))
             coverage['voice']='signal-and-text-check'
             coverage['listening_cues']=len(sound['listening_checks'])
+            reel = export_term_reel(project, sound['terminology']['items'])
+            coverage['term_reel'] = {'status': reel['status'], 'clips': len(reel['clips']), 'audio': reel['audio']}
             if abs(sound['duration']-timeline['duration'])>.15:
                 add('voice',[{'code':'audio-duration','message':'配音文件长度与时间轴不一致，重建音画同步。'}],'error')
-            video=project/'video.mp4'
+            from video_quality import probe, review_points, extract_samples
+            video=project / (video_file or 'video.mp4')
             if not video.is_file():
-                add('video',[{'code':'video-missing','message':'成片 video.mp4 尚未生成。'}],'error')
+                add('video',[{'code':'video-missing','message':f'找不到待检查的成片 {video.name}。'}],'error')
             else:
-                data=json.loads(subprocess.check_output(
-                    ['ffprobe','-v','error','-show_entries','format=duration:stream=codec_type','-of','json',str(video)],text=True))
-                if {'audio','video'}-set(s.get('codec_type') for s in data.get('streams',[])):
+                media = probe(video)
+                coverage['media'] = media
+                if not media['audio_codec'] or not media['video_codec']:
                     add('video',[{'code':'video-stream','message':'成片须同时有音轨和视频轨。'}],'error')
-                if abs(float(data['format']['duration'])-timeline['duration'])>1:
+                if abs(media['duration_seconds']-timeline['duration'])>1:
                     add('video',[{'code':'video-duration','message':'成片长度与当前配音时间轴不一致。'}],'error')
+                elif media['video_codec']:
+                    media['samples'] = extract_samples(video, media, review_points(timeline['pages'], pages), project/'review-video')
+                    media['visual_review'] = 'pending'
                 coverage['video']='stream-and-duration-check'
-            manual.append('按 voice-report.json 的 listening_checks 连听上下文，确认多音字、吞字、拖字、重音和段落衔接。')
+                manual.append('在原始分辨率查看抽帧中的上下标、负号和细线，在交付视频中以正常速度播放落笔与动画片段。')
+            if reel['clips']:
+                manual.append('打开[读音试听合辑](review-audio/term-reel.wav)，按 term-reel.json 对照每个词的读法和原片时间。')
+            manual.append('按 voice-report.json 的 listening_checks 连听上下文，确认字母、单位、多音字、重音和段落衔接。')
+            manual.append('按正常速度看一段常规讲解和一段难点推导，检查是否靠降语速、拖慢书写或空白补时长。')
         manual.extend(['观看开场、重难点和结论，确认提问已经上屏、所指物理量可见、结论能用于记笔记。',
                        '按原题、题图与参考解独立推导；核对学生讲义图文相接、公式和视频一致。'])
         if any(p.get('native_scenes') or p.get('demonstration') for p in pages):
@@ -128,6 +177,16 @@ def run(project,stage='plan',prepared=None):
             lines.append(f'- {item["area"]}'+(f' · {where}' if where else '')+'：'+item['message'])
     else:
         lines.append('已运行的自动检查未发现问题。')
+    if 'media' in coverage:
+        media = coverage['media']
+        def rate(value):
+            return f'{value / 1000:.0f} kb/s' if value is not None else '未提供'
+        lines.extend(['', '## 交付视频', '',
+                      f'{Path(media["file"]).name} · {media["size_bytes"] / 1e6:.1f} MB · {media["duration_seconds"]:.1f} 秒',
+                      f'{media["width"]} × {media["height"]} · {media["fps"]} fps · {media["video_codec"]} 平均 {rate(media["video_average_bps"])} · {media["audio_codec"]} 平均 {rate(media["audio_average_bps"])}。'])
+        for sample in media.get('samples', []):
+            image = Path(sample['image']).relative_to(project).as_posix()
+            lines.append(f'- {sample["seconds"]:.2f} 秒，{sample["look_for"]}。[查看原尺寸画面]({image})')
     lines.extend(['','## 观看与试听',''])
     lines.extend('- '+task for task in result['manual_review']['tasks'])
     lines.extend(['','自动检查的范围记录在 quality-report.json。观看和试听结果由实际审阅填写到制作记录。',''])
