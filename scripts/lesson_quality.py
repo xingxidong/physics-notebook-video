@@ -62,6 +62,12 @@ def run(project,stage='plan',prepared=None,video_file=None):
             lesson,pages=compile_lesson(project)
         else:
             lesson,pages,_=prepared
+        from feedback_bank import check as check_feedback
+        feedback = check_feedback(project,lesson)
+        coverage['viewer_feedback'] = {'catalogs':feedback['catalog_counts'], 'listen':len(feedback['listen']),
+                                       'report':'feedback-check.json'}
+        add('viewer-feedback',[dict(row,code=row['key']) for row in feedback['findings']])
+        manual.extend(row.get('expected') or row['observed'] for row in feedback['manual_checks'])
         revision=fingerprint(project,lesson)
         teaching=audit(project,lesson,pages)
         add('teaching',teaching['errors'],'error')

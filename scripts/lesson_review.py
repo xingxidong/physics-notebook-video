@@ -214,7 +214,7 @@ def plan_text(project,lesson,pages,timing,layout,teaching,*,duration=None,langua
             lines.append(f'- {item.get("cue","整课")}：'+(f'「{text}」 ' if text else '')+item['message'])
         lines.append('')
     if quality:
-        lines.extend(['## 制作复查','', '[当前制作检查清单](制作检查.md)',''])
+        lines.extend(['## 制作复查','', '[当前制作检查清单](制作检查.md) · [本课历史反馈与逐句试听位置](feedback-check.json)',''])
         for item in quality.get('findings',[]):
             lines.append('- '+item['message'])
         lines.append('')

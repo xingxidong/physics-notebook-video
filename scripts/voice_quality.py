@@ -181,6 +181,8 @@ def export_term_reel(project, items):
         if not {'letter_or_symbol', 'polyphonic', 'configured_pronunciation'}.intersection(item['categories']):
             continue
         signature = (item['term'], item['reference_reading'], tuple(sorted(item['minimax_rules_sent'].items())))
+        if 'viewer_feedback' in item['categories']:
+            signature += (item['cue'],)
         if signature in seen:
             continue
         seen.add(signature)

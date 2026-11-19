@@ -1,0 +1,14 @@
+[
+  {
+    "key": "相位",
+    "observed": "相被读成第一声",
+    "expected": "xiang4 wei4",
+    "hint": "向位"
+  },
+  {
+    "key": "长度",
+    "observed": "长被读成 zhǎng",
+    "expected": "chang2 du4",
+    "hint": "常度"
+  }
+]

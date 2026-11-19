@@ -2,7 +2,7 @@
 import argparse,json,re,statistics
 from pathlib import Path
 from classroom_language import review_narration
-from pronunciation import local_tts_text, PHYSICS_PINYIN, LISTEN_TERMS, matched_pronunciations, spoken_symbols, symbol_reading
+from pronunciation import local_tts_text, reference_readings, LISTEN_TERMS, matched_pronunciations, spoken_symbols, symbol_reading
 
 SYMBOL_PHRASES=('带下标零的时间','带下标零的质量字母','普通的时间字母','质量字母')
 META_PHRASES=('整道推导都围绕','连成了一条线','接下来我们将','通过以上分析我们可以看出','两个物理量已经配上了')
@@ -14,6 +14,7 @@ def inspect_script(lesson, backend=None):
     backend=backend or speech.get('backend','glm')
     pronunciation=[]
     inputs=[]
+    reference=reference_readings()
     for c in cues:
         text=c.get('tts','')
         try:
@@ -21,7 +22,7 @@ def inspect_script(lesson, backend=None):
         except ValueError as exc:
             raise ValueError(f'{c["id"]}: {exc}') from exc
         for term, reading in terms.items():
-            expected = PHYSICS_PINYIN.get(term)
+            expected = reference.get(term)
             if expected and expected != reading:
                 warnings.append({'code':'term-tone-conflict','cue':c['id'],
                                  'message':f'“{term}”配置为 {reading}，物理词表读作 {expected}，配音前核对本句。'})

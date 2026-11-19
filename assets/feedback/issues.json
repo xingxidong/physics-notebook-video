@@ -1,0 +1,170 @@
+[
+  {
+    "key": "opening",
+    "scope": "all",
+    "observed": "开场听完仍说不出要研究什么",
+    "expected": "看第一段，能从图和口播指出研究对象与要回答的问题。"
+  },
+  {
+    "key": "lesson-order",
+    "scope": "all",
+    "observed": "各段重点和前后关系不清",
+    "expected": "逐段说出本段解决的问题，以及它怎样用到上一步的结论。"
+  },
+  {
+    "key": "difficulty",
+    "scope": "all",
+    "observed": "重难点讲得和代数代入一样快",
+    "expected": "从教案定位决定解法的一步，看讲稿是否解释选择的理由。"
+  },
+  {
+    "key": "concept-sequence",
+    "scope": "concept",
+    "observed": "新知识被讲成连续解题步骤",
+    "expected": "观察本课用什么现象或问题引出概念，在哪里写出定义、条件和应用。"
+  },
+  {
+    "key": "derivation",
+    "scope": "all",
+    "observed": "关键关系直接出现，学生问这一式从哪来",
+    "expected": "从前一行推到下一行，补建模理由和必要中间式。"
+  },
+  {
+    "key": "closure",
+    "scope": "all",
+    "observed": "最后一行算完就突然结束",
+    "expected": "连看末段，听到开场所问、关键关系和结论的物理意义。"
+  },
+  {
+    "key": "full-question",
+    "scope": "problem",
+    "observed": "原题没有完整出现在视频中",
+    "expected": "逐小问对照原题，检查全部条件、图和所求在成片中的位置。"
+  },
+  {
+    "key": "formula-ocr",
+    "scope": "problem",
+    "observed": "识别出来的公式不准",
+    "expected": "对照原图逐个查看上下标、分式、根号、单位和 LaTeX 题面。"
+  },
+  {
+    "key": "figure-first",
+    "scope": "all",
+    "observed": "画面还没有模型，老师已经指着图讲",
+    "expected": "在首次引用那一帧找齐对象和接触关系。"
+  },
+  {
+    "key": "figure-labels",
+    "scope": "all",
+    "observed": "图中讲到的量没有标清",
+    "expected": "首次使用时在图上找到点、角的两边、方向、量及单位。"
+  },
+  {
+    "key": "visible-question",
+    "scope": "all",
+    "observed": "口头提问没有写在板上",
+    "expected": "在开始分析前看见完整问题。"
+  },
+  {
+    "key": "visible-law",
+    "scope": "concept",
+    "observed": "讲了几个定律，学生暂停后无处抄录",
+    "expected": "逐条检查定律表述、条件与公式已经落笔。"
+  },
+  {
+    "key": "handwritten-math",
+    "scope": "all",
+    "observed": "公式整块出现",
+    "expected": "播放推导处，看到公式随语义逐笔写出。"
+  },
+  {
+    "key": "handwritten-hanzi",
+    "scope": "all",
+    "observed": "有些汉字变成印刷体",
+    "expected": "原尺寸查看讲解文字与手写公式的笔迹。"
+  },
+  {
+    "key": "page-continuity",
+    "scope": "all",
+    "observed": "翻页时上一步关系消失",
+    "expected": "在同一页完成一段推导，续页保留正要引用的式子。"
+  },
+  {
+    "key": "page-title",
+    "scope": "all",
+    "observed": "正课每页加标题",
+    "expected": "检查正课页的标题开关，保留片头课名和必要的定律名称。"
+  },
+  {
+    "key": "formula-arrows",
+    "scope": "all",
+    "observed": "公式间连接箭头干扰板书",
+    "expected": "去掉公式之间的连接箭头，核实受力和位移的方向箭头。"
+  },
+  {
+    "key": "camera",
+    "scope": "all",
+    "observed": "讲解中画面突然缩小",
+    "expected": "从讲解前后连续播放，确认镜头固定。"
+  },
+  {
+    "key": "intersection",
+    "scope": "all",
+    "observed": "物块穿过接触面",
+    "expected": "查看接触前、接触时、接触后的动画，追踪物块轮廓和支持面。"
+  },
+  {
+    "key": "script-tone",
+    "scope": "all",
+    "observed": "口播和讲义有程序腔",
+    "expected": "连读开场与转折，用眼前的物理对象、动作和运算承接。"
+  },
+  {
+    "key": "prosody",
+    "scope": "all",
+    "observed": "语调和重音机械",
+    "expected": "用最终音色连听提问、关键条件、计算三处，听重音是否落在含义上。"
+  },
+  {
+    "key": "stalled-speech",
+    "scope": "all",
+    "observed": "一句话中间像说不出话",
+    "expected": "在最终音轨上听完整前后句，重录卡住的局部句段。"
+  },
+  {
+    "key": "note-silence",
+    "scope": "all",
+    "observed": "专门留出安静抄笔记的时间",
+    "expected": "看结论写完后的实际时间轴，让学生按需自行暂停。"
+  },
+  {
+    "key": "pacing",
+    "scope": "all",
+    "observed": "为凑时长压低语速、拖慢书写",
+    "expected": "对照选定原始录音和时间轴；需要长讲时补内容，并看落笔和声音是否同步。"
+  },
+  {
+    "key": "duration-gap",
+    "scope": "all",
+    "observed": "计划时长和成片时长相差很大",
+    "expected": "按小问或教学目标核实讲稿覆盖和实测时长，说明增减内容。"
+  },
+  {
+    "key": "handout-order",
+    "scope": "all",
+    "observed": "学生讲义层次混乱",
+    "expected": "翻阅学生 PDF，看新课能否找到定义和应用，习题能否顺着图和步骤读完。"
+  },
+  {
+    "key": "handout-diagram",
+    "scope": "all",
+    "observed": "解答图和推导分离",
+    "expected": "在用到图的步骤找到对应 TikZ 图、标注和解释。"
+  },
+  {
+    "key": "release-name",
+    "scope": "all",
+    "observed": "成片名称出现错误翻译",
+    "expected": "对照原课名、题号和届次，检查片头与交付文件名。"
+  }
+]

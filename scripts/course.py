@@ -452,6 +452,8 @@ def video(project,data,font,width):
     return {'video_new':new,'video_reused':reused}
 
 def run_build(project,args):
+    from feedback_bank import check as check_feedback
+    check_feedback(project, enforce=not args.draft)
     project=Path(project).resolve();lesson,pages=compile_lesson(project);font=font_path(lesson,project)
     from teaching import audit as audit_teaching
     from lesson_review import require as require_review
@@ -558,7 +560,16 @@ def main():
     setup_cmd=subs.add_parser('setup-renderers');setup_cmd.add_argument('--runtime',required=True)
     preview=subs.add_parser('preview',help='Render silent native preview without changing final audio, timeline or video')
     preview.add_argument('project');preview.add_argument('--renderer',choices=['manim','motion-canvas'],default='manim');preview.add_argument('--runtime');preview.add_argument('--width',type=int,choices=[1280,1920],default=1280);preview.add_argument('--fps',type=int,choices=[12,24,30],default=24)
+    feedback=subs.add_parser('feedback-check',help='Check this lesson against past viewer feedback before production')
+    feedback.add_argument('project')
     args=parser.parse_args()
+    if args.command in ('feedback-check','review-plan','preview','render'):
+        from feedback_bank import check as check_feedback
+        report=check_feedback(args.project,enforce=args.command=='render')
+        if args.command=='feedback-check':
+            print(json.dumps(report,ensure_ascii=False))
+            if report['status']=='blocked':sys.exit(1)
+            return
     if args.command=='quality-check':
         from lesson_quality import run
         if args.video_file and args.stage != 'final':

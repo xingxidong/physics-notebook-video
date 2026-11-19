@@ -176,9 +176,15 @@ def display_words(text, readings, words):
     return result
 
 
+def reference_readings():
+    from feedback_bank import catalog
+    return {**PHYSICS_PINYIN, **{key: entry['expected'] for key, entry in catalog()['polyphones'].items()
+                                if entry.get('expected')}}
+
+
 def matched_pronunciations(text, course_overrides=None, cue_overrides=None):
-    """Use built-in terms, then course and cue overrides. False clears inherited rules."""
-    terms = PHYSICS_PINYIN.copy()
+    """Use standard readings and viewer corrections, then course and cue overrides."""
+    terms = reference_readings()
     for overrides in (course_overrides, cue_overrides):
         if overrides is None:
             continue
@@ -219,6 +225,10 @@ PLAIN_HINTS = {'长度': ('chang2 du4', '常度'), '相位': ('xiang4 wei4', '�
 def local_tts_text(text, terms, course=None, cue=None):
     hints = {term: replacement for term, (reading, replacement) in PLAIN_HINTS.items()
              if terms.get(term) == reading}
+    from feedback_bank import catalog
+    for key, entry in catalog()['polyphones'].items():
+        if entry.get('hint') and terms.get(key) == entry.get('expected'):
+            hints[key] = entry['hint']
     for overrides in (course, cue):
         if overrides is None:
             continue

@@ -47,7 +47,6 @@ SPELLING_FIXES = {
 BUILTIN_TERMS = frozenset(PHYSICS_TERMS) | POLYPHONIC_TERMS
 
 
-BUILTIN_PATTERN = term_pattern(BUILTIN_TERMS)
 
 
 def _clean(text):
@@ -74,6 +73,13 @@ def _word_windows(cue, text):
 
 
 def inspect_terminology(data):
+    from feedback_bank import catalog
+    banks = catalog()
+    historical_words = banks['polyphones']
+    vocabulary = BUILTIN_TERMS | historical_words.keys()
+    references = {**REFERENCE_PINYIN, **{word: entry['expected'] for word, entry in historical_words.items()
+                                         if entry.get('expected')}}
+    default_pattern = term_pattern(vocabulary)
     occurrences = []
     warnings = []
     for page_index, page in enumerate(data['pages'], 1):
@@ -87,8 +93,8 @@ def inspect_terminology(data):
                 term, _, pronunciation = entry.partition('/')
                 if term:
                     rules[term] = ' '.join(re.findall(r'\(([^()]+)\)', pronunciation))
-            extra = rules.keys() - BUILTIN_TERMS
-            pattern = term_pattern(BUILTIN_TERMS | extra) if extra else BUILTIN_PATTERN
+            extra = rules.keys() - vocabulary
+            pattern = term_pattern(vocabulary | extra) if extra else default_pattern
             matches = sorted([*pattern.finditer(text), *spoken_symbols(text)], key=lambda match: match.start())
             windows = _word_windows(cue, text) if matches else []
             for match in matches:
@@ -97,13 +103,19 @@ def inspect_terminology(data):
                 categories = []
                 if term in PHYSICS_TERMS:
                     categories.append('physics_term')
-                if term in POLYPHONIC_TERMS:
+                if term in POLYPHONIC_TERMS or term in historical_words:
                     categories.append('polyphonic')
                 if applied_rules:
                     categories.append('configured_pronunciation')
                 is_symbol = not categories
                 if is_symbol:
                     categories.append('letter_or_symbol')
+                if is_symbol:
+                    known_issue = (term.upper() if term.isascii() else term) in banks['letters']
+                else:
+                    known_issue = any(word in term for word in historical_words)
+                if known_issue:
+                    categories.append('viewer_feedback')
                 if windows:
                     offset = len(_clean(text[:match.start()]))
                     selected = windows[offset:offset + len(term)]
@@ -111,7 +123,7 @@ def inspect_terminology(data):
                     term_end = start + max(w[1] for w in selected)
                 else:
                     term_start, term_end = start, end
-                reference = REFERENCE_PINYIN.get(term)
+                reference = references.get(term)
                 differs = False
                 if reference:
                     syllables = reference.split()

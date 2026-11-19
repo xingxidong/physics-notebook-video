@@ -3,13 +3,19 @@ name: physics-notebook-video
 description: 将物理题或教材制作为电子笔记本式逐笔板书视频。习题课从题面、情景动画和配图推导讲到结果；新授课从现象和对照讲到完整定义、定律与应用。支持中文配音、可编辑 LaTeX 和 TikZ、Manim、Motion Canvas 及本地批量导出。
 metadata:
   author: xingxidong
-  version: "0.18.1"
+  version: "0.19.0"
   standard: agentskills.io
   icon: assets/icon.png
   requirements: Python 3.11+, FFmpeg, Chinese font; XeLaTeX/xeCJK and PyMuPDF for problem text; Node.js 20+/Chrome for Motion Canvas; TeX/dvisvgm for Manim
 ---
 
 # 物理逐笔板书课
+
+## 看课反馈与下次备课
+
+用户指出成片有错时，当次调用 `scripts/feedback_bank.py record` 登记到对应库。综合问题、多音词和字母分别登记，能定位时记下课名、页或时间点。沿用相同的词或问题编号，保留再次发生的位置。听不清的实音照实描述，读法待确认时先登记；完成修复后将成片对应片段实际复看、复听。
+
+每次制作两种课型、续做旧课或批量出片，都先看适用的历史问题。已有课程源就运行 `course.py feedback-check PROJECT`，读本课的 `feedback-check.json`，在教案和预览里逐项核实相应画面，按命中的句段试听。自定义渲染或本地配音也走这一步。收到新反馈后重新运行。正式音轨生成后再听同一批句子；按页、句、时间点记下所见所闻。操作与三个库见[看课反馈](references/viewer-feedback.md)。
 
 ## 习题课
 
