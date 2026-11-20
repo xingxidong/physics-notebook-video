@@ -85,14 +85,14 @@ class TeachingMediaTests(unittest.TestCase):
         self.assertNotIn('相位',entry['pinyin'])
         from pronunciation import matched_pronunciations,LETTER_IPA
         self.assertEqual(len(LETTER_IPA),26)
-        self.assertEqual(resolve_readings('直线AB与DNA。'),'直线 A B 与DNA。')
+        self.assertEqual(resolve_readings('直线AB与DNA。'),'直线 ay bee 与DNA。')
         from pronunciation import local_tts_text
         terms = matched_pronunciations('相位差与重合')
         self.assertEqual(local_tts_text('相位差与重合', terms, {'重合':'崇合'}), '向位差与崇合')
         self.assertEqual(local_tts_text('相位差与重合', terms, {'重合':'崇合'}, {'重合':None}), '向位差与重合')
         self.assertEqual(matched_pronunciations('不同相干条件'),{'相干':'xiang1 gan1'})
-        self.assertEqual(resolve_readings('x，y，F。'), 'ex，why，F。')
-        self.assertEqual(resolve_readings('x', {'x':'艾克斯'}), '艾克斯')
+        self.assertEqual(resolve_readings('x，y，F。'), 'ex，why，eff。')
+        self.assertEqual(resolve_readings('x', {'x':'艾克斯'}), 'ex')
 
     def test_formula_variables_survive_legacy_quantity_aliases(self):
         from oralize import render_parts

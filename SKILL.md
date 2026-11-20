@@ -3,7 +3,7 @@ name: physics-notebook-video
 description: 将物理题或教材制作为电子笔记本式逐笔板书视频。习题课从题面、情景动画和配图推导讲到结果；新授课从现象和对照讲到完整定义、定律与应用。支持中文配音、可编辑 LaTeX 和 TikZ、Manim、Motion Canvas 及本地批量导出。
 metadata:
   author: xingxidong
-  version: "0.19.0"
+  version: "0.20.0"
   standard: agentskills.io
   icon: assets/icon.png
   requirements: Python 3.11+, FFmpeg, Chinese font; XeLaTeX/xeCJK and PyMuPDF for problem text; Node.js 20+/Chrome for Motion Canvas; TeX/dvisvgm for Manim
@@ -16,6 +16,12 @@ metadata:
 用户指出成片有错时，当次调用 `scripts/feedback_bank.py record` 登记到对应库。综合问题、多音词和字母分别登记，能定位时记下课名、页或时间点。沿用相同的词或问题编号，保留再次发生的位置。听不清的实音照实描述，读法待确认时先登记；完成修复后将成片对应片段实际复看、复听。
 
 每次制作两种课型、续做旧课或批量出片，都先看适用的历史问题。已有课程源就运行 `course.py feedback-check PROJECT`，读本课的 `feedback-check.json`，在教案和预览里逐项核实相应画面，按命中的句段试听。自定义渲染或本地配音也走这一步。收到新反馈后重新运行。正式音轨生成后再听同一批句子；按页、句、时间点记下所见所闻。操作与三个库见[看课反馈](references/viewer-feedback.md)。
+
+作者的长期要求也进入反馈循环。把“以后”“至少”“同类课也这样做”连同适用课型和来源写入个人库；下一课编排时读取，完课后按实际 MP4 复查。审阅记录区分作者报告、已复录、自动识别结果和作者确认。相同反馈再次出现时追加本次实例。字母用所选音色在完整课堂句中比较；ASR 转写正确仍需关注听感，见[作者反馈的闭环](references/viewer-feedback.md)。
+
+收到纠正时先找已有的 key，将本次原话留在对应库里。一次性的要求标记具体课名。试听或对照画面后用 `feedback_bank.py decide` 记录候选办法、作者选取或撤回的版本、适用范围和依据。选中的实音绑定合成模型、参考音色指纹和本地样本。下一课读取 `feedback-check.json` 的 `replay`，在命中的新句子或实际画面上复查；音色变更重新短句试听。具体操作见[从一次反馈到下一节课](references/viewer-feedback.md#从一次反馈到下一节课)。
+
+文章完整讲解设置 `source_type: article` 和 `article_coverage`，逐项把原文公式、图的各子图、推理和作者建议的学生活动落到讲稿、板书。时长下限用正常语速的实录估计并用交付文件实测。内容短时展开学生需要的推导、读图、先修和变式，重新送审。[文章改课与时长](references/article-lesson.md)
 
 ## 习题课
 
@@ -61,6 +67,8 @@ python3 SKILL/scripts/course.py build PROJECT --draft
 先按[实际笔迹排版](references/board-layout.md)设置题图、推导、结论和续页，再用 `course.py board-check PROJECT --strict` 核对关键时刻的画面。原生动画用 `course.py preview PROJECT --renderer manim` 查看无配音运动稿。核对动作、文字和图的显示顺序，检查标注与公式的间距。已有可用模型优先复用。题型和场景设置见[情景动画](references/scenario-animation.md)。
 
 ## 课堂表达与配音
+
+学生口播直接点出画面里的对象。“看右边的速度箭头，它缩短了多少？”让学生有具体动作。资料出处留在备课记录。字幕逐句核对；听字母时保留两侧汉字。26 个拉丁字母均按英语字母名整体发音，TTS 输入优先使用英文或引擎支持的英语音素，旧讲稿的汉字谐音改回英语字母名，特别留意 W 的最后一个音、S 和 X 的韵尾、Q 的起音，以及 P、T、V 在句中的自然收音。独立句的交界用正式音轨连听，发现急接或碰声时回到原始分句修复。
 
 出教案前运行 `course.py quality-check PROJECT --stage plan`，按页面和句段处理教学、口播、时长和画面问题。报告中的 `coverage` 说明检查范围；原生动画需实际观看开始、接触前后、极值、转折和结束。见[制作复查](references/quality-workflow.md)。
 

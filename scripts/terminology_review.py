@@ -78,7 +78,7 @@ def inspect_terminology(data):
     historical_words = banks['polyphones']
     vocabulary = BUILTIN_TERMS | historical_words.keys()
     references = {**REFERENCE_PINYIN, **{word: entry['expected'] for word, entry in historical_words.items()
-                                         if entry.get('expected')}}
+                                         if entry.get('expected') and not entry.get('context_required')}}
     default_pattern = term_pattern(vocabulary)
     occurrences = []
     warnings = []

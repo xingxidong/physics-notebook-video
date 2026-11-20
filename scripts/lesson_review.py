@@ -95,7 +95,7 @@ def fingerprint(project,lesson):
     if not isinstance(assets,list) or any(not isinstance(name,str) for name in assets):
         raise ValueError('review_assets 须列出项目内的素材路径。')
     names=set(assets)
-    for key in ('course_outline','duration_plan','handout','input_manifest'):
+    for key in ('course_outline','duration_plan','handout','input_manifest','article_coverage'):
 
         if isinstance(lesson.get(key),str):
             names.add(lesson[key])
@@ -215,6 +215,8 @@ def plan_text(project,lesson,pages,timing,layout,teaching,*,duration=None,langua
         lines.append('')
     if quality:
         lines.extend(['## 制作复查','', '[当前制作检查清单](制作检查.md) · [本课历史反馈与逐句试听位置](feedback-check.json)',''])
+        for note in quality.get('coverage',{}).get('viewer_feedback',{}).get('replay',[]):
+            lines.append('- '+note)
         for item in quality.get('findings',[]):
             lines.append('- '+item['message'])
         lines.append('')

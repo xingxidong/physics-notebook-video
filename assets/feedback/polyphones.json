@@ -10,5 +10,11 @@
     "observed": "长被读成 zhǎng",
     "expected": "chang2 du4",
     "hint": "常度"
+  },
+  {
+    "key": "分量",
+    "expected": "fen1 liang4",
+    "context_required": true,
+    "observed": "矢量沿坐标轴的分量读音有误；依上下文区分矢量分量与份量、轻重。"
   }
 ]

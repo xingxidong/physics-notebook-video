@@ -11,6 +11,8 @@ UNCLEAR_REFERENCE = re.compile(
     r'(?:^|[。！？])\s*(?P<opening>这个东西|这个关系|这样一来|这部分|按照这个思路)'
     r'(?P<rest>[^。！？]{0,11})(?=[。！？]|$)'
 )
+SOURCE_TALK = re.compile(r'(?:论文|文章|讲义|截图|原文)(?:中|里|上|最后建议|的图|提到|指出|所述)')
+UNSEEN_GESTURE = re.compile(r'(?:从|用|跟着|根据)手势(?:来)?看(?:这个|那个|这一个)?量')
 READING_MARKUP = re.compile(r'\\(?:d?frac|sqrt|cdot|times|vec|sum|int|begin)\b|[A-Za-z][_^][{\w]|\$[^$]+\$')
 REPEATED_TRANSITION = re.compile(r'^(?:然后|接下来|现在|所以|那么|于是)[，,、 ]+(?:然后|接下来|现在|所以|那么|于是)[，,、 ]*')
 PREDICATE_BREAK = re.compile(
@@ -57,6 +59,8 @@ def review_narration(cues):
             record(cue, 'generic-ending', match.group(), '收束时回到模型、关键依据和结果，不用礼貌性结束语代替总结。')
 
         for pattern, code, message in (
+            (SOURCE_TALK, 'source-in-narration', '直接点出图上的对象、已知条件或所求，资料出处保留在教师备课记录。'),
+            (UNSEEN_GESTURE, 'unseen-gesture', '指出学生能看到的箭头、方向或读数，并说清要比较什么。'),
             (UNCLEAR_REFERENCE, 'vague-reference', '复读前后两段；若指代不够清楚，用点名、物理量或具体算式承接。'),
             (READING_MARKUP, 'readable-formula', 'LaTeX 留在板书，口播说清量名、分组、运算及其依据。'),
             (REPEATED_TRANSITION, 'stacked-transitions', '保留一个自然的接续词，随即说清当前动作或物理关系。'),

@@ -3,10 +3,13 @@ import argparse
 from contextlib import closing
 from functools import lru_cache
 import json
+import math
 import os
 from pathlib import Path
 import sqlite3
 import tempfile
+
+from feedback_review import SCOPES, STATES, compare_audio, decide, decisions, replay
 
 KINDS = ('issues', 'polyphones', 'letters')
 SEEDS = Path(__file__).resolve().parents[1] / 'assets/feedback'
@@ -30,6 +33,8 @@ def _snapshot(path, stamp):
                 return rules
             for kind, key, payload in db.execute('SELECT kind, key, payload FROM reports ORDER BY id'):
                 values = json.loads(payload)
+                if values.get('only_this_lesson'):
+                    continue
                 previous = rules[kind].get(key, {})
                 if kind == 'polyphones' and 'expected' in values and values['expected'] != previous.get('expected'):
                     previous = {k:v for k,v in previous.items() if k != 'hint'}
@@ -46,15 +51,22 @@ def catalog():
     return _snapshot(path, (stat.st_ino, stat.st_size, stat.st_mtime_ns))
 
 
-def record(kind, key, observed, expected=None, lesson='', at='', scope=None, match=None, hint=None):
+def record(kind, key, observed, expected=None, lesson='', at='', scope=None, match=None, hint=None, source_type=None, minimum_minutes=None, only_this_lesson=False):
     from pronunciation import FREE_SYMBOL, HAN_TERM, SYLLABLE, symbol_reading
     key, observed = key.strip(), observed.strip()
     if kind not in KINDS or not key or not observed:
         raise ValueError('请记录类别、词或问题编号，以及用户实际发现的现象。')
+    if only_this_lesson and (not lesson.strip() or scope or minimum_minutes or hint or (expected and kind == 'polyphones')):
+        raise ValueError('单课观察需要课名；读法覆盖和课时下限请分别写入本课的配音或时长设置。')
     if kind != 'issues' and (match or scope):
         raise ValueError('读音记录按实际出现的词或字母匹配。')
     if scope and scope not in ('concept','problem','all'):
         raise ValueError('课型可填 all、concept 或 problem。')
+    if source_type is not None and (kind != 'issues' or source_type != 'article'):
+        raise ValueError('文章课偏好须记录在问题库，source_type 填 article。')
+    if minimum_minutes is not None and (kind != 'issues' or isinstance(minimum_minutes,bool)
+            or not isinstance(minimum_minutes,(int,float)) or not math.isfinite(minimum_minutes) or minimum_minutes <= 0):
+        raise ValueError('最低时长须为问题库中的正数分钟。')
     if kind == 'letters':
         if not FREE_SYMBOL.fullmatch(key):
             raise ValueError('字母记录需要单个字母。')
@@ -77,7 +89,9 @@ def record(kind, key, observed, expected=None, lesson='', at='', scope=None, mat
     if hint and (kind != 'polyphones' or not expected or not HAN_TERM.fullmatch(hint) or len(key) != len(hint)):
         raise ValueError('本地同音提示需要已确认拼音和等长汉字。')
     values = {'observed':observed}
-    for name, value in [('expected',expected), ('scope',scope), ('match',match), ('hint',hint)]:
+    if only_this_lesson:
+        values['only_this_lesson'] = True
+    for name, value in [('expected',expected), ('scope',scope), ('match',match), ('hint',hint), ('source_type',source_type), ('minimum_minutes',minimum_minutes)]:
         if value:
             values[name] = value
     payload = json.dumps(values, ensure_ascii=False, sort_keys=True)
@@ -95,13 +109,16 @@ def record(kind, key, observed, expected=None, lesson='', at='', scope=None, mat
     return {'bank':kind,'key':key,'recorded':added,'database':str(path)}
 
 
-def history():
+def history(lesson=None):
     path = database().resolve()
     if not path.is_file():
         return []
     with closing(sqlite3.connect(path.as_uri() + '?mode=ro', uri=True, timeout=15)) as db:
-        return [dict(bank=k,key=t,lesson=l,at=a,received=d,**json.loads(p))
-                for k,t,l,a,d,p in db.execute('SELECT kind,key,lesson,location,received,payload FROM reports ORDER BY id')]
+        if not db.execute("SELECT 1 FROM sqlite_master WHERE name='reports'").fetchone():
+            return []
+        sql = 'SELECT kind,key,lesson,location,received,payload FROM reports'
+        rows = db.execute(sql + ' WHERE lesson=? ORDER BY id', (lesson,)) if lesson is not None else db.execute(sql + ' ORDER BY id')
+        return [dict(bank=k,key=t,lesson=l,at=a,received=d,**json.loads(p)) for k,t,l,a,d,p in rows]
 
 
 def save_report(path, result):
@@ -118,15 +135,35 @@ def save_report(path, result):
         temp.unlink(missing_ok=True)
 
 
+def lesson_catalog(lesson):
+    rules = {kind: dict(entries) for kind, entries in catalog().items()}
+    title = lesson.get('title')
+    if title:
+        for item in history(lesson=title):
+            if item.get('only_this_lesson'):
+                kind, key = item['bank'], item['key']
+                rules[kind][key] = {**rules[kind].get(key, {}), **item}
+    return rules
+
+
+def applicable_issues(lesson, rules=None):
+    kind = lesson.get('kind','all')
+    if rules is None:
+        rules = lesson_catalog(lesson)
+    return [r for r in rules['issues'].values()
+            if r.get('scope','all') in ('all',kind)
+            and (not r.get('source_type') or r['source_type'] == lesson.get('source_type'))]
+
+
 def check(project, lesson=None, enforce=False):
     from pronunciation import local_tts_text, matched_pronunciations, spoken_symbols, term_pattern, PHYSICS_PINYIN
     from speech_plan import apply
     project = Path(project).resolve()
     if lesson is None:
         lesson, _ = apply(project, json.loads((project/'lesson.json').read_text(encoding='utf-8')))
-    rules = catalog()
+    rules = lesson_catalog(lesson)
     mode = lesson.get('kind', 'all')
-    applicable = [r for r in rules['issues'].values() if r.get('scope','all') in ('all',mode)]
+    applicable = applicable_issues(lesson, rules)
     manual = [r for r in applicable if not r.get('match')]
     hits, findings = [], []
     speech = lesson.get('speech', {})
@@ -143,7 +180,8 @@ def check(project, lesson=None, enforce=False):
             cid = cue['id']
             text = cue.get('tts', cue.get('text',''))
             for rule in applicable:
-                if rule.get('match') and rule['match'] in text:
+                phrases = [rule['match']] if rule.get('match') else rule.get('review_phrases', ())
+                if any(phrase in text for phrase in phrases):
                     flag(rule['key'], rule.get('expected') or rule['observed'], cid)
             matches = list(pattern.finditer(text))
             if matches:
@@ -155,9 +193,13 @@ def check(project, lesson=None, enforce=False):
             for m in matches:
                 key = m.group()
                 expected = rules['polyphones'][key].get('expected') or PHYSICS_PINYIN.get(key)
-                hits.append(dict(bank='polyphones',key=key,expected=expected,page=pid,cue=cid,context=text))
                 word = next((w for w in segments if w.start() <= m.start() and w.end() >= m.end()), None)
-                if expected and word:
+                ambiguous = rules['polyphones'][key].get('context_required') and (
+                    word is None or word.group() == key or word.group() not in PHYSICS_PINYIN)
+                hits.append(dict(bank='polyphones',key=key,expected=None if ambiguous else expected,
+                                 page=pid,cue=cid,context=text,
+                                 **({'context_note':'结合原句确认物理义项，矢量分量读 '+expected} if ambiguous and expected else {})))
+                if expected and word and not ambiguous:
                     pos = m.start() - word.start()
                     actual = ' '.join(resolved[word.group()].split()[pos:pos+len(key)])
                     marker = (key, word.group(), actual)
@@ -172,7 +214,7 @@ def check(project, lesson=None, enforce=False):
                     reported.add((key,selected))
             for key in dict.fromkeys(m.group().upper() if m.group().isascii() else m.group() for m in spoken_symbols(text)):
                 if key in rules['letters']:
-                    hits.append(dict(bank='letters',key=key,expected=rules['letters'][key]['expected'],page=pid,cue=cid,context=text))
+                    hits.append(dict(bank='letters',key=key,expected=rules['letters'][key]['expected'],viewer_note=rules['letters'][key].get('observed',''),page=pid,cue=cid,context=text))
             if cue.get('audio'):
                 meta = (project / cue['audio']).with_suffix('.json')
                 if meta.is_file():
@@ -187,6 +229,7 @@ def check(project, lesson=None, enforce=False):
                                 flag('pacing','已选用经过降速的录音，请换回对应的原速录音。',cid,'error')
     result = {'kind':mode, 'catalog_counts':{k:len(v) for k,v in rules.items()},
               'manual_checks':manual, 'listen':hits, 'findings':findings,
+              'replay':replay(lesson, applicable, hits, findings),
               'status':'blocked' if any(x['severity']=='error' for x in findings) else 'review'}
     save_report(project/'feedback-check.json', result)
     if enforce and result['status']=='blocked':
@@ -201,12 +244,32 @@ def main():
     r.add_argument('kind',choices=KINDS)
     for arg in ['key','observed','expected','lesson','at','scope','match','hint']:
         r.add_argument('--'+arg, required=arg in ('key','observed'))
+    r.add_argument('--source-type', choices=['article'])
+    r.add_argument('--minimum-minutes', type=float)
+    r.add_argument('--only-this-lesson', action='store_true')
+    pair = cmds.add_parser('compare-audio', help='按 A、B 顺序以原速拼接两个短句样本供试听')
+    pair.add_argument('before')
+    pair.add_argument('after')
+    pair.add_argument('--output', required=True)
+    review = cmds.add_parser('decide', help='保存候选办法、采用依据或撤回理由')
+    review.add_argument('kind', choices=KINDS)
+    review.add_argument('--state', required=True, choices=STATES)
+    review.add_argument('--scope', required=True, choices=SCOPES)
+    for name in ('key', 'action', 'evidence', 'before', 'example', 'lesson', 'model', 'reference-sha256', 'sample'):
+        review.add_argument('--'+name, required=name in ('key', 'action', 'evidence'))
+    cmds.add_parser('reviews', help='按时间显示本地修订历史和样本')
     cmds.add_parser('list')
     cmds.add_parser('history')
     args = vars(p.parse_args())
     cmd = args.pop('cmd')
     if cmd == 'record':
         result = record(**{k:v for k,v in args.items() if v is not None})
+    elif cmd == 'compare-audio':
+        result = compare_audio(**args)
+    elif cmd == 'decide':
+        result = decide(**{k:v for k,v in args.items() if v is not None})
+    elif cmd == 'reviews':
+        result = decisions(database().resolve())
     else:
         result = history() if cmd == 'history' else catalog()
     print(json.dumps(result, ensure_ascii=False, indent=2))

@@ -1,7 +1,47 @@
 [
   {
     "key": "X",
-    "observed": "变量 x 的字母名听起来不自然；曾被改念成横坐标",
+    "observed": "变量 x 的字母名听起来不自然；曾被改念成横坐标。原配音把字母拆成几个汉语音节；/ɛks/ 的 /ks/ 收在同一音节内。",
     "expected": "X /ɛks/"
+  },
+  {
+    "key": "K",
+    "expected": "K /keɪ/",
+    "observed": "中文句中独立字母 k 听感不准；用所选音色试听阻力系数 k 以及 k 乘速度。"
+  },
+  {
+    "key": "M",
+    "expected": "M /ɛm/",
+    "observed": "质量变量 m 的字母名听起来别扭；试听单音节收唇鼻音和 m 与 g 连读。"
+  },
+  {
+    "key": "W",
+    "expected": "W /ˈdʌbəljuː/",
+    "observed": "整个字母名连读，重音在前，末尾 /juː/ 接在前面，避免末尾另起一个汉语音节。"
+  },
+  {
+    "key": "Q",
+    "expected": "Q /kjuː/",
+    "observed": "原配音一律念成“丘”；保留 /k/ 起音并连到 /juː/。"
+  },
+  {
+    "key": "S",
+    "expected": "S /ɛs/",
+    "observed": "“哎、私”听成两节；/ɛs/ 只有一个音节。"
+  },
+  {
+    "key": "T",
+    "expected": "T /tiː/",
+    "observed": "原音听成汉语第一声；使用 /tiː/，随中文句意收音。"
+  },
+  {
+    "key": "P",
+    "expected": "P /piː/",
+    "observed": "原音听成汉语第一声；使用 /piː/，随中文句意收音。"
+  },
+  {
+    "key": "V",
+    "expected": "V /viː/",
+    "observed": "检查 /v/ 的唇齿摩擦和后面的长元音 /iː/。"
   }
 ]

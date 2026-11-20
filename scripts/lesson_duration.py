@@ -82,12 +82,49 @@ def load(project, source):
     return json.loads(local_file(project, source).read_text())
 
 
+def minimum_seconds(project, lesson):
+    from feedback_bank import applicable_issues
+    source = load(project,lesson['duration_plan']) if lesson.get('duration_plan') else {}
+    explicit = source.get('minimum_minutes')
+    if explicit is not None:
+        if isinstance(explicit,bool) or not isinstance(explicit,(int,float)) or not math.isfinite(explicit) or explicit<=0:
+            raise ValueError('minimum_minutes 须为有限正数。')
+        return explicit*60
+    if source.get('requested_minutes') is not None:
+        return None
+    limits = [r['minimum_minutes'] for r in applicable_issues(lesson) if r.get('minimum_minutes')]
+    return 60*max(limits) if limits else None
+
+
 def page_paces(project, lesson):
     source = lesson.get('duration_plan')
     if source is None:
         return {}
     plan = estimate(load(project, source))
     return {page: sum(PACE[row['mode']]) / 2 for row in plan['sections'] for page in row['pages']}
+
+
+def spoken_budget(previous, current):
+    """Estimate voice time from the reference speaker's recorded sentence timings."""
+    if previous.get('draft') is not False:
+        raise ValueError('语速依据应选用已有正式音轨的时间轴。')
+
+    def sentences(timeline):
+        return (cue for page in timeline['pages'] if page.get('id') != 'opening-card'
+                for cue in page.get('cues', []) if (cue.get('tts') or '').strip())
+
+    def units(cue):
+        return sum(char.isalnum() for char in cue['tts'])
+
+    recorded = [cue for cue in sentences(previous) if cue['end'] > cue['start'] and units(cue)]
+    seconds = sum(cue['end'] - cue['start'] for cue in recorded)
+    if not seconds:
+        raise ValueError('参考时间轴缺少有文字、起止时间的发声句段。')
+    old_units = sum(map(units, recorded))
+    new_units = sum(map(units, sentences(current)))
+    return {'reference_units': old_units, 'reference_seconds': seconds,
+            'current_units': new_units, 'units_per_second': old_units / seconds,
+            'estimated_spoken_seconds': new_units * seconds / old_units}
 
 
 def compare_pace(previous, current):
@@ -142,12 +179,16 @@ def report(project, lesson, timeline):
     else:
         definition = load(project, source)
         plan = estimate(definition)
-        if definition.get('reference_timeline') and not timeline.get('draft'):
+        if definition.get('reference_timeline') and (lesson.get('source_type') == 'article' or not timeline.get('draft')):
             from lesson_review import local_file
             reference = local_file(project, definition['reference_timeline'])
             if reference == (Path(project) / 'timeline.json').resolve():
                 raise ValueError('请使用单独保存的旧版正式时间轴对照节奏。')
-            plan['pace_comparison'] = compare_pace(json.loads(reference.read_text()), timeline)
+            previous = json.loads(reference.read_text())
+            if lesson.get('source_type') == 'article':
+                plan['spoken_budget'] = spoken_budget(previous, timeline)
+            if not timeline.get('draft'):
+                plan['pace_comparison'] = compare_pace(previous, timeline)
         authored = [pid for r in plan['sections'] for pid in r['pages']]
         if authored != [p['id'] for p in pages]:
             raise ValueError('时长编排须按实际授课顺序把每个板书页分配到一个教学段。')
@@ -180,6 +221,10 @@ def report(project, lesson, timeline):
         if lesson.get('course_outline'):
             plan['outline_seconds'] = 60 * load_outline(project, lesson['course_outline'])['target_minutes']
     issues = list(plan.get('pace_comparison', {}).get('issues', []))
+    floor = minimum_seconds(project, lesson)
+    budget = plan.get('spoken_budget')
+    if floor and budget and budget['estimated_spoken_seconds'] < floor and timeline.get('draft'):
+        issues.append('按参考音色的实录语速，当前讲稿发声时长低于成片下限。请查看哪些时间用于真实演示，并在教案中补足需要的推导、读图或应用。')
     for row in plan['sections']:
         issues.extend(row['title']+'：'+message for message in row.get('issues',[]))
     target = plan['requested_seconds'] or plan.get('outline_seconds')
@@ -190,7 +235,7 @@ def report(project, lesson, timeline):
         issues.append('时间轴超出备课估算范围。对照分段时长检查口播、落笔和观察安排。')
     if span and target and (target < span[0] or target > span[1]):
         issues.append('指定时长在当前讲法的常见范围之外。用自然节奏补充有作用的先修、推导或应用，或调整例题数量和课次。')
-    return {**plan, 'timeline_status': 'estimated' if timeline.get('draft') else 'measured',
+    return {**plan, 'minimum_seconds': floor, 'timeline_status': 'estimated' if timeline.get('draft') else 'measured',
             'timeline_seconds': total, 'issues': issues}
 
 
@@ -206,6 +251,11 @@ def markdown(info):
     if info['recommended_seconds'] is not None:
         low, high = info['range_seconds']
         lines.append(f'建议约 **{clock(info["recommended_seconds"])}**，备课估算范围 {clock(low)}–{clock(high)}。')
+    if info.get('minimum_seconds'):
+        lines.append(f'成片最低时长 {clock(info["minimum_seconds"])}，按正常语速和实际导出文件检查。')
+    if info.get('spoken_budget'):
+        budget = info['spoken_budget']
+        lines.append(f'同音色参考句段合计 {budget["reference_seconds"]:.1f} 秒，每秒 {budget["units_per_second"]:.2f} 个有效字和字母。按当前口播预计 {clock(budget["estimated_spoken_seconds"])}。')
     if info.get('requested_seconds'):
         lines.append(f'用户指定时长：{clock(info["requested_seconds"])}。')
     if 'timeline_seconds' in info:

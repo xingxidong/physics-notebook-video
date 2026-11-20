@@ -13,6 +13,12 @@ PHYSICS_PINYIN = {
     '长短': 'chang2 duan3',
     '测量': 'ce4 liang2',
     '矢量': 'shi3 liang4',
+    '速度分量': 'su4 du4 fen1 liang4',
+    '阻力分量': 'zu3 li4 fen1 liang4',
+    '水平分量': 'shui3 ping2 fen1 liang4',
+    '竖直分量': 'shu4 zhi2 fen1 liang4',
+    '非零分量': 'fei1 ling2 fen1 liang4',
+    '矢量分量': 'shi3 liang4 fen1 liang4',
     '重复': 'chong2 fu4',
     '伸长': 'shen1 chang2',
     '波长': 'bo1 chang2',
@@ -57,7 +63,11 @@ LETTER_IPA = dict(zip('ABCDEFGHIJKLMNOPQRSTUVWXYZ', (
 )))
 # Use unambiguous English words for these names when sending mixed-language
 # plain text. The lesson, subtitles and timing anchors keep the source symbol.
-ENGLISH_NAMES = {'X': 'ex', 'Y': 'why', 'I': 'eye'}
+ENGLISH_NAMES = dict(zip('ABCDEFGHIJKLMNOPQRSTUVWXYZ', (
+    'ay', 'bee', 'see', 'dee', 'ee', 'eff', 'gee', 'aitch', 'eye', 'jay',
+    'kay', 'ell', 'em', 'en', 'oh', 'pea', 'queue', 'are', 'ess', 'tee',
+    'you', 'vee', 'double you', 'ex', 'why', 'zee',
+)))
 GREEK = dict(zip('αβγδεζηθικλμνξοπρστυφχψω',
                  '阿尔法 贝塔 伽马 德尔塔 艾普西隆 泽塔 伊塔 西塔 约塔 卡帕 拉姆达 缪 纽 克西 奥密克戎 派 柔 西格玛 陶 宇普西隆 斐 希 普赛 欧米伽'.split()))
 GREEK.update({'ϕ': '斐', 'ϵ': '艾普西隆', 'ϑ': '西塔', 'ς': '西格玛'})
@@ -104,11 +114,6 @@ def letter_bindings(text, requested=None):
     for symbol in symbols:
         upper = symbol.upper()
         default = ENGLISH_NAMES.get(upper, upper) if upper in LETTER_IPA else symbol_reading(symbol)
-        # Older lessons bound a letter to its quantity. Upgrade those aliases to
-        # the letter name. Only a known phonetic rendering may change the sound.
-        variant = requested.get(symbol)
-        if upper == 'X' and variant in ('艾克斯', '埃克斯'):
-            default = variant
         result[symbol] = default
     return result
 
@@ -179,7 +184,7 @@ def display_words(text, readings, words):
 def reference_readings():
     from feedback_bank import catalog
     return {**PHYSICS_PINYIN, **{key: entry['expected'] for key, entry in catalog()['polyphones'].items()
-                                if entry.get('expected')}}
+                                if entry.get('expected') and not entry.get('context_required')}}
 
 
 def matched_pronunciations(text, course_overrides=None, cue_overrides=None):
@@ -220,6 +225,9 @@ def term_pattern(terms):
 # characters only for the documented trouble spots and only in the TTS input.
 PLAIN_HINTS = {'长度': ('chang2 du4', '常度'), '相位': ('xiang4 wei4', '向位'),
                '相位差': ('xiang4 wei4 cha1', '向位差')}
+PLAIN_HINTS.update({term: (reading, term[:-1] + '亮')
+                    for term, reading in PHYSICS_PINYIN.items()
+                    if term.endswith('分量') and reading.endswith('fen1 liang4')})
 
 
 def local_tts_text(text, terms, course=None, cue=None):

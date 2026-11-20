@@ -63,11 +63,18 @@ def run(project,stage='plan',prepared=None,video_file=None):
         else:
             lesson,pages,_=prepared
         from feedback_bank import check as check_feedback
+        from feedback_review import review_line
         feedback = check_feedback(project,lesson)
         coverage['viewer_feedback'] = {'catalogs':feedback['catalog_counts'], 'listen':len(feedback['listen']),
-                                       'report':'feedback-check.json'}
+                                       'report':'feedback-check.json', 'replay':[review_line(i) for i in feedback['replay']]}
         add('viewer-feedback',[dict(row,code=row['key']) for row in feedback['findings']])
+        manual.extend(coverage['viewer_feedback']['replay'])
         manual.extend(row.get('expected') or row['observed'] for row in feedback['manual_checks'])
+        if lesson.get('source_type')=='article':
+            from article_coverage import audit as audit_article
+            gaps = audit_article(project,lesson)
+            add('article',gaps,'error')
+            coverage['article']='mapped' if not gaps else 'incomplete'
         revision=fingerprint(project,lesson)
         teaching=audit(project,lesson,pages)
         add('teaching',teaching['errors'],'error')
@@ -116,6 +123,11 @@ def run(project,stage='plan',prepared=None,video_file=None):
         coverage['board']=board.get('coverage',[])
         duration=duration_report(project,lesson,timeline)
         add('duration',[{'code':'duration-budget','message':m} for m in duration['issues']])
+        floor = duration.get('minimum_seconds')
+        coverage['minimum_seconds'] = floor
+        if floor and timeline['duration'] < floor:
+            add('duration',[{'code':'duration-below-minimum','message':
+                f'当前时间轴 {timeline["duration"]:.1f} 秒，最低 {floor:g} 秒。补入前置知识、图上推导或实际变式后重新计时。'}],'error')
         coverage['duration']=duration['timeline_status']
         # Export current, consolidated diagnostics without changing the lesson/approval.
         write_json(project/'delivery-report.json',delivery)
@@ -150,6 +162,9 @@ def run(project,stage='plan',prepared=None,video_file=None):
             else:
                 media = probe(video)
                 coverage['media'] = media
+                if floor and media['duration_seconds'] < floor:
+                    add('video',[{'code':'media-below-minimum','message':
+                        f'所选 MP4 实测 {media["duration_seconds"]:.2f} 秒，最低 {floor:g} 秒。'}],'error')
                 if not media['audio_codec'] or not media['video_codec']:
                     add('video',[{'code':'video-stream','message':'成片须同时有音轨和视频轨。'}],'error')
                 if abs(media['duration_seconds']-timeline['duration'])>1:

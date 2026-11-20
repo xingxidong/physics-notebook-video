@@ -48,6 +48,51 @@ def _review_joins(pages, pauses):
         })
     return findings
 
+def _review_short_joins(cues, samples, rate):
+    """Locate a rushed sentence or an isolated transient in a recorded cue gap."""
+    findings = []
+    step = max(1, round(.005 * rate))
+    for left, right in zip(cues, cues[1:]):
+        a = round(left['end'] * rate)
+        b = round(right['start'] * rate)
+        if a > b or b > len(samples):
+            continue
+        lo, hi = max(0, a-round(.22*rate)), min(len(samples), b+round(.22*rate))
+        # Ten-millisecond or smaller energy measurements, with real cue-edge audio.
+        flags = []
+        for i in range(lo, hi, step):
+            block = samples[i:min(hi, i+step)]
+            flags.append(sum(x*x for x in block) > len(block)*180**2)
+        mid = min(len(flags)-1, ((a+b)//2-lo)//step)
+        if mid < 0:
+            continue
+        l = r = mid
+        while l >= 0 and not flags[l]:
+            l -= 1
+        while r < len(flags) and not flags[r]:
+            r += 1
+        quiet = max(0, r-l-1)*step/rate
+        code = None
+        message = ''
+        if left.get('tts', '').rstrip().endswith(('。','？','！','?','!')) and quiet < .14 and b-a < .14*rate:
+            code, message = 'tight-sentence-join', '整句收尾后很快进入下一句。连听前句末尾和下句开头。'
+        # An isolated short pulse surrounded by >=45 ms quiet on both sides.
+        for j in range(9, len(flags)-10):
+            if not flags[j] or any(flags[j-9:j]):
+                continue
+            k = j+1
+            while k<len(flags) and flags[k]:
+                k += 1
+            onset = lo+j*step
+            if (k-j)*step/rate <= .045 and k+9 <= len(flags) and not any(flags[k:k+9]) and a-.08*rate<=onset<=b+.08*rate:
+                code, message = 'join-transient', '句间有孤立短脉冲，回听是否为碰声或拼接杂声。'
+                break
+        if code:
+            findings.append(dict(code=code,cue=right['id'],related_cues=[left['id'],right['id']],
+                                 start=lo/rate,end=hi/rate,quiet_seconds=round(quiet,3),message=message))
+    return findings
+
+
 def _absolute_cues(pages):
     return [{**cue, 'start': page.get('start',0) + cue['start'], 'end': page.get('start',0) + cue['end']}
             for page in pages for cue in page['cues']]
@@ -132,8 +177,9 @@ def audit(project,data=None):
     warnings.extend(spelling_warnings)
     timed_script = _absolute_cues(data['pages'])
     classroom = review_narration(timed_script)+_review_joins(data['pages'],pauses)+_review_inside(timed_script,pauses)
+    classroom.extend(_review_short_joins(timed_script,samples,rate))
     listening = _listening_checks(timed_script, [*classroom,*warnings,*terminology['items']])
-    audio_attention=any(row['code'] in ('in-cue-hesitation','audible-cue-gap') for row in classroom)
+    audio_attention=any(row['code'] in ('in-cue-hesitation','audible-cue-gap','tight-sentence-join','join-transient') for row in classroom)
     report={
         'status':'attention' if warnings or audio_attention else 'pass','duration':round(len(samples)/rate,3),'sample_rate':rate,
         'peak_dbfs':round(_db(peak),2),'rms_dbfs':round(_db(rms),2),'clipping_ratio':round(clip,7),

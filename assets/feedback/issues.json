@@ -166,5 +166,31 @@
     "scope": "all",
     "observed": "成片名称出现错误翻译",
     "expected": "对照原课名、题号和届次，检查片头与交付文件名。"
+  },
+  {
+    "key": "article-coverage",
+    "scope": "all",
+    "source_type": "article",
+    "observed": "文章改课压缩了图、推导及学生应用活动。",
+    "expected": "将原文各节、公式、分图和作者提出的学生活动对应到具体讲稿与板书；标出只报结论和需要展开之处。"
+  },
+  {
+    "key": "visible-referent",
+    "scope": "all",
+    "observed": "“从手势看这个量”时画面没有手势，量的指代也不明确。",
+    "expected": "在这句话开始的一帧定位手势、虚线或标记，并指出对应的物理量。",
+    "review_phrases": ["从手势看", "看这个手势", "看这条虚线", "看图中这条虚线", "沿着这条虚线"]
+  },
+  {
+    "key": "student-source-talk",
+    "scope": "all",
+    "observed": "学生口播出现“文章最后建议”“论文里说”和“文章的图三”。",
+    "expected": "直接讲问题、物理关系、图中位置，学生听到的正文去掉幕后出处。"
+  },
+  {
+    "key": "rushed-noisy-join",
+    "scope": "all",
+    "observed": "有的下一句话紧跟着响起，中间能听到蹬的一声。",
+    "expected": "量两侧原有停顿，处理异常接缝，带前后两句话回听。"
   }
 ]
