@@ -1,0 +1,13 @@
+\begin{tikzpicture}[>=Stealth,scale=1.15]
+\coordinate (A) at (0,2);\coordinate (B) at (3.464,0);\coordinate (C) at (0,0);
+\draw[thick] (A)--(B)--(C)--cycle;
+\draw pic[draw,angle radius=9mm,"$\theta$"] {angle=A--B--C};
+\begin{scope}[shift={(0.8,1.538)},rotate=-30]
+\draw[fill=blue!8,thick] (-.22,0) rectangle (.22,.32);
+\node at (0,.53) {$m$};
+\draw[<->,green!50!black] (.3,-.2)--(2.3,-.2) node[midway,below] {$s$};
+\end{scope}
+\node[right] at (3.6,1.5) {$\theta=30^\circ$};
+\node[right] at (3.6,.95) {$s=2.0\,\mathrm m$};
+\node[right] at (3.6,.4) {$g=10\,\mathrm{m\,s^{-2}}$};
+\end{tikzpicture}

@@ -1,6 +1,48 @@
 # 物理逐笔板书视频技能
 
-版本 0.20.0。面向支持 Agent Skills 和本地命令的 Agent 宿主，制作带中文配音的物理讲解视频。
+版本 0.27.9。面向支持 Agent Skills 和本地命令的 Agent 宿主，制作带中文配音的物理讲解视频。
+
+0.27.9 内置 Academic Humanizer，[课堂文案改稿](references/classroom-language-editing.md)纳入新授课和习题课。重写[两份长课模板](assets/starter-kit/long-lessons/README.md)，各段均附试讲。符合条件的 Apple Silicon Mac 安装技能时会同时下载[本地 Qwen 配音](references/platform-install.md#随技能安装本地配音)。
+
+公开仓库保留读音卡、反馈和复试记录，随包试音使用公开合成音色。个人音色配置、参考录音和私人试听留在本机。
+
+0.27.8 将[自我成长库的跨课复试](references/classroom-transfer.md)接入备课和成片复查。保留每次试用的完整课堂句、结果及短样，记录故障发生的环节，按当前版改法回看依据。
+
+0.27.7 从真实课稿、赛题和讲义新增[68 张读音卡](references/term-glossaries/扩展-0.27.7/README.md)，整库 3,740 张。订正 23 张旧卡，修复“三相交流电”和“偏转角”的跨词误判。
+
+0.27.6 新增[四组课堂读音卡](references/term-glossaries/扩展-0.27.6/README.md)共 1,000 张，整库 3,672 张。新增词逐卡交叉复读，上一批 72 张补做独立复查。修订涉及“分度值”和“滞止点”。
+
+0.27.5 新增[实验测量、机械波与声学、流体与材料读音卡](references/term-glossaries/扩展-0.27.5/README.md) 72 张，词库共 2,672 张。
+
+0.27.4 新增[三组完整读音卡](references/term-glossaries/扩展-0.27.4/README.md)，共 180 张，现有 2600 张。补充力学与数学方法、电磁学与光学、热学与近代物理中的常用缺项，沿用完整例句和具体连读标准，原有学习记录保留。
+
+0.27.3 完成[全部 2,420 张课堂读音卡的六项内容](references/term-glossaries/全库完善/README.md)：保留 63 张完整卡，逐条补齐其余 2,357 张的词义、课堂例句、连读和易混提示；保留参考课来源，订正发现的旧拼音。全部随技能安装，并接入固定试音、历史反馈和成片逐处检查。
+
+0.27.2 将 [16 句固定试音与读音卡、历史反馈、本课难句接通](assets/starter-kit/voice-trial/README.md)。自动选材，逐处区分读音与连读，实听结果和音段随技能保存；词卡改变后相关句重查，成片仍检查每次出现。
+
+0.27.1 恢复随包斜面视频的浅色方格笔记本背景，同步更新板书预览和样例成片；新课与样例沿用默认网格样式。
+
+0.27.0 增加[完整样例、固定试音材料、长课模板与参数动画](assets/starter-kit/README.md)，接通本地 Qwen；完善逐句术语盘点、学习资料合并、推导同步与最终交付检查。[制作与交付](references/production-workflow.md)
+
+0.26.0 将课堂词卡、制课反馈、改法与试听片段随技能打包。创建课程会先生成《备课提醒》，写完讲稿后逐句对照以往的问题。[随技能带走的学习记录](references/viewer-feedback.md)
+
+0.25.0 增加制课进度、逐步对应的板书和讲义、修订试听，以及可在空目录编译的学生讲义源码包。[制课与修订命令](references/production-workflow.md)
+
+0.24.0 让制作前的术语清单、配音输入和成片检查共用逐处读法。作者指出的断词可以直接进入个人词卡。重复术语中节奏异常的句子会集中列出，26 个字母配有中文课堂例句。[词卡用法与复听](references/term-flow.md#同一句里的不同读音)
+
+0.23.0 加入独立保存的课堂读音卡。学过的课程可以删除原片，今后仍可查整词拼音、易混用法和连读示例。制作端逐句补齐本课新词，在本次导出的音轨上逐次检查。[课堂读音卡和整课逐词检查](references/term-flow.md#课堂读音卡)
+
+0.22.0 新增整句音画复核、本地拼音与字母音素复测和匿名录音盲测。补录后按改变的音轨、接缝及板书重查。[语音纠错操作](references/term-flow.md#听完整句话再决定怎样补录)
+
+0.21.1 将各讲新增的整词读音直接接入备课和成片审查。新词候选附原句，读音有分歧的术语在配音前单列。[新词覆盖](references/term-flow.md)
+
+0.21.0 先识别整课物理术语，再从最终音轨逐处检查发音和连读。[术语检查](references/term-flow.md)
+
+0.20.3 增加常用词逐字读音审查，口播和交付音轨共用词、字与原句位置。[常用词读音审查](references/voice.md#常用词读音审查)
+
+0.20.2 对全课排查学科多音词，从本课选试音句，一次听一整句并逐处记录实音。
+
+0.20.1 增加“测量”和物理量的分词选音，按反馈词在实际交付视频中的每次出现记录声调。[成片声调复听](references/voice.md#成片声调复听)
 
 0.20.0 将作者反馈的修订历史、适用课型和已选音色样本接入下一课的制作前检查。用一条真实课堂句比较修改前后的效果。[反馈与样本复查](references/viewer-feedback.md#从一次反馈到下一节课)
 
@@ -137,6 +179,14 @@ python3 -m venv .venv
 
 ## 第一次运行：先看布局
 
+想先完整跑通一次，使用[一页 PDF 到成片样例](assets/starter-kit/incline/README.md)：
+
+```sh
+python3 "$PHYSICS_SKILL/scripts/sample_kit.py" render /ABS/EMPTY/demo
+```
+
+它使用随包音频，输出约一分半的完整视频、板书与预览，不调用配音接口。下面的课型示例用于自己备课。
+
 ```sh
 .venv/bin/python "$PHYSICS_SKILL/scripts/course.py" init lesson-demo --title "点电荷的电场" --backend minimax
 .venv/bin/python "$PHYSICS_SKILL/scripts/course.py" build lesson-demo --draft
@@ -160,7 +210,7 @@ MINIMAX_API_HOST=https://api.minimax.cn
 .venv/bin/python "$PHYSICS_SKILL/scripts/captions.py" lesson-demo --burn
 ```
 
-成片为 `lesson-demo/video-captioned.mp4`。需要先试另一种配音时，可在 `init` 中选择 `--backend edge`；Edge 需要联网。
+待审成片为 `lesson-demo/video-captioned.mp4`。对该文件运行 `quality-check lesson-demo --stage final --video-file video-captioned.mp4`，按 [制作流程](references/production-workflow.md) 完成实际试听与观看，再用 `finalize lesson-demo --video-file video-captioned.mp4` 生成交付清单。需要先试另一种配音时，可在 `init` 中选择 `--backend edge`；Edge 需要联网。
 
 ## 习题课的资料与用法
 

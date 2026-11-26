@@ -1,0 +1,21 @@
+{
+  "status": "offline_request_example_not_sent",
+  "endpoint": "POST /v1/t2a_v2",
+  "input_text": "沿斜面取切向分量，再用点乘求大小。",
+  "pronunciation_dict": {
+    "tone": [
+      "切向分量/(qie1)(xiang4)(fen1)(liang4)",
+      "点乘/(dian3)(cheng2)"
+    ]
+  },
+  "voice_setting": {
+    "voice_id": "Chinese (Mandarin)_Gentleman",
+    "speed": 1
+  },
+  "audio_setting": {
+    "format": "mp3",
+    "sample_rate": 32000,
+    "channel": 1
+  },
+  "output_audio": "本地执行后由接口实际返回；样例未调用付费服务"
+}

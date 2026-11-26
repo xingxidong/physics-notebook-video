@@ -3,6 +3,9 @@ import copy,math
 import ink
 
 def setup(spec):
+    if spec.get('kind')=='incline':
+        from incline_motion import setup as incline_setup
+        return incline_setup(spec)
     if spec.get('kind')=='pursuit':
         from pursuit import setup as pursuit_setup
         return pursuit_setup(spec)
@@ -21,6 +24,9 @@ def setup(spec):
     return m
 
 def strokes(m,t):
+    if m.get('kind')=='incline':
+        from incline_motion import strokes as incline_strokes
+        return incline_strokes(m,t)
     if m.get('kind')=='pursuit':
         from pursuit import strokes as pursuit_strokes
         return pursuit_strokes(m,t)
@@ -78,6 +84,8 @@ def bind_cues(m,cues):
     m['vector_start']=lookup[m.get('vectors_cue',first)]['start'];return m
 
 def motion_report(m):
+    if m.get('kind')=='incline':
+        return {'moving':True,'kind':'incline','distance':m['distance'],'acceleration':m['acceleration']}
     if m.get('kind')=='pursuit':
         from pursuit import state
         segments=m.get('segments');lo=segments[0]['from'] if segments else 0;hi=segments[-1]['to'] if segments else 1

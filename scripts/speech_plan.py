@@ -58,6 +58,8 @@ def apply(project,lesson):
     if profile=='classroom':
         for name,settings in CLASSROOM_ROLES.items():roles[name].update(settings)
         lesson.setdefault('speech',{}).setdefault('trim_edges',True)
+    if lesson.get('speech',{}).get('backend')=='qwen':
+        for settings in roles.values():settings['speed']=1.0
     for name,value in custom.items():
         if not isinstance(value,dict):raise ValueError(f'Custom speech role {name} must be an object')
         roles[name]={**roles.get(name,{}),**value}

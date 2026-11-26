@@ -1,0 +1,169 @@
+{
+  "kind": "problem",
+  "status": "pass",
+  "required": true,
+  "source_intake_required": true,
+  "structural_checks_only": true,
+  "physics_correctness": "not_evaluated_by_this_checker",
+  "coverage": [
+    {
+      "page": "p01",
+      "motion": "checked",
+      "motion_reason": null,
+      "derived_formulas": 9,
+      "linked_steps": 6,
+      "derivation": "checked",
+      "semantic_events": 0
+    }
+  ],
+  "recognized_problem_pages": 1,
+  "problem_checks": {
+    "incline": {
+      "motion_scenes": 1,
+      "derivation_steps": 6
+    }
+  },
+  "motion_scenes": 1,
+  "derivation_steps": 6,
+  "knowledge_notes": [],
+  "concept_sequence": {
+    "status": "not_applicable",
+    "units": []
+  },
+  "course_outline": {
+    "status": "not_applicable"
+  },
+  "lesson_arc": {
+    "status": "pass",
+    "entry_question": "光滑斜面上滑过两米后的速度多大？",
+    "beats": [
+      {
+        "id": "beat-read",
+        "purpose": "orient",
+        "cue_ids": [
+          "read"
+        ],
+        "student_question": "题目要求哪个速度？",
+        "scene_change": "沿斜面的运动、受力或对应式子按口播呈现。",
+        "takeaway": "这道题看左边的斜面。倾角三十度，表面光滑，斜面固定。小物块从静止释放，沿斜面滑过两米，求末速度。",
+        "visual_ids": [
+          "scene:p01"
+        ]
+      },
+      {
+        "id": "beat-observe",
+        "purpose": "model",
+        "cue_ids": [
+          "observe"
+        ],
+        "student_question": "位移沿哪个方向量？",
+        "scene_change": "沿斜面的运动、受力或对应式子按口播呈现。",
+        "takeaway": "先看它怎样运动。物块沿斜面越来越快。这里的两米，是沿斜面量出来的距离。图上的绿色箭头表示速度方向。",
+        "visual_ids": [
+          "scene:p01"
+        ]
+      },
+      {
+        "id": "beat-force",
+        "purpose": "reason",
+        "cue_ids": [
+          "force"
+        ],
+        "student_question": "哪些力使物块加速？",
+        "scene_change": "沿斜面的运动、受力或对应式子按口播呈现。",
+        "takeaway": "现在画受力图。重力竖直向下，支持力垂直斜面。沿斜面向下取正方向，把重力分解，沿斜面的分量等于重力乘倾角的正弦。",
+        "visual_ids": [
+          "weight",
+          "weight-label",
+          "normal",
+          "normal-label",
+          "slope-force",
+          "tangent",
+          "tangent-label"
+        ]
+      },
+      {
+        "id": "beat-newton",
+        "purpose": "derive",
+        "cue_ids": [
+          "newton"
+        ],
+        "student_question": "沿斜面如何列方程？",
+        "scene_change": "沿斜面的运动、受力或对应式子按口播呈现。",
+        "takeaway": "把这个分量写进牛顿第二定律。质量乘重力加速度，再乘倾角的正弦，等于质量乘加速度。等号两边的质量可以约去。",
+        "visual_ids": [
+          "eq-newton"
+        ]
+      },
+      {
+        "id": "beat-accel",
+        "purpose": "derive",
+        "cue_ids": [
+          "accel"
+        ],
+        "student_question": "加速度的数值是多少？",
+        "scene_change": "沿斜面的运动、受力或对应式子按口播呈现。",
+        "takeaway": "所以加速度等于重力加速度乘倾角的正弦。三十度的正弦是二分之一，十乘二分之一，得到五米每二次方秒。",
+        "visual_ids": [
+          "eq-a"
+        ]
+      },
+      {
+        "id": "beat-time",
+        "purpose": "derive",
+        "cue_ids": [
+          "time"
+        ],
+        "student_question": "怎样描述这段匀加速运动？",
+        "scene_change": "沿斜面的运动、受力或对应式子按口播呈现。",
+        "takeaway": "加速度是常量，初速度又是零。位移等于二分之一加速度乘时间平方，速度等于加速度乘时间。",
+        "visual_ids": [
+          "eq-s",
+          "eq-time-v"
+        ]
+      },
+      {
+        "id": "beat-eliminate",
+        "purpose": "derive",
+        "cue_ids": [
+          "eliminate"
+        ],
+        "student_question": "怎样消去时间？",
+        "scene_change": "沿斜面的运动、受力或对应式子按口播呈现。",
+        "takeaway": "把第二个式子平方，得到速度平方等于加速度平方乘时间平方。再用第一个式子消去时间，就有速度平方等于二倍加速度乘位移。",
+        "visual_ids": [
+          "eq-v-square"
+        ]
+      },
+      {
+        "id": "beat-answer",
+        "purpose": "anchor",
+        "cue_ids": [
+          "answer"
+        ],
+        "student_question": "速度数值是多少？",
+        "scene_change": "沿斜面的运动、受力或对应式子按口播呈现。",
+        "takeaway": "代入加速度五、位移二，速度平方等于二十。题目求速率，取正的平方根，答案是二倍根号五米每秒，约四点四七米每秒。",
+        "visual_ids": [
+          "eq-answer"
+        ]
+      },
+      {
+        "id": "beat-close",
+        "purpose": "recap",
+        "cue_ids": [
+          "close"
+        ],
+        "student_question": "怎样从受力走到速度？",
+        "scene_change": "沿斜面的运动、受力或对应式子按口播呈现。",
+        "takeaway": "这道题先用受力求加速度，再用位移求速度。图里沿斜面的方向、式子中的重力分量、以及两米的位移，说的是同一个方向。",
+        "visual_ids": [
+          "recap"
+        ]
+      }
+    ],
+    "errors": []
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,571 @@
+{
+  "title": "光滑斜面上的滑块",
+  "kind": "problem",
+  "review_required": true,
+  "workflow_version": 1,
+  "term_inventory_version": 2,
+  "paper": "grid",
+  "camera": "static",
+  "show_titles": false,
+  "renderer": "motion-canvas",
+  "opening": {
+    "title": "光滑斜面上的滑块",
+    "author": "物理逐笔板书课",
+    "contact": "",
+    "school": "开源制作样例"
+  },
+  "speech": {
+    "backend": "user",
+    "speed": 1,
+    "delivery_profile": "classroom",
+    "trim_edges": false,
+    "audio_mastering": false
+  },
+  "handout": "student.tex",
+  "handout_source": "student.tex",
+  "review_assets": [
+    "source.pdf",
+    "source.tex",
+    "incline.tikz",
+    "forces.tikz"
+  ],
+  "pages": [
+    {
+      "id": "p01",
+      "title": "光滑斜面上的滑块",
+      "layout": {},
+      "demonstration": {
+        "kind": "incline",
+        "start_cue": "observe",
+        "end_cue": "observe",
+        "angle": 30,
+        "distance": 2,
+        "g": 10
+      },
+      "cues": [
+        {
+          "id": "read",
+          "role": "observe",
+          "tts": "这道题看左边的斜面。倾角三十度，表面光滑，斜面固定。小物块从静止释放，沿斜面滑过两米，求末速度。",
+          "audio": "audio/read.mp3",
+          "speed": 1,
+          "pause_before": 0,
+          "pause_after": 0.25,
+          "actions": []
+        },
+        {
+          "id": "observe",
+          "role": "observe",
+          "tts": "先看它怎样运动。物块沿斜面越来越快。这里的两米，是沿斜面量出来的距离。图上的绿色箭头表示速度方向。",
+          "audio": "audio/observe.mp3",
+          "speed": 1,
+          "pause_before": 0,
+          "pause_after": 0.25,
+          "actions": []
+        },
+        {
+          "id": "force",
+          "role": "observe",
+          "tts": "现在画受力图。重力竖直向下，支持力垂直斜面。沿斜面向下取正方向，把重力分解，沿斜面的分量等于重力乘倾角的正弦。",
+          "audio": "audio/force.mp3",
+          "speed": 1,
+          "pause_before": 0,
+          "pause_after": 0.25,
+          "actions": [
+            {
+              "type": "arrow",
+              "id": "weight",
+              "from": [
+                370,
+                580
+              ],
+              "to": [
+                370,
+                643
+              ],
+              "color": "red",
+              "at": 0.05,
+              "write_seconds": 0.6
+            },
+            {
+              "type": "math",
+              "id": "weight-label",
+              "latex": "mg",
+              "x": 380,
+              "y": 616,
+              "size": 23,
+              "color": "red",
+              "at": 0.1,
+              "write_seconds": 0.7
+            },
+            {
+              "type": "arrow",
+              "id": "normal",
+              "from": [
+                370,
+                580
+              ],
+              "to": [
+                397.2798002192098,
+                532.75
+              ],
+              "color": "blue",
+              "at": 0.23,
+              "write_seconds": 0.6
+            },
+            {
+              "type": "math",
+              "id": "normal-label",
+              "latex": "F_N",
+              "x": 410,
+              "y": 525,
+              "size": 23,
+              "color": "blue",
+              "at": 0.28,
+              "write_seconds": 0.7
+            },
+            {
+              "type": "line",
+              "id": "slope-force",
+              "from": [
+                300,
+                540
+              ],
+              "to": [
+                440,
+                620
+              ],
+              "color": "muted",
+              "at": 0.38,
+              "write_seconds": 0.6
+            },
+            {
+              "type": "arrow",
+              "id": "tangent",
+              "from": [
+                370,
+                580
+              ],
+              "to": [
+                397.2798002192098,
+                595.75
+              ],
+              "color": "green",
+              "at": 0.53,
+              "write_seconds": 0.6
+            },
+            {
+              "type": "math",
+              "id": "tangent-label",
+              "latex": "mg\\sin\\theta",
+              "x": 405,
+              "y": 593,
+              "size": 20,
+              "color": "green",
+              "at": 0.64,
+              "write_seconds": 1.1
+            }
+          ]
+        },
+        {
+          "id": "newton",
+          "role": "derive",
+          "tts": "把这个分量写进牛顿第二定律。质量乘重力加速度，再乘倾角的正弦，等于质量乘加速度。等号两边的质量可以约去。",
+          "audio": "audio/newton.mp3",
+          "speed": 1,
+          "pause_before": 0,
+          "pause_after": 0.25,
+          "actions": [
+            {
+              "type": "math",
+              "id": "eq-newton",
+              "latex": "mg\\sin\\theta=ma",
+              "x": 575,
+              "y": 205,
+              "size": 28,
+              "color": "blue",
+              "at": 0.06,
+              "write_seconds": 3.0
+            }
+          ]
+        },
+        {
+          "id": "accel",
+          "role": "derive",
+          "tts": "所以加速度等于重力加速度乘倾角的正弦。三十度的正弦是二分之一，十乘二分之一，得到五米每二次方秒。",
+          "audio": "audio/accel.mp3",
+          "speed": 1,
+          "pause_before": 0,
+          "pause_after": 0.25,
+          "actions": [
+            {
+              "type": "math",
+              "id": "eq-a",
+              "latex": "a=g\\sin\\theta=5\\,m/s^2",
+              "x": 575,
+              "y": 272,
+              "size": 28,
+              "color": "blue",
+              "at": 0.06,
+              "write_seconds": 3.0
+            }
+          ]
+        },
+        {
+          "id": "time",
+          "role": "derive",
+          "tts": "加速度是常量，初速度又是零。位移等于二分之一加速度乘时间平方，速度等于加速度乘时间。",
+          "audio": "audio/time.mp3",
+          "speed": 1,
+          "pause_before": 0,
+          "pause_after": 0.25,
+          "actions": [
+            {
+              "type": "math",
+              "id": "eq-s",
+              "latex": "s=\\frac12at^2",
+              "x": 575,
+              "y": 339,
+              "size": 28,
+              "color": "blue",
+              "at": 0.04,
+              "write_seconds": 2
+            },
+            {
+              "type": "math",
+              "id": "eq-time-v",
+              "latex": "v=at",
+              "x": 575,
+              "y": 395,
+              "size": 28,
+              "color": "blue",
+              "at": 0.55,
+              "write_seconds": 1.3
+            }
+          ]
+        },
+        {
+          "id": "eliminate",
+          "role": "derive",
+          "tts": "把第二个式子平方，得到速度平方等于加速度平方乘时间平方。再用第一个式子消去时间，就有速度平方等于二倍加速度乘位移。",
+          "audio": "audio/eliminate.mp3",
+          "speed": 1,
+          "pause_before": 0,
+          "pause_after": 0.25,
+          "actions": [
+            {
+              "type": "math",
+              "id": "eq-v-square",
+              "latex": "v^2=a^2t^2=2as",
+              "x": 575,
+              "y": 450,
+              "size": 28,
+              "color": "blue",
+              "at": 0.04,
+              "write_seconds": 3.3
+            }
+          ]
+        },
+        {
+          "id": "answer",
+          "role": "derive",
+          "tts": "代入加速度五、位移二，速度平方等于二十。题目求速率，取正的平方根，答案是二倍根号五米每秒，约四点四七米每秒。",
+          "audio": "audio/answer.mp3",
+          "speed": 1,
+          "pause_before": 0,
+          "pause_after": 0.25,
+          "actions": [
+            {
+              "type": "math",
+              "id": "eq-answer",
+              "latex": "v=\\sqrt{20}=2\\sqrt5\\,m/s",
+              "x": 575,
+              "y": 515,
+              "size": 28,
+              "color": "blue",
+              "at": 0.35,
+              "write_seconds": 3.2
+            }
+          ]
+        },
+        {
+          "id": "close",
+          "role": "conclusion",
+          "tts": "这道题先用受力求加速度，再用位移求速度。图里沿斜面的方向、式子中的重力分量、以及两米的位移，说的是同一个方向。",
+          "audio": "audio/close.mp3",
+          "speed": 1,
+          "pause_before": 0,
+          "pause_after": 0.25,
+          "actions": [
+            {
+              "type": "text",
+              "id": "recap",
+              "text": "受力求加速度，位移求速度",
+              "x": 575,
+              "y": 590,
+              "size": 23,
+              "color": "red",
+              "at": 0.04,
+              "write_seconds": 3
+            }
+          ]
+        }
+      ],
+      "problem_id": "incline",
+      "problem": {
+        "text": "一个小物块从静止开始沿固定的光滑斜面下滑。斜面倾角为 $30^\\circ$，物块沿斜面滑行 $2.0\\,\\mathrm m$，取 $g=10\\,\\mathrm{m\\,s^{-2}}$。求此时物块的速度大小。",
+        "font_size": 18,
+        "rect": [
+          145,
+          98,
+          1030,
+          92
+        ]
+      },
+      "derivation_steps": [
+        {
+          "id": "step-1",
+          "cue_id": "newton",
+          "action_id": "eq-newton",
+          "result": "mg\\sin\\theta=ma",
+          "handout_result": "mg\\sin\\theta=ma.",
+          "handout_label": "eq:newton",
+          "spoken_anchor": "把这个分量写进牛顿第二定律",
+          "question": "沿斜面如何列方程？",
+          "reason": "把这个分量写进牛顿第二定律。质量乘重力加速度，再乘倾角的正弦，等于质量乘加速度。等号两边的质量可以约去。",
+          "depends_on": [],
+          "requires_visible": [
+            "tangent"
+          ]
+        },
+        {
+          "id": "step-2",
+          "cue_id": "accel",
+          "action_id": "eq-a",
+          "result": "a=g\\sin\\theta=5\\,m/s^2",
+          "handout_result": "a=g\\sin\\theta=10\\times\\frac12=5\\,\\mathrm{m\\,s^{-2}}.",
+          "handout_label": "eq:a",
+          "spoken_anchor": "所以加速度等于重力加速度乘倾角的正弦",
+          "question": "加速度的数值是多少？",
+          "reason": "所以加速度等于重力加速度乘倾角的正弦。三十度的正弦是二分之一，十乘二分之一，得到五米每二次方秒。",
+          "depends_on": [
+            "step-1"
+          ],
+          "requires_visible": []
+        },
+        {
+          "id": "step-3",
+          "cue_id": "time",
+          "action_id": "eq-s",
+          "result": "s=\\frac12at^2",
+          "handout_result": "s=\\frac12at^2",
+          "handout_label": "eq:s",
+          "spoken_anchor": "位移等于二分之一加速度乘时间平方",
+          "question": "怎样描述这段匀加速运动？",
+          "reason": "加速度是常量，初速度又是零。位移等于二分之一加速度乘时间平方，速度等于加速度乘时间。",
+          "depends_on": [
+            "step-2"
+          ],
+          "requires_visible": []
+        },
+        {
+          "id": "step-4",
+          "cue_id": "time",
+          "action_id": "eq-time-v",
+          "result": "v=at",
+          "handout_result": "v=at",
+          "handout_label": "eq:vt",
+          "spoken_anchor": "速度等于加速度乘时间",
+          "question": "怎样描述这段匀加速运动？",
+          "reason": "加速度是常量，初速度又是零。位移等于二分之一加速度乘时间平方，速度等于加速度乘时间。",
+          "depends_on": [
+            "step-3"
+          ],
+          "requires_visible": []
+        },
+        {
+          "id": "step-5",
+          "cue_id": "eliminate",
+          "action_id": "eq-v-square",
+          "result": "v^2=a^2t^2=2as",
+          "handout_result": "v^2=a^2t^2=2as.",
+          "handout_label": "eq:kinematics",
+          "spoken_anchor": "把第二个式子平方",
+          "question": "怎样消去时间？",
+          "reason": "把第二个式子平方，得到速度平方等于加速度平方乘时间平方。再用第一个式子消去时间，就有速度平方等于二倍加速度乘位移。",
+          "depends_on": [
+            "step-4"
+          ],
+          "requires_visible": []
+        },
+        {
+          "id": "step-6",
+          "cue_id": "answer",
+          "action_id": "eq-answer",
+          "result": "v=\\sqrt{20}=2\\sqrt5\\,m/s",
+          "handout_result": "v=\\sqrt{2as}=\\sqrt{2\\times5\\times2}=2\\sqrt5\\,\\mathrm{m\\,s^{-1}}.",
+          "handout_label": "eq:v",
+          "spoken_anchor": "速度平方等于二十",
+          "question": "速度数值是多少？",
+          "reason": "代入加速度五、位移二，速度平方等于二十。题目求速率，取正的平方根，答案是二倍根号五米每秒，约四点四七米每秒。",
+          "depends_on": [
+            "step-5"
+          ],
+          "requires_visible": []
+        }
+      ]
+    }
+  ],
+  "lesson_arc": {
+    "entry_question": "光滑斜面上滑过两米后的速度多大？",
+    "beats": [
+      {
+        "id": "beat-read",
+        "purpose": "orient",
+        "cue_ids": [
+          "read"
+        ],
+        "student_question": "题目要求哪个速度？",
+        "scene_change": "沿斜面的运动、受力或对应式子按口播呈现。",
+        "takeaway": "这道题看左边的斜面。倾角三十度，表面光滑，斜面固定。小物块从静止释放，沿斜面滑过两米，求末速度。",
+        "visual_ids": [
+          "scene:p01"
+        ]
+      },
+      {
+        "id": "beat-observe",
+        "purpose": "model",
+        "cue_ids": [
+          "observe"
+        ],
+        "student_question": "位移沿哪个方向量？",
+        "scene_change": "沿斜面的运动、受力或对应式子按口播呈现。",
+        "takeaway": "先看它怎样运动。物块沿斜面越来越快。这里的两米，是沿斜面量出来的距离。图上的绿色箭头表示速度方向。",
+        "visual_ids": [
+          "scene:p01"
+        ]
+      },
+      {
+        "id": "beat-force",
+        "purpose": "reason",
+        "cue_ids": [
+          "force"
+        ],
+        "student_question": "哪些力使物块加速？",
+        "scene_change": "沿斜面的运动、受力或对应式子按口播呈现。",
+        "takeaway": "现在画受力图。重力竖直向下，支持力垂直斜面。沿斜面向下取正方向，把重力分解，沿斜面的分量等于重力乘倾角的正弦。",
+        "visual_ids": [
+          "weight",
+          "weight-label",
+          "normal",
+          "normal-label",
+          "slope-force",
+          "tangent",
+          "tangent-label"
+        ]
+      },
+      {
+        "id": "beat-newton",
+        "purpose": "derive",
+        "cue_ids": [
+          "newton"
+        ],
+        "student_question": "沿斜面如何列方程？",
+        "scene_change": "沿斜面的运动、受力或对应式子按口播呈现。",
+        "takeaway": "把这个分量写进牛顿第二定律。质量乘重力加速度，再乘倾角的正弦，等于质量乘加速度。等号两边的质量可以约去。",
+        "visual_ids": [
+          "eq-newton"
+        ]
+      },
+      {
+        "id": "beat-accel",
+        "purpose": "derive",
+        "cue_ids": [
+          "accel"
+        ],
+        "student_question": "加速度的数值是多少？",
+        "scene_change": "沿斜面的运动、受力或对应式子按口播呈现。",
+        "takeaway": "所以加速度等于重力加速度乘倾角的正弦。三十度的正弦是二分之一，十乘二分之一，得到五米每二次方秒。",
+        "visual_ids": [
+          "eq-a"
+        ]
+      },
+      {
+        "id": "beat-time",
+        "purpose": "derive",
+        "cue_ids": [
+          "time"
+        ],
+        "student_question": "怎样描述这段匀加速运动？",
+        "scene_change": "沿斜面的运动、受力或对应式子按口播呈现。",
+        "takeaway": "加速度是常量，初速度又是零。位移等于二分之一加速度乘时间平方，速度等于加速度乘时间。",
+        "visual_ids": [
+          "eq-s",
+          "eq-time-v"
+        ]
+      },
+      {
+        "id": "beat-eliminate",
+        "purpose": "derive",
+        "cue_ids": [
+          "eliminate"
+        ],
+        "student_question": "怎样消去时间？",
+        "scene_change": "沿斜面的运动、受力或对应式子按口播呈现。",
+        "takeaway": "把第二个式子平方，得到速度平方等于加速度平方乘时间平方。再用第一个式子消去时间，就有速度平方等于二倍加速度乘位移。",
+        "visual_ids": [
+          "eq-v-square"
+        ]
+      },
+      {
+        "id": "beat-answer",
+        "purpose": "anchor",
+        "cue_ids": [
+          "answer"
+        ],
+        "student_question": "速度数值是多少？",
+        "scene_change": "沿斜面的运动、受力或对应式子按口播呈现。",
+        "takeaway": "代入加速度五、位移二，速度平方等于二十。题目求速率，取正的平方根，答案是二倍根号五米每秒，约四点四七米每秒。",
+        "visual_ids": [
+          "eq-answer"
+        ]
+      },
+      {
+        "id": "beat-close",
+        "purpose": "recap",
+        "cue_ids": [
+          "close"
+        ],
+        "student_question": "怎样从受力走到速度？",
+        "scene_change": "沿斜面的运动、受力或对应式子按口播呈现。",
+        "takeaway": "这道题先用受力求加速度，再用位移求速度。图里沿斜面的方向、式子中的重力分量、以及两米的位移，说的是同一个方向。",
+        "visual_ids": [
+          "recap"
+        ]
+      }
+    ]
+  },
+  "closure": {
+    "recap_cues": [
+      "close"
+    ],
+    "visible_action_ids": [
+      "eq-newton",
+      "eq-answer"
+    ],
+    "points": [
+      {
+        "kind": "model",
+        "text": "固定光滑斜面上的匀加速运动。"
+      },
+      {
+        "kind": "key_step",
+        "text": "沿斜面写牛顿第二定律求加速度，再消去时间。"
+      },
+      {
+        "kind": "result",
+        "text": "末速度为二倍根号五米每秒。"
+      }
+    ]
+  }
+}

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Create, validate, and merge section work packages for long physics courses."""
 import argparse,json,re,shlex,subprocess,sys
+from copy import deepcopy
 from pathlib import Path
 
 ID_RE=re.compile(r'^[a-z0-9][a-z0-9-]{0,31}$')
@@ -82,8 +83,14 @@ def init(project,plan_file):
         'camera':course.get('camera','static'),
         'speech':speech,
     }
-    for key in ('font','parameters','kind','input_manifest'):
-        if key in course:lesson[key]=course[key]
+    lesson.update(deepcopy({k:v for k,v in course.items() if k not in
+                          ('target_minutes','minimum_minutes','speech','sections')}))
+    if lesson.get('kind') in ('concept','problem'):
+        lesson['review_required']=True
+        lesson['workflow_version']=1
+        lesson['term_inventory_version']=2
+        lesson.setdefault('handout','学生讲义.tex')
+        lesson.setdefault('handout_source','学生讲义.tex')
     if outline:lesson['course_outline']=outline
     contract={
         'schema_version':1,'course':course,'lesson':lesson,
@@ -143,7 +150,7 @@ def load_team(project):
 def inspect_team(project,deep=False):
     project,team,contract,manifest=load_team(project);errors=[];warnings=[];details=[];seen=set();all_pages=[];all_cues=[];seconds=0
     symbols=contract.get('symbols',{});policy=contract.get('page_policy',{})
-    lesson=dict(contract['lesson'])
+    lesson=deepcopy(contract['lesson'])
     collect_concepts=lesson.get('kind')=='concept'
     if collect_concepts:
         lesson.setdefault('concept_units',[])
@@ -156,6 +163,12 @@ def inspect_team(project,deep=False):
         try:fragment=read_json(fragment_path)
         except ValueError as e:errors.append(str(e));detail['status']='invalid';details.append(detail);continue
         detail['status']='ready'
+        if fragment.get('lesson_arc'):
+            arc=lesson.setdefault('lesson_arc',{'entry_question':'','beats':[]})
+            for beat in fragment['lesson_arc'].get('beats',[]):
+                if beat not in arc['beats']:arc['beats'].append(beat)
+        if item['order']==max(x['order'] for x in manifest['sections']) and fragment.get('closure'):
+            lesson.setdefault('closure',deepcopy(fragment['closure']))
         if collect_concepts:
             planned_ids=item.get('unit_ids')
             source_units=fragment.get('concept_units',[])
@@ -283,7 +296,7 @@ def main():
     p=sub.add_parser('validate');p.add_argument('project');p.add_argument('--strict-duration',action='store_true')
     p=sub.add_parser('merge');p.add_argument('project');p.add_argument('--output',default='lesson.json')
     p=sub.add_parser('verify-video');p.add_argument('project');p.add_argument('--video',required=True)
-    p=sub.add_parser('build-final');p.add_argument('project');p.add_argument('--output',default='lesson.json');p.add_argument('--backend',choices=['glm','doubao','minimax','edge','user']);p.add_argument('--voice');p.add_argument('--renderer',choices=['notebook','motion-canvas','manim']);p.add_argument('--runtime');p.add_argument('--fps',type=int,choices=[12,24,30],default=24);p.add_argument('--width',type=int,choices=[1280,1920],default=1920)
+    p=sub.add_parser('build-final');p.add_argument('project');p.add_argument('--output',default='lesson.json');p.add_argument('--backend',choices=['glm','doubao','minimax','edge','qwen','user']);p.add_argument('--voice');p.add_argument('--renderer',choices=['notebook','motion-canvas','manim']);p.add_argument('--runtime');p.add_argument('--fps',type=int,choices=[12,24,30],default=24);p.add_argument('--width',type=int,choices=[1280,1920],default=1920)
     args=parser.parse_args()
     if args.command=='init':init(args.project,args.plan)
     elif args.command=='status':status(args.project,args.fail_on_error)

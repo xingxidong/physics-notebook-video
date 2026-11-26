@@ -2,31 +2,8 @@
 import math
 import re
 
-from pronunciation import term_pattern, LISTEN_TERMS, PHYSICS_PINYIN, spoken_symbols, symbol_reading
+from pronunciation import term_pattern, LISTEN_TERMS, PHYSICS_TERMS, PHYSICS_PINYIN, spoken_symbols, symbol_reading
 
-
-PHYSICS_TERMS = {
-    '质心': 'zhi4 xin1', '速度': 'su4 du4', '加速度': 'jia1 su4 du4',
-    '动量': 'dong4 liang4', '冲量': 'chong1 liang4', '力矩': 'li4 ju3',
-    '动量守恒': 'dong4 liang4 shou3 heng2', '角动量守恒': 'jiao3 dong4 liang4 shou3 heng2',
-    '动能': 'dong4 neng2', '势能': 'shi4 neng2', '机械能': 'ji1 xie4 neng2',
-    '角速度': 'jiao3 su4 du4', '简谐振动': 'jian3 xie2 zhen4 dong4',
-    '库仑定律': 'ku4 lun2 ding4 lü4', '高斯定理': 'gao1 si1 ding4 li3',
-    '安培环路定律': 'an1 pei2 huan2 lu4 ding4 lü4', '洛伦兹力': 'luo4 lun2 zi1 li4',
-    '楞次定律': 'leng2 ci4 ding4 lü4', '电势差': 'dian4 shi4 cha1',
-    '电动势': 'dian4 dong4 shi4', '感应电动势': 'gan3 ying4 dian4 dong4 shi4',
-    '磁通': 'ci2 tong1', '磁通量': 'ci2 tong1 liang4', '磁通链': 'ci2 tong1 lian4',
-    '励磁电流': 'li4 ci2 dian4 liu2', '磁芯': 'ci2 xin1',
-    '自感': 'zi4 gan3', '互感': 'hu4 gan3', '互感系数': 'hu4 gan3 xi4 shu4',
-    '耦合系数': 'ou3 he2 xi4 shu4', '理想变压器': 'li3 xiang3 bian4 ya1 qi4',
-    '变压器': 'bian4 ya1 qi4', '相位差': 'xiang4 wei4 cha1',
-    '波长': 'bo1 chang2', '驻波': 'zhu4 bo1', '波节': 'bo1 jie2', '波腹': 'bo1 fu4',
-    '折射率': 'zhe2 she4 lü4', '散射': 'san3 she4', '相干': 'xiang1 gan1',
-    '等温过程': 'deng3 wen1 guo4 cheng2', '绝热过程': 'jue2 re4 guo4 cheng2',
-    '熵增': 'shang1 zeng1', '光电效应': 'guang1 dian4 xiao4 ying4',
-    '载荷': 'zai4 he4', '质量数': 'zhi4 liang4 shu4',
-    **PHYSICS_PINYIN,
-}
 
 POLYPHONIC_TERMS = frozenset(PHYSICS_PINYIN) | frozenset(LISTEN_TERMS) | {
     '动量', '冲量', '动量守恒', '角动量守恒', '磁通量', '互感系数', '耦合系数',

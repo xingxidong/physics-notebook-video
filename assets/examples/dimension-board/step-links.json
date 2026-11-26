@@ -1,0 +1,26 @@
+{
+  "length-from-speed": {
+    "question": "初速度乘时间是什么量纲？",
+    "spoken_anchor": "先看第一项",
+    "requires_visible": [
+      "v-label",
+      "t-label"
+    ],
+    "handout_label": "eq:length-from-speed"
+  },
+  "speed-from-acceleration": {
+    "question": "加速度乘时间是什么量纲？",
+    "spoken_anchor": "第二项用的是加速度",
+    "requires_visible": [
+      "a-label",
+      "t-label"
+    ],
+    "handout_label": "eq:speed-from-acceleration"
+  },
+  "length-from-acceleration": {
+    "question": "加速度要乘几份时间才能得到长度？",
+    "spoken_anchor": "让加速度乘时间的平方",
+    "requires_visible": [],
+    "handout_label": "eq:length-from-acceleration"
+  }
+}

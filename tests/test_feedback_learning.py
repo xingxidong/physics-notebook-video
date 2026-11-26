@@ -51,12 +51,16 @@ class LearningBetweenLessons(unittest.TestCase):
         self.assertNotIn('reference_sample', report['replay'][0])
         self.lesson['speech'] = {'feedback_voice':dict(self.voice)}
         entry = check(self.root, self.lesson)['replay'][0]
-        self.assertEqual((entry['status'],entry['reference_sample']), ('apply_and_check',str(self.wav)))
+        sample=Path(entry['reference_sample'])
+        self.assertEqual(entry['status'],'apply_and_check')
+        self.assertEqual(sample.read_bytes(),self.wav.read_bytes())
         self.review('trial', action='再比较 C')
         self.assertEqual([i['status'] for i in check(self.root, self.lesson)['replay']], ['apply_and_check','compare'])
-        self.wav.write_bytes(b'changed')
-        self.assertEqual(check(self.root, self.lesson)['replay'][0]['status'], 'restore_or_audition')
         self.wav.unlink()
+        self.assertEqual(check(self.root,self.lesson)['replay'][0]['status'],'apply_and_check')
+        sample.write_bytes(b'changed')
+        self.assertEqual(check(self.root, self.lesson)['replay'][0]['status'], 'restore_or_audition')
+        sample.unlink()
         self.assertNotIn('reference_sample', check(self.root, self.lesson)['replay'][0])
         self.lesson['speech']['feedback_voice']['model'] = 'new-tts'
         self.assertEqual(check(self.root, self.lesson)['replay'][0]['status'], 'audition_voice')

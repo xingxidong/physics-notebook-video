@@ -28,8 +28,10 @@ class PronunciationTests(unittest.TestCase):
             report = inspect_script(resolved)['pronunciation']
         self.assertTrue(report['apply_dictionary'])
         entry, = report['cues']
-        self.assertEqual(entry['terms'], {'相乘': 'xiang1 cheng2', '切线': 'qie1 xian4', '电荷': 'dian4 he4',
-                                          '相位': 'xiang4 wei4', '相长干涉': 'xiang1 zhang3 gan1 she4'})
+        expected = {'相乘':'xiang1 cheng2', '切线':'qie1 xian4', '电荷':'dian4 he4',
+                    '相位':'xiang4 wei4', '相长干涉':'xiang1 zhang3 gan1 she4'}
+        self.assertEqual({word:entry['terms'].get(word) for word in expected},expected)
+        self.assertTrue(all(word in sentence for word in entry['terms']))
         self.assertEqual(entry['listen_for'], ['相乘'])
         self.assertEqual(resolved['pages'][0]['cues'][0]['tts'], sentence)
         with self.assertRaisesRegex(ValueError, '相位'):
@@ -47,7 +49,7 @@ class PronunciationTests(unittest.TestCase):
         before = {'backend': 'minimax', 'minimax_pronunciation': False}
         after = {'backend': 'minimax'}
         affected = {'tts': '相位发生了变化。'}
-        unaffected = {'tts': '两条曲线都发生了变化。'}
+        unaffected = {'tts': '两条虚线都发生了变化。'}
         with tempfile.TemporaryDirectory() as tmp, \
              patch('voice.environment', return_value={'MINIMAX_API_KEY': 'test-key'}), \
              patch('voice.http', return_value=response) as http, \

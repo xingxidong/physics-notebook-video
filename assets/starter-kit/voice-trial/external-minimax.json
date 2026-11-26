@@ -1,0 +1,6 @@
+{
+  "backend": "minimax",
+  "model": "speech-2.8-hd",
+  "voice": "Chinese (Mandarin)_Gentleman",
+  "speed": 1
+}

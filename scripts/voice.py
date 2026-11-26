@@ -6,7 +6,7 @@ import asyncio,base64,hashlib,json,os,re,shutil,subprocess,urllib.request,urllib
 from pathlib import Path
 from pronunciation import matched_pronunciations, minimax_dictionary
 
-DEFAULTS={'glm':'chuichui','doubao':'zh_male_youyoujunzi_uranus_bigtts','minimax':'Chinese (Mandarin)_Gentleman','edge':'zh-CN-YunxiNeural','user':''}
+DEFAULTS={'glm':'chuichui','doubao':'zh_male_youyoujunzi_uranus_bigtts','minimax':'Chinese (Mandarin)_Gentleman','edge':'zh-CN-YunxiNeural','qwen':'teacher-reference','user':''}
 KEYS={'glm':'GLM_API_KEY','doubao':'DOUBAO_API_KEY','minimax':'MINIMAX_API_KEY'}
 def environment(project):
     values={};p=Path(project)/'.env'
@@ -72,16 +72,22 @@ def master(project,cfg,source,duration):
 def synth(project,cfg,cue):
     project=Path(project);env=environment(project);backend=cfg.get('backend','glm')
     if backend not in DEFAULTS:raise ValueError(f'Unknown speech backend {backend}')
+    if backend=='qwen':
+        from qwen_voice import synth as local_synth
+        return local_synth(project,cfg,cue)
     voice=cfg.get('voice') or env.get(backend.upper()+'_VOICE') or DEFAULTS[backend]
     speed=float(cue.get('speed',cfg.get('speed',1.0)));pitch=cue.get('pitch',cfg.get('pitch','+0Hz'));volume=float(cue.get('volume',cfg.get('volume',1.0)))
     if not .5<=speed<=2:raise ValueError('Speech speed must be between 0.5 and 2')
     if not .1<=volume<=10:raise ValueError('Speech volume must be between 0.1 and 10')
     if backend=='edge' and volume>2:raise ValueError('Edge speech volume must be between 0.1 and 2')
     text=cue.get('tts',cue.get('text',''));audio_path=cue.get('audio')
+    provider=cue.get('_card_provider') if backend=='minimax' else None
+    if provider:
+        text=provider['provider_text']
     model=cfg.get('model') or env.get('MINIMAX_MODEL','speech-2.8-hd') if backend=='minimax' else cfg.get('model','')
     signature={'backend':backend,'voice':voice,'model':model,'speed':speed,'pitch':pitch,'volume':volume,'tts':text,'adapter':2}
     signature.update(resource_id=cfg.get('resource_id',env.get('DOUBAO_RESOURCE_ID','seed-tts-2.0')),host=env.get('MINIMAX_API_HOST','https://api.minimaxi.com'),emotion=cue.get('emotion'))
-    matches = (matched_pronunciations(text, cfg.get('minimax_pronunciation'), cue.get('minimax_pronunciation'))
+    matches = provider['pinyin'] if provider else (matched_pronunciations(text, cfg.get('minimax_pronunciation'), cue.get('minimax_pronunciation'))
                if backend == 'minimax' else {})
     if matches:
         signature['pronunciation_dict'] = minimax_dictionary(matches)

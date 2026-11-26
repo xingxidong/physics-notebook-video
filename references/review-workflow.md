@@ -6,8 +6,9 @@
 
 1. 写好课程源、完整口播和学生讲义。新授课与习题课按[讲义编写与排版](handouts.md)分别组织内容，统一使用 LaTeX 排版、TikZ 配图。编译并逐页查看实际 PDF，保持题面、板书、讲义和图的符号一致。显式设置 `handout:"学生讲义.pdf"`，把实际参与编译的 LaTeX、TikZ、样式和插图逐个加入 `review_assets`。初始化示例的 `讲义.md` 作为草稿继续整理。
 2. 有原生 Manim 或 Motion Canvas 动画时先生成无配音预览。开场、接触前后、运动峰值、转折及结束均查看画面，对照接触点、轨迹、速度方向、文字位置。抽样边界检查见[板书排版](board-layout.md)。把正常接触与确实穿模的情况区分清楚，按图里的物理条件调整。
-3. 用 `review-plan` 输出 `教案.md` 和 `review-preview/`。给人看完整口播、重难点、板书关键帧、片头和学生讲义。收到修改意见先改教案源、讲稿或动画，再出新的教案。审阅者明确同意当前版本后，才用 `approve-plan` 登记实际确认文字。用户的修改意见用于更新教案。
-4. 正式构建。配音、动画和板书按实测时间复查。交付视频、学生讲义 PDF、其完整 LaTeX/TikZ 源码及依赖素材、板书 PDF。字幕可另外导出。查看 `delivery-files.json` 并确认源码包收齐实际编译所需的文件，学生可打开每个交付文件。
+3. 按[课堂文案改稿](classroom-language-editing.md)复读完整讲稿和学生讲义。用 `review-plan` 输出 `教案.md` 和 `review-preview/`，根据口播句编号和讲义行号修改后再生成。给人看完整口播、重难点、板书关键帧、片头和学生讲义。收到修改意见先改教案源、讲稿或动画，再出新的教案。审阅者明确同意当前版本后，用 `approve-plan` 登记实际确认文字。
+4. 正式构建后先得到 `delivery-candidate.json` 待审清单。对实际要交付的 MP4 运行 `quality-check --stage final --video-file 文件名`，逐处完成术语、字母、句间衔接及口播落笔检查。制作者把实际观看、试听结果登记到对应检查项；修订后重新检查受影响内容。
+5. 所有检查完成后运行 `finalize --video-file 文件名`，生成 `delivery-files.json`。交付视频、学生讲义 PDF、完整 LaTeX/TikZ 源码及依赖素材、板书 PDF，确认每个文件可打开。具体登记命令见 [制作流程](production-workflow.md)。
 
 ```sh
 python3 SKILL/scripts/course.py preview PROJECT --renderer manim

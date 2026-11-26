@@ -1,7 +1,8 @@
 """Small explicit LaTeX subset -> editable single-stroke math layout."""
 import re
 PARTIAL='∂'
-SYMBOLS={'alpha':'α','beta':'β','gamma':'γ','eta':'η','delta':'δ','theta':'θ','lambda':'λ','mu':'μ','pi':'π','rho':'ρ','sigma':'σ','tau':'τ','phi':'φ','varphi':'φ','nu':'ν','xi':'ξ','Psi':'Ψ','kappa':'κ','ell':'ℓ','omega':'ω','varepsilon':'ε','epsilon':'ε','Phi':'Φ','Omega':'Ω','Delta':'Δ','Sigma':'Σ','oint':'∮','int':'∫','cdot':'·','times':'×','to':'→','parallel':'∥','infty':'∞','leq':'≤','geq':'≥','approx':'≈','sin':'sin','cos':'cos','tan':'tan','ln':'ln','exp':'exp'}
+DEGREE='°'
+SYMBOLS={'alpha':'α','beta':'β','gamma':'γ','Gamma':'Γ','eta':'η','delta':'δ','theta':'θ','lambda':'λ','mu':'μ','pi':'π','rho':'ρ','sigma':'σ','tau':'τ','phi':'φ','varphi':'φ','nu':'ν','xi':'ξ','Psi':'Ψ','kappa':'κ','ell':'ℓ','omega':'ω','varepsilon':'ε','epsilon':'ε','Phi':'Φ','Omega':'Ω','Delta':'Δ','Sigma':'Σ','oint':'∮','int':'∫','ast':'*','cdot':'·','times':'×','to':'→','parallel':'∥','infty':'∞','leq':'≤','geq':'≥','approx':'≈','sin':'sin','cos':'cos','tan':'tan','ln':'ln','exp':'exp'}
 class Parser:
     def __init__(self,s):self.s=s;self.i=0
     def spaces(self):
@@ -25,6 +26,7 @@ class Parser:
             if cmd in ('left','right'):return self.atom()
             if cmd in ('quad','qquad'):return '  '
             if cmd=='partial':return PARTIAL
+            if cmd=='circ':return DEGREE
             if cmd in SYMBOLS:return SYMBOLS[cmd]
             raise ValueError(f'Unsupported LaTeX command: \\{cmd}; add explicit stroke/layout support.')
         if c in '}_^':raise ValueError(f'Unexpected LaTeX character: {c}')

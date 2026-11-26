@@ -1,0 +1,314 @@
+{
+  "backend": "qwen",
+  "items": [
+    {
+      "id": "measure",
+      "text": "先沿着斜面测量长度，再写出这个物理量的单位。",
+      "targets": [
+        {
+          "term": "测量",
+          "offset": 5,
+          "pinyin": "ce4 liang2",
+          "sense": "测量动作"
+        },
+        {
+          "term": "长度",
+          "offset": 7,
+          "pinyin": "chang2 du4",
+          "sense": "长短"
+        },
+        {
+          "term": "物理量",
+          "offset": 15,
+          "pinyin": "wu4 li3 liang4",
+          "sense": "量名"
+        }
+      ],
+      "flow": "测量、长度、物理量各自连读；逗号处换气。",
+      "reference_audio": "audio/measure.mp3",
+      "reference_status": "synthetic_comparison_only",
+      "judgment": "pending",
+      "audio": "audio/measure.wav",
+      "duration": 4.16,
+      "audio_sha256": "91d3a7ae0f7f3587e9491c18cf6d85a4c5fdff3217ff2c224230e5d0c3df20ca",
+      "synthesis_signature": {
+        "backend": "qwen",
+        "adapter": 1,
+        "runtime": {
+          "mlx-audio": "0.5.0",
+          "mlx": "0.32.4"
+        },
+        "python": "local-runtime",
+        "worker_sha256": "1bfa86adad314a88584b473e2405a507ed29750c3669fbd6875ee015fe0d8c74",
+        "model": "mlx-community/Qwen3-TTS-12Hz-0.6B-Base-8bit",
+        "model_files": {
+          "model.safetensors": {
+            "size": 1304461214,
+            "mtime_ns": 1794713431154466093
+          },
+          "tokenizer_config.json": {
+            "size": 7344,
+            "mtime_ns": 1794711207582691565,
+            "sha256": "dc3c31c3bdaedd5016382bb3cbe07323026775ad51f5a4fb564505992ae4a670"
+          },
+          "config.json": {
+            "size": 5522,
+            "mtime_ns": 1794711029703350847,
+            "sha256": "b404fb6f99dac6f7a81f3a03af5675b131ecf9936ac75a7c9d75e54044600044"
+          },
+          "generation_config.json": {
+            "size": 245,
+            "mtime_ns": 1794711031029125426,
+            "sha256": "f1b90b4513f3b34c62851049e2492d7b4c5940daf1276f89c82b8ef04127f3aa"
+          },
+          "vocab.json": {
+            "size": 2776833,
+            "mtime_ns": 1794711215436690755,
+            "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+          },
+          "model.safetensors.index.json": {
+            "size": 77731,
+            "mtime_ns": 1794711207255834338,
+            "sha256": "7829f1cc24f5cbd7d7a3ba888bb08c7cf52d82ba79a4f0f3756d41f8bf5e52b4"
+          },
+          "preprocessor_config.json": {
+            "size": 127,
+            "mtime_ns": 1794711207507062749,
+            "sha256": "efdde1022ea9d76928bf7a9cd53139138f5ba2e466e837f08f6105ab1af1c119"
+          }
+        },
+        "reference_sha256": "95c41f0efde19a6158747e92506ebf044b1e036be3c3ac75539ec85154155c20",
+        "reference_text": "沿着斜面向下取正方向，重力的切向分量让物块加速。",
+        "tts": "先沿着斜面测梁常度，再写出这个物理量的单位。",
+        "source_text": "先沿着斜面测量长度，再写出这个物理量的单位。",
+        "rate_multiplier": 1,
+        "seed": 281762,
+        "temperature": 0.53,
+        "letter_style": "names"
+      },
+      "synthesis": {
+        "actual_input": "先沿着斜面测梁常度，再写出这个物理量的单位。",
+        "source_text": "先沿着斜面测量长度，再写出这个物理量的单位。",
+        "duration": 4.16,
+        "rate_multiplier": 1,
+        "alignment": "unmeasured"
+      },
+      "planned_input": {
+        "source": "先沿着斜面测量长度，再写出这个物理量的单位。",
+        "provider_text": "先沿着斜面测量长度，再写出这个物理量的单位。",
+        "pinyin": {
+          "沿着": "yan2 zhe5",
+          "斜面": "xie2 mian4",
+          "测量": "ce4 liang2",
+          "长度": "chang2 du4",
+          "物理量": "wu4 li3 liang4"
+        },
+        "local_text": "先沿着斜面测梁常度，再写出这个物理量的单位。",
+        "targets": [
+          {
+            "term": "斜面",
+            "offset": 3,
+            "expected": "xie2 mian4"
+          },
+          {
+            "term": "测量",
+            "offset": 5,
+            "expected": "ce4 liang2",
+            "flow": "“测量”连续，第二个字自然上扬。"
+          },
+          {
+            "term": "长度",
+            "offset": 7,
+            "expected": "chang2 du4",
+            "flow": "长读第二声，长度两字连读。"
+          },
+          {
+            "term": "物理量",
+            "offset": 15,
+            "expected": "wu4 li3 liang4",
+            "flow": "“量”紧跟“物理”。"
+          }
+        ],
+        "conflicts": [],
+        "provider_exclusions": [],
+        "symbols": []
+      },
+      "review_status": "pending"
+    },
+    {
+      "id": "mixed-q",
+      "text": "水平分量是 u 乘 q，竖直分量是负 v 乘 q。",
+      "targets": [
+        {
+          "term": "分量",
+          "offset": 2,
+          "pinyin": "fen1 liang4",
+          "sense": "矢量投影"
+        },
+        {
+          "term": "分量",
+          "offset": 14,
+          "pinyin": "fen1 liang4",
+          "sense": "矢量投影"
+        }
+      ],
+      "flow": "按 u /juː/、q /kjuː/、v /viː/、q /kjuː/ 的顺序；每个字母整体融入中文。",
+      "reference_audio": "audio/mixed-q.mp3",
+      "reference_status": "synthetic_comparison_only",
+      "judgment": "pending",
+      "audio": "audio/mixed-q.wav",
+      "duration": 5.28,
+      "audio_sha256": "c1dfac4852c2a2b17c3ecde113450f4d69dfb56e00ad7de0bc0d802465125a19",
+      "synthesis_signature": {
+        "backend": "qwen",
+        "adapter": 1,
+        "runtime": {
+          "mlx-audio": "0.5.0",
+          "mlx": "0.32.4"
+        },
+        "python": "local-runtime",
+        "worker_sha256": "1bfa86adad314a88584b473e2405a507ed29750c3669fbd6875ee015fe0d8c74",
+        "model": "mlx-community/Qwen3-TTS-12Hz-0.6B-Base-8bit",
+        "model_files": {
+          "model.safetensors": {
+            "size": 1304461214,
+            "mtime_ns": 1794713431154466093
+          },
+          "tokenizer_config.json": {
+            "size": 7344,
+            "mtime_ns": 1794711207582691565,
+            "sha256": "dc3c31c3bdaedd5016382bb3cbe07323026775ad51f5a4fb564505992ae4a670"
+          },
+          "config.json": {
+            "size": 5522,
+            "mtime_ns": 1794711029703350847,
+            "sha256": "b404fb6f99dac6f7a81f3a03af5675b131ecf9936ac75a7c9d75e54044600044"
+          },
+          "generation_config.json": {
+            "size": 245,
+            "mtime_ns": 1794711031029125426,
+            "sha256": "f1b90b4513f3b34c62851049e2492d7b4c5940daf1276f89c82b8ef04127f3aa"
+          },
+          "vocab.json": {
+            "size": 2776833,
+            "mtime_ns": 1794711215436690755,
+            "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+          },
+          "model.safetensors.index.json": {
+            "size": 77731,
+            "mtime_ns": 1794711207255834338,
+            "sha256": "7829f1cc24f5cbd7d7a3ba888bb08c7cf52d82ba79a4f0f3756d41f8bf5e52b4"
+          },
+          "preprocessor_config.json": {
+            "size": 127,
+            "mtime_ns": 1794711207507062749,
+            "sha256": "efdde1022ea9d76928bf7a9cd53139138f5ba2e466e837f08f6105ab1af1c119"
+          }
+        },
+        "reference_sha256": "95c41f0efde19a6158747e92506ebf044b1e036be3c3ac75539ec85154155c20",
+        "reference_text": "沿着斜面向下取正方向，重力的切向分量让物块加速。",
+        "tts": "水平分亮是 u 乘 q，竖直分亮是负 v 乘 q。",
+        "source_text": "水平分量是 u 乘 q，竖直分量是负 v 乘 q。",
+        "rate_multiplier": 1,
+        "seed": 281762,
+        "temperature": 0.53,
+        "letter_style": "names"
+      },
+      "synthesis": {
+        "actual_input": "水平分亮是  You  乘  Cue ，竖直分亮是负  Vee  乘  Cue 。",
+        "source_text": "水平分量是 u 乘 q，竖直分量是负 v 乘 q。",
+        "duration": 5.28,
+        "rate_multiplier": 1,
+        "alignment": "unmeasured"
+      },
+      "planned_input": {
+        "source": "水平分量是 u 乘 q，竖直分量是负 v 乘 q。",
+        "provider_text": "水平分量是 u 乘 q，竖直分量是负 v 乘 q。",
+        "pinyin": {
+          "水平分量": "shui3 ping2 fen1 liang4",
+          "竖直分量": "shu4 zhi2 fen1 liang4"
+        },
+        "local_text": "水平分亮是 u 乘 q，竖直分亮是负 v 乘 q。",
+        "targets": [
+          {
+            "term": "水平",
+            "offset": 0,
+            "expected": "shui3 ping2"
+          },
+          {
+            "term": "水平分量",
+            "offset": 0,
+            "expected": "shui3 ping2 fen1 liang4"
+          },
+          {
+            "term": "分量",
+            "offset": 2,
+            "expected": "fen1 liang4",
+            "flow": "“分”用第一声，“量”用第四声，两字成词。"
+          },
+          {
+            "term": "竖直",
+            "offset": 12,
+            "expected": "shu4 zhi2"
+          },
+          {
+            "term": "竖直分量",
+            "offset": 12,
+            "expected": "shu4 zhi2 fen1 liang4"
+          },
+          {
+            "term": "分量",
+            "offset": 14,
+            "expected": "fen1 liang4",
+            "flow": "“分”用第一声，“量”用第四声，两字成词。"
+          }
+        ],
+        "conflicts": [],
+        "provider_exclusions": [],
+        "symbols": [
+          {
+            "symbol": "u",
+            "offset": 6,
+            "core_end": 7,
+            "end": 7,
+            "expression": "u",
+            "expected": "U /juː/",
+            "listen_for": "开头从 /j/ 滑入 /uː/，和同句 q 的 /k/ 起音区分。 已有反馈：成片复查：“减去 u 乘 t”中的字母容易听成“又”。",
+            "example": "把 u 乘 q 写在这一项。"
+          },
+          {
+            "symbol": "q",
+            "offset": 10,
+            "core_end": 11,
+            "end": 11,
+            "expression": "q",
+            "expected": "Q /kjuː/",
+            "listen_for": "听起首的 /k/ 和紧接的 /juː/，整次 q 只含一个元音核。两处 q 分别听。 已有反馈：成片复查：密度比和分母中的 q 与 u 易混。",
+            "example": "水平分量是 u 乘 q，竖直分量是负 v 乘 q。"
+          },
+          {
+            "symbol": "v",
+            "offset": 19,
+            "core_end": 20,
+            "end": 20,
+            "expression": "v",
+            "expected": "V /viː/",
+            "listen_for": "上齿与下唇形成 /v/，随后接 /iː/。遇到 v₀ 时再接一次“零”。 已有反馈：用户报告板书 v₀ 听起来像“ve0”；需分辨正常 V 韵尾与额外元音。",
+            "example": "把初速 v₀ 代进去。"
+          },
+          {
+            "symbol": "q",
+            "offset": 23,
+            "core_end": 24,
+            "end": 24,
+            "expression": "q",
+            "expected": "Q /kjuː/",
+            "listen_for": "听起首的 /k/ 和紧接的 /juː/，整次 q 只含一个元音核。两处 q 分别听。 已有反馈：成片复查：密度比和分母中的 q 与 u 易混。",
+            "example": "水平分量是 u 乘 q，竖直分量是负 v 乘 q。"
+          }
+        ]
+      },
+      "review_status": "pending"
+    }
+  ]
+}

@@ -1,0 +1,310 @@
+{
+  "schema": 1,
+  "version": "0.27.5",
+  "base_card_count": 2600,
+  "new_card_count": 72,
+  "total_card_count": 2672,
+  "author": "assistant",
+  "example_provenance": "assistant_authored",
+  "audio_review": "not_performed",
+  "domains": {
+    "实验测量与读数": 24,
+    "机械波与声学": 24,
+    "流体与材料": 24
+  },
+  "references": [
+    "references/term-glossaries/扩展-0.27.5/实验测量与读数.md",
+    "references/term-glossaries/扩展-0.27.5/机械波与声学.md",
+    "references/term-glossaries/扩展-0.27.5/流体与材料.md"
+  ],
+  "cards": {
+    "游标卡尺": {
+      "reading": "you2 biao1 ka3 chi3",
+      "sha256": "8c0d57f5aaa4b51c7fcad07004d85f5ef88d52fdf1d782f1b2fc5910ca80cd49"
+    },
+    "螺旋测微器": {
+      "reading": "luo2 xuan2 ce4 wei1 qi4",
+      "sha256": "9534d0f3686a53934c20d4c4083d2dca0be36935aaecfc20c6f459594e2826e5"
+    },
+    "分度值": {
+      "reading": "fen1 du4 zhi2",
+      "sha256": "27fc1504d0710c4ff511e3161a1216ac78479794b5cc883c97ece4850f2cb345"
+    },
+    "零点误差": {
+      "reading": "ling2 dian3 wu4 cha1",
+      "sha256": "5521e14cbab79b7ceb972f6d8dfab0bf1948fdf91c6c921b1567ad75d86deda8"
+    },
+    "视差": {
+      "reading": "shi4 cha1",
+      "sha256": "710aac2ea3ecb2cf5d424186654a4c84810cb0965868d83220fb94703e3a5fba"
+    },
+    "有效数字": {
+      "reading": "you3 xiao4 shu4 zi4",
+      "sha256": "fa20e67b7996a8f135cea36ffb6285c0b6ea9a648e2cd4dd8d0c3c9f8fede261"
+    },
+    "直接测量": {
+      "reading": "zhi2 jie1 ce4 liang2",
+      "sha256": "1ab853fdeaaea1bd52343b4d2dc9968fa5f6c877a465f51b2a19cc0bc554b840"
+    },
+    "间接测量": {
+      "reading": "jian4 jie1 ce4 liang2",
+      "sha256": "9a2592a92e0a13e3eaa0be60972749cc5b3e2455cde9fed55dbab3958f8dd534"
+    },
+    "系统误差": {
+      "reading": "xi4 tong3 wu4 cha1",
+      "sha256": "7d68a3a47d5a21ce9c13cf9ce8a97de5f7feaaf5180d70b5697f9d624576ab8f"
+    },
+    "随机误差": {
+      "reading": "sui2 ji1 wu4 cha1",
+      "sha256": "6354a3ca315aa4cb167fcbf0bd029a63ad206edc8fe910ac6c38e1f9cccf6160"
+    },
+    "半偏法": {
+      "reading": "ban4 pian1 fa3",
+      "sha256": "b4f77e59bae43002029df290a753f744f39300f8f05100eaa5729a61a2546043"
+    },
+    "相对误差": {
+      "reading": "xiang1 dui4 wu4 cha1",
+      "sha256": "8f302907b3035434350851a85eb150afa2f26d6a93089a9bf4dcca12a4cae30f"
+    },
+    "标准不确定度": {
+      "reading": "biao1 zhun3 bu4 que4 ding4 du4",
+      "sha256": "3e9badc3f1b867443cfe4bfcdc73a5977f9abaf256c6cb1826bb9862dc7e2fa4"
+    },
+    "重复性": {
+      "reading": "chong2 fu4 xing4",
+      "sha256": "0d9f8b4d517871a600b4998fcbe3f2a108d77ef362b354431e0293675b24b3c7"
+    },
+    "逐差法": {
+      "reading": "zhu2 cha1 fa3",
+      "sha256": "1747deefd2538027e589bb5fd7445685d858afd3d012a479b583f8ce963026ec"
+    },
+    "最小二乘法": {
+      "reading": "zui4 xiao3 er4 cheng2 fa3",
+      "sha256": "f9f8c5df3c7e8fbf89f0625a4af3d36a1517bb2624f28da02be9f284946cf586"
+    },
+    "残差": {
+      "reading": "can2 cha1",
+      "sha256": "25fca92bce2e0f56a8429b23627e5456468e62c0ef5f548754a9a960c46456aa"
+    },
+    "电阻箱": {
+      "reading": "dian4 zu3 xiang1",
+      "sha256": "1e30a2db296d75789cb50ddce6e0b78a278aa655cc1f14c010256ba927ef6958"
+    },
+    "光电门": {
+      "reading": "guang1 dian4 men2",
+      "sha256": "9e2f2d5575f8ac5861d5c8852831577b375de61f8b29244ca6889fd312486958"
+    },
+    "遮光片": {
+      "reading": "zhe1 guang1 pian4",
+      "sha256": "660732dcd3969c366d3e657eec7208d05a0e383a36a8ca6f0af82602c100f3de"
+    },
+    "示波器": {
+      "reading": "shi4 bo1 qi4",
+      "sha256": "3ad21bffec5f1d2ef6d4c3cf58b00d5bf4dd111f39119175b8f3cf1082097bde"
+    },
+    "时基": {
+      "reading": "shi2 ji1",
+      "sha256": "8cc69c878035225be31c9eeea9e490c932935586be082a8db399423fe1b90a83"
+    },
+    "触发电平": {
+      "reading": "chu4 fa1 dian4 ping2",
+      "sha256": "85c98fec2c11bc76b9e44ca3dc775fba464f1a1609267b7303e4beabd5609671"
+    },
+    "峰峰值": {
+      "reading": "feng1 feng1 zhi2",
+      "sha256": "f7f7ebe074da2787012d94c8cfb429bac6d5ee787848127418076ec4b45a8533"
+    },
+    "波线": {
+      "reading": "bo1 xian4",
+      "sha256": "c3046239d871d7513b388c51ac2119104f911b5e492ed6436f8e8f7b9594baf2"
+    },
+    "透射波": {
+      "reading": "tou4 she4 bo1",
+      "sha256": "834282f3f028103c2157b55b29882120bafcdedab6d8e26dc5eff5bf7079b1f2"
+    },
+    "相速度": {
+      "reading": "xiang4 su4 du4",
+      "sha256": "fc58194cb7f333dbbe82a50e2002ac5d5e5c0b565aea7c1ddaf51b6e10351f44"
+    },
+    "群速度": {
+      "reading": "qun2 su4 du4",
+      "sha256": "ca6b7051251d5fe409766c1577ef380f9028e608643a0ee02cd7b0ec266ac0e7"
+    },
+    "波包": {
+      "reading": "bo1 bao1",
+      "sha256": "49c6ad7e62111170938bf67d3b959bd8e8895ee8166ceccb3992f485b2065feb"
+    },
+    "色散关系": {
+      "reading": "se4 san4 guan1 xi4",
+      "sha256": "e10f7f6bbaeffc84f63762e1322db57837c21d7e524f372cb9664eb1ad327c37"
+    },
+    "反射系数": {
+      "reading": "fan3 she4 xi4 shu4",
+      "sha256": "659fa7780d7b207e371a5b77476460e8ea871df611a61e2245d58b78030731cc"
+    },
+    "透射系数": {
+      "reading": "tou4 she4 xi4 shu4",
+      "sha256": "fc8ad0f670f6efe9123f28f5eadfd9322d89aeda91eddfa71921e65931575139"
+    },
+    "声压": {
+      "reading": "sheng1 ya1",
+      "sha256": "25de4a82d570d3d7877293f167c6b240101c37a847009a693c91c6b78ed4924b"
+    },
+    "声强": {
+      "reading": "sheng1 qiang2",
+      "sha256": "094abe86079b8b68b00030ff7ccbdc77047eca2101dfd0f4be20239b3ddc105d"
+    },
+    "声强级": {
+      "reading": "sheng1 qiang2 ji2",
+      "sha256": "69ceaed6cb53014b97b692e044c974ddbf3ed602f4b601ef892aa7430aa75e09"
+    },
+    "多普勒效应": {
+      "reading": "duo1 pu3 le4 xiao4 ying4",
+      "sha256": "1e3c18111a4732f17ff3a758de5437f7c9adfdb6fb834ef8902c334447903701"
+    },
+    "拍频": {
+      "reading": "pai1 pin2",
+      "sha256": "1b26e599ecf0a0d4fd3381f969595b0952b375dd8dc8a8d49a2c1f66b7b82cb8"
+    },
+    "基频": {
+      "reading": "ji1 pin2",
+      "sha256": "d79ff8c508da03152d7059c4973d16f946a61b4594c6a31f2fcee80e9345b690"
+    },
+    "泛音": {
+      "reading": "fan4 yin1",
+      "sha256": "b35faaece7de94fefb7d98242c919870110ebdbfc2827ce46c1a0c15c6e8ca9a"
+    },
+    "谐波": {
+      "reading": "xie2 bo1",
+      "sha256": "b6fc0b83973b2129545f79d6bb77e3f2a2bfa72cb060b25c506e57a95d99ab1b"
+    },
+    "共鸣管": {
+      "reading": "gong4 ming2 guan3",
+      "sha256": "56a8bdd18d564c3af496828d1b226da4e8e76ac61b4422e028d0fe5a57235052"
+    },
+    "开管": {
+      "reading": "kai1 guan3",
+      "sha256": "871bcd5a1d1b604be53e1abbb720470e7728f39afd38fa588561861838af201c"
+    },
+    "闭管": {
+      "reading": "bi4 guan3",
+      "sha256": "6c5a6cf9cd8fbf1d9eec79e2403e8a4037899453e3bbbc1ccce0d6a8dca1eb38"
+    },
+    "固定端反射": {
+      "reading": "gu4 ding4 duan1 fan3 she4",
+      "sha256": "203de2409748096bfc3d19b65c8fec5277611f69b48ea7d1c38c8b93f6c28cac"
+    },
+    "自由端反射": {
+      "reading": "zi4 you2 duan1 fan3 she4",
+      "sha256": "27ccb39d8c4be4c90a98cecfada94ed0a4e2efdcabaa9e8877e9a112f64e1f8e"
+    },
+    "声速": {
+      "reading": "sheng1 su4",
+      "sha256": "ba06d2dc45b4cf8fa954e23116f2dedb8e74d42cb4f06241c252cac10242bd63"
+    },
+    "回声": {
+      "reading": "hui2 sheng1",
+      "sha256": "bbbb7231fa3a8bcf4b8524c0d9f900822010a9a4c4cf20e99dfa9068f9c6d617"
+    },
+    "管口修正": {
+      "reading": "guan3 kou3 xiu1 zheng4",
+      "sha256": "74c713bfb97934e01496b90b27d8c3843ace70c5c3a5e70dc3e94d0b7670a2c5"
+    },
+    "连通器": {
+      "reading": "lian2 tong1 qi4",
+      "sha256": "0f91326e52a6f3c0cc49046a88b4bceff85cc6e7c0754aff45a9639bd4a73989"
+    },
+    "帕斯卡原理": {
+      "reading": "pa4 si1 ka3 yuan2 li3",
+      "sha256": "ac631435eae917b4bb17ac857ccfe5839843df93a1b60d62cdb71ee24b4cf365"
+    },
+    "排水量": {
+      "reading": "pai2 shui3 liang4",
+      "sha256": "55a13285e616de3a811f3d2e89851b25f102849bc776e25edfb243780c99286b"
+    },
+    "吃水深度": {
+      "reading": "chi1 shui3 shen1 du4",
+      "sha256": "6a9a4f9ec176fb8c92a1bb57b27b41aa620f1232520054337405309e2a467a93"
+    },
+    "浮心": {
+      "reading": "fu2 xin1",
+      "sha256": "e1e5dc9cf963dc422d9944d3a777e4406015aac109fe5586c92203fd741149ce"
+    },
+    "静水压强": {
+      "reading": "jing4 shui3 ya1 qiang2",
+      "sha256": "6ea99aacbd33e7119c97aae0ffbed5ac59a40736a2059688a2a191a7fe51fd24"
+    },
+    "液压机": {
+      "reading": "ye4 ya1 ji1",
+      "sha256": "e4ccfd42f21a752964cb3f722b99902f9592b2c73790502262d736b702b45b12"
+    },
+    "虹吸": {
+      "reading": "hong2 xi1",
+      "sha256": "949904d6a6a7ab273729c62e5bd76daabdce869ed8be581bc79c860d754df4fe"
+    },
+    "毛细现象": {
+      "reading": "mao2 xi4 xian4 xiang4",
+      "sha256": "ff26162b0062df039902dde64366d84491efec511e5ed921fb8a118706dc1ec0"
+    },
+    "动力黏度": {
+      "reading": "dong4 li4 nian2 du4",
+      "sha256": "41ee81cb0b2b5634764ee3d756345ec097cae739c58c44a0fd58cf470a20a6c7"
+    },
+    "运动黏度": {
+      "reading": "yun4 dong4 nian2 du4",
+      "sha256": "f34f9a5202e88104dd934401742e9a222bc762b51c615443c1e1b6ab848592a9"
+    },
+    "体积流量": {
+      "reading": "ti3 ji1 liu2 liang4",
+      "sha256": "4fe2cbe34f7e1bb3cece3545b0a4bda9a12724162252b4341650ffa106808823"
+    },
+    "流线": {
+      "reading": "liu2 xian4",
+      "sha256": "8c067ba857cd3405b86aa58d8cb47478c834edd27e223daf8bca0a3322e5350f"
+    },
+    "流管": {
+      "reading": "liu2 guan3",
+      "sha256": "42c10fed353dbdb640e9f065c622b0a701972002d585128571dace8fb17842ef"
+    },
+    "滞止点": {
+      "reading": "zhi4 zhi3 dian3",
+      "sha256": "22077429238b78ddc023033f83e0d181c47d2d3d943795b903c4de6a9c948bb7"
+    },
+    "无滑移条件": {
+      "reading": "wu2 hua2 yi2 tiao2 jian4",
+      "sha256": "922f402d05b8c2c186bd54c3478e3680b11ec47476aef573fbf8948a8181e508"
+    },
+    "正应力": {
+      "reading": "zheng4 ying4 li4",
+      "sha256": "1cad5994a0149c43a0c7f20f952aa4a0858b006e2052a3b886a980e44031fd72"
+    },
+    "切应力": {
+      "reading": "qie1 ying4 li4",
+      "sha256": "e2fbcebd9dda06d4a2cd89b4a892cb0249db8afc8a31c71130e586e052eef0cb"
+    },
+    "线应变": {
+      "reading": "xian4 ying4 bian4",
+      "sha256": "d731c2d8b02c8484aac40fe62763e6a5e05eefa628ef5a13c414bfb1b6ca95a5"
+    },
+    "切应变": {
+      "reading": "qie1 ying4 bian4",
+      "sha256": "b1dfecb62ae15323fec1825d1f8ffd916eb5751d615bb67f8ab8f9ef2ac73a30"
+    },
+    "杨氏模量": {
+      "reading": "yang2 shi4 mo2 liang4",
+      "sha256": "59125a331dafed14d7575e9b228dc5b836f3665817307dc4e5b0ec5195334291"
+    },
+    "剪切模量": {
+      "reading": "jian3 qie1 mo2 liang4",
+      "sha256": "ffbd06d2608bc7e4845415a34db67d29b2d96c57d5520036c6eebfd4d8ed56f1"
+    },
+    "体积模量": {
+      "reading": "ti3 ji1 mo2 liang4",
+      "sha256": "3cfcba0cdcf63ab8c2a2254e68bd7671cfdfcd5fd20257584d16ed21dc1bbd27"
+    },
+    "比例极限": {
+      "reading": "bi3 li4 ji2 xian4",
+      "sha256": "29b57d93e368744837b46dc56037a4451b2167c0a854e75bdd0daa8e1b2259ec"
+    }
+  }
+}

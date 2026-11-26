@@ -13,6 +13,18 @@ from layout import page_spec,expand_actions,place_action,focus_spec,focus_state,
 
 
 class VoiceV04Tests(unittest.TestCase):
+    def test_mechanics_lecture_formula_groups(self):
+        self.assertEqual(oralize_latex(r'v_{Bx}=v_{Ax}'),'v下标B x，等于，v下标A x')
+        self.assertEqual(oralize_latex(r'\cos\theta'),'θ的余弦')
+        self.assertEqual(oralize_latex(r'\sin(2\theta)'),'二倍θ的正弦')
+        self.assertEqual(oralize_latex(r'R^2\sin^2\theta'),'R的平方乘θ的正弦值的平方')
+        self.assertEqual(oralize_latex(r'\frac{1}{12}'),'十二分之一')
+        self.assertEqual(oralize_latex(r'\frac{1}{2}mv_C^2'),'二分之一乘m乘v下标C的平方')
+        self.assertEqual(oralize_latex("F-F'"),'F，减，F撇')
+        self.assertEqual(oralize_latex(r'I^{\prime}'),'I撇')
+        self.assertEqual(oralize_latex(r'\ddot{\theta}'),'θ对时间的二阶导数')
+        self.assertEqual(oralize_latex(r'\theta^2'),'θ的平方')
+
     def test_formula_oralizer_handles_physics_structure(self):
         value=oralize_latex(r'E(r)=\frac{Q}{4\pi\varepsilon_0 r^2}')
         self.assertIn('E关于r的函数',value)

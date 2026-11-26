@@ -1,0 +1,11 @@
+\begin{tikzpicture}[>=Stealth]
+\draw[gray,dashed] (0,0) circle (1.7);
+\draw[blue,thick,->] (0,-1.7) arc[start angle=-90,delta angle=120,radius=1.7];
+\draw[dashed] (0,0)--(-1.7,0) node[midway,above] {$r=2$};
+\fill (0,-1.7) circle (2pt);
+\draw[->,green!50!black] (0,-1.7)--(1.1,-1.7) node[right] {$v$};
+\draw[->,red] (0,-1.7)--(0,-0.7) node[left] {$q\,\mathbf v\times\mathbf B$};
+\node at (2.8,1) {$B$ 指向纸内};
+\node at (2.8,.3) {$q=1$};
+\node at (2.8,-.4) {$r=mv/|qB|$};
+\end{tikzpicture}

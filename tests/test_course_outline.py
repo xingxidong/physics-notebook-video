@@ -58,9 +58,27 @@ class CourseOutlineTests(unittest.TestCase):
         source = self.sample()
         unit_id = source['concept_units'][0]['id']
         outline = source['course_outline']
+        page=source['pages'][0]
+        page['cues'].append({'id':'lesson-end','role':'conclusion','tts':'同一位置的电场强度由场源决定，用力与试探电荷量的比值表示。','actions':[]})
+        purposes=['orient','reason','derive','anchor','apply','apply','recap']
+        source['lesson_arc']={'entry_question':outline['main_question'],'beats':[
+            {'id':'beat-'+c['id'],'purpose':purpose,'cue_ids':[c['id']],
+             'student_question':outline['main_question'],'scene_change':'对照图中的试探电荷和电场力。',
+             'takeaway':c['tts'],'visual_ids':[next((a['id'] for a in c['actions'] if a.get('id')),'field-definition')]}
+            for c,purpose in zip(page['cues'],purposes)]}
+        source['closure']={'recap_cues':['lesson-end'],'visible_action_ids':['field-definition'],
+            'points':[{'kind':'opening_question','text':outline['main_question']},
+                      {'kind':'conclusion','text':'电场强度是力与试探电荷量之比。'},
+                      {'kind':'application','text':'带电物体在电场中所受的力等于电荷量乘电场强度。'}]}
+        anchors=['力的大小正好也加倍','把每次的力除以试探电荷的电荷量','它所受的力除以电荷量','电场强度乘以负的电荷量']
+        for step,anchor in zip(page['derivation_steps'],anchors):
+            step.update(question=outline['main_question'],spoken_anchor=anchor,handout_label='eq:'+step['id'])
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
-            plan = {'course':{'title':'电场强度','kind':'concept','target_minutes':1.25},
+            (root/'学生讲义.tex').write_text(r'\documentclass{article}\begin{document}'+''.join(
+                r'\begin{equation}'+s['result']+r'\label{'+s['handout_label']+r'}\end{equation}' for s in page['derivation_steps'])+r'\end{document}')
+            plan = {'course':{'title':'电场强度','kind':'concept','target_minutes':1.25,
+                              'lesson_arc':{'entry_question':outline['main_question'],'beats':[]}},
                     'sections':[{'id':'field','title':'电场强度','target_minutes':1.25,'unit_ids':[unit_id]}],
                     'course_outline':'outline.json'}
             (root/'outline.json').write_text(json.dumps(outline))
@@ -81,12 +99,13 @@ class CourseOutlineTests(unittest.TestCase):
                 if isinstance(value,dict):
                     return {key:remap(item) for key,item in value.items()}
                 return rename.get(value,value) if isinstance(value,str) else value
-            fragment=remap({key:source[key] for key in ('pages','concept_units','knowledge_points')})
+            fragment=remap({key:source[key] for key in ('pages','concept_units','knowledge_points','lesson_arc','closure')})
             fragment.update(section_id='field',symbols_used=[])
             fragment['pages'][0].update(board_unit='电场强度',complete_on_page=True)
             path=work/'fragment.json'
             path.write_text(json.dumps(fragment))
-            self.assertTrue(inspect_team(root,deep=True)[-1]['ok'])
+            report=inspect_team(root,deep=True)[-1]
+            self.assertTrue(report['ok'],report['errors'])
             merge(root,'lesson.json')
             self.assertEqual(json.loads((root/'lesson.json').read_text())['course_outline'],outline)
 

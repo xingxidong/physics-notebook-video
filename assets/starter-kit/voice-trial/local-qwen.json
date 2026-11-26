@@ -1,0 +1,9 @@
+{
+  "backend": "qwen",
+  "speed": 1,
+  "qwen": {
+    "reference_audio": "public-reference.wav",
+    "reference_text": "沿着斜面向下取正方向，重力的切向分量让物块加速。",
+    "letter_style": "names"
+  }
+}

@@ -6,6 +6,8 @@ import re
 import sqlite3
 import subprocess
 import tempfile
+from uuid import uuid4
+from learning_bundle import prepare_decisions, keep_sample, resolve_sample
 from contextlib import closing
 from pathlib import Path
 
@@ -27,7 +29,7 @@ def decisions(path):
     with closing(sqlite3.connect(path.as_uri() + '?mode=ro', uri=True, timeout=15)) as db:
         if not db.execute("SELECT 1 FROM sqlite_master WHERE name='decisions'").fetchone():
             return []
-        rows = db.execute('SELECT id, received, payload FROM decisions ORDER BY id')
+        rows = db.execute('SELECT id, received, payload FROM decisions ORDER BY received,id')
         return [dict(id=i, received=t, **json.loads(payload)) for i, t, payload in rows]
 
 
@@ -56,7 +58,8 @@ def decide(kind, key, state, scope, action, evidence, lesson='', before='', exam
                 example=example.strip(), model=model, reference_sha256=reference_sha256)
     if sample:
         path = Path(sample).expanduser().resolve(strict=True)
-        data.update(sample=str(path), sample_sha256=digest(path))
+        checksum=digest(path)
+        data.update(sample=keep_sample(database().resolve(),path,checksum), sample_sha256=checksum)
     # A new decision replaces only the same rule, audience and voice.
     identity = (kind, key, scope, data['lesson'] if scope == 'lesson' else '', model, reference_sha256)
     selector = json.dumps(identity, ensure_ascii=False)
@@ -65,14 +68,12 @@ def decide(kind, key, state, scope, action, evidence, lesson='', before='', exam
     path.parent.mkdir(parents=True, exist_ok=True)
     with closing(sqlite3.connect(path, timeout=15)) as db, db:
         db.execute('BEGIN IMMEDIATE')
-        db.execute('''CREATE TABLE IF NOT EXISTS decisions (
-            id INTEGER PRIMARY KEY, selector TEXT NOT NULL, payload TEXT NOT NULL,
-            received TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)''')
-        previous = db.execute('SELECT id,payload FROM decisions WHERE selector=? ORDER BY id DESC LIMIT 1',
+        prepare_decisions(db)
+        previous = db.execute('SELECT id,payload FROM decisions WHERE selector=? ORDER BY received DESC,id DESC LIMIT 1',
                               (selector,)).fetchone()
         if previous and previous[1] == payload:
             return {'id':previous[0], 'recorded':False}
-        cursor = db.execute('INSERT INTO decisions(selector,payload) VALUES(?,?)', (selector,payload))
+        cursor = db.execute('INSERT INTO decisions(selector,payload,event_uid) VALUES(?,?,?)', (selector,payload,uuid4().hex))
         return {'id':cursor.lastrowid, 'recorded':True}
 
 
@@ -158,7 +159,8 @@ def replay(lesson, applicable, hits, findings):
             status = 'compare' if item['state'] == 'trial' else 'apply_and_check'
             if item.get('sample'):
                 try:
-                    intact = digest(Path(item['sample'])) == item['sample_sha256']
+                    clip = resolve_sample(database().resolve(),item['sample'])
+                    intact = digest(clip) == item['sample_sha256']
                 except OSError:
                     intact = False
                 if not intact:
@@ -167,7 +169,7 @@ def replay(lesson, applicable, hits, findings):
                          status=status, cues=positions, example=item['example'],
                          before=item['before'], action=item['action'], evidence=item['evidence'])
             if status == 'apply_and_check' and item.get('sample'):
-                entry['reference_sample'] = item['sample']
+                entry['reference_sample'] = str(clip)
             out.append(entry)
     return out
 

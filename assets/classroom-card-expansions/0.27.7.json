@@ -1,0 +1,1010 @@
+{
+  "schema": 1,
+  "version": "0.27.7",
+  "base_card_count": 3672,
+  "new_card_count": 68,
+  "total_card_count": 3740,
+  "domains": {
+    "力学与数学方法": 16,
+    "电磁学与电路": 17,
+    "几何光学与波动光学": 19,
+    "热学": 16
+  },
+  "references": [
+    "references/term-glossaries/扩展-0.27.7/力学与数学方法.md",
+    "references/term-glossaries/扩展-0.27.7/电磁学与电路.md",
+    "references/term-glossaries/扩展-0.27.7/几何光学与波动光学.md",
+    "references/term-glossaries/扩展-0.27.7/热学.md"
+  ],
+  "example_provenance": "assistant_authored",
+  "audio_review": "new_examples_not_synthesized",
+  "cards": {
+    "稳心": {
+      "reading": "wen3 xin1",
+      "domain": "力学与数学方法",
+      "sha256": "0440f44ec9e2b1e7047fb9852473c7ea458b7daabc90851ca6a127c62527992c",
+      "observed_at": [
+        "漂浮木块的稳定与小振动｜第43届复赛第5题，句 m-point",
+        "漂浮木块的稳定与小振动｜第43届复赛第5题，句 m-triangle",
+        "漂浮木块的稳定与小振动｜第43届复赛第5题，句 m-limit",
+        "漂浮木块的稳定与小振动｜第43届复赛第5题，句 m-height",
+        "漂浮木块的稳定与小振动｜第43届复赛第5题，句 restoring-sign"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "小横倾下取相邻浮力作用线，回复条件是稳心高于重心。"
+    },
+    "稳心高度": {
+      "reading": "wen3 xin1 gao1 du4",
+      "domain": "力学与数学方法",
+      "sha256": "437cfd71169241180ecea87eb8a9f9110378b121c1398a1ada538ef7f540a6c3",
+      "observed_at": [
+        "漂浮木块的稳定与小振动｜第43届复赛第5题，句 m-triangle",
+        "漂浮木块的稳定与小振动｜第43届复赛第5题，句 roll-frequency",
+        "漂浮木块的稳定与小振动｜第43届复赛第5题，句 compare-ratio",
+        "漂浮木块的稳定与小振动｜第43届复赛第5题，句 compare-substitute"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "用有向的 GM；重量与偏角固定时比较回复力矩。"
+    },
+    "水线": {
+      "reading": "shui3 xian4",
+      "domain": "力学与数学方法",
+      "sha256": "1922381f738aac9c775a65ca08a3c0aecde862c04be87f1a5cebab4b607b7130",
+      "observed_at": [
+        "漂浮木块的稳定与小振动｜第43届复赛第5题，句 volume",
+        "漂浮木块的稳定与小振动｜第43届复赛第5题，句 water-angle",
+        "漂浮木块的稳定与小振动｜第43届复赛第5题，句 strip-height",
+        "漂浮木块的稳定与小振动｜第43届复赛第5题，句 line-result"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "区分实验室水面与木块截面内的倾斜液面线。"
+    },
+    "排水体积": {
+      "reading": "pai2 shui3 ti3 ji1",
+      "domain": "力学与数学方法",
+      "sha256": "708c71b6bd24c979d4a3547a859116c12389d834467722762d0c2344ca4202a0",
+      "observed_at": [
+        "漂浮木块的稳定与小振动｜第43届复赛第5题，句 volume",
+        "漂浮木块的稳定与小振动｜第43届复赛第5题，句 heave-omega"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "平底棱柱例中的乘积用浸深，未误用全高。"
+    },
+    "横摇": {
+      "reading": "heng2 yao2",
+      "domain": "力学与数学方法",
+      "sha256": "39de4bcf396f9f7f966744ec59102da89bff1f7712d61f3ea382cad37c0d6b8f",
+      "observed_at": [
+        "漂浮木块的稳定与小振动｜第43届复赛第5题，句 compare-smaller",
+        "漂浮木块的稳定与小振动｜第43届复赛第5题，句 motion-recap",
+        "漂浮木块的稳定与小振动｜第43届复赛第5题，句 moment-recap",
+        "漂浮木块的稳定与小振动｜第43届复赛第5题，句 last-recap"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "绕纵轴往复倾斜，两侧浸深反向变化。"
+    },
+    "幂函数": {
+      "reading": "mi4 han2 shu4",
+      "domain": "力学与数学方法",
+      "sha256": "8681d81a2cf10e9d9f468c35b3ef2a10c50bdb004b0b88c71169afdf64f6638b",
+      "observed_at": [
+        "弹簧腿机器人：支撑阶段运动与转角，句 s01-expansion-derivative-power",
+        "弹簧腿机器人：支撑阶段运动与转角，句 s01-sho-replace-rho"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "区分固定指数与指数函数，平方例的缩放为四倍。"
+    },
+    "原函数": {
+      "reading": "yuan2 han2 shu4",
+      "domain": "力学与数学方法",
+      "sha256": "8256aebbb82e47da9cb1c8782e764ecdad7a8064980069e48976a814d7b8d84e",
+      "observed_at": [
+        "弹簧腿机器人：支撑阶段运动与转角，句 s03-integrate-c05",
+        "弹簧腿机器人：支撑阶段运动与转角，句 s03-integrate-c07"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "导数回到 v(t)，与整个原函数族有别。"
+    },
+    "公因式": {
+      "reading": "gong1 yin1 shi4",
+      "domain": "力学与数学方法",
+      "sha256": "deab1e023b711d592b8e553b7707014b213d1fda76ef0d497ee42c3e027e036b",
+      "observed_at": [
+        "弹簧腿机器人：支撑阶段运动与转角，句 s03-combine-c05",
+        "弹簧腿机器人：支撑阶段运动与转角，句 s03-combine-c06"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "逐项提取同一个 a，括号内保留 x+y。"
+    },
+    "等腰三角形": {
+      "reading": "deng3 yao1 san1 jiao3 xing2",
+      "domain": "力学与数学方法",
+      "sha256": "25354b62473d3085c6f2798d45380314b03f3f78f84c9bd2abcbcc6861293ca6",
+      "observed_at": [
+        "有阻力的平抛，速度何时最小？，句 terminal_e2_3",
+        "两圆上部交点的运动，句 geometry",
+        "有阻力的平抛，速度何时最小？，句 foot",
+        "两圆上部交点的运动，句 coordinate-x",
+        "两圆上部交点的运动，句 method"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "两条等长半径作腰，底边连接两圆心。"
+    },
+    "垂足": {
+      "reading": "chui2 zu2",
+      "domain": "力学与数学方法",
+      "sha256": "d14e04bebbf9c150631af74dc48b8459fc417af93c19d764a4a354dae650af0f",
+      "observed_at": [
+        "有阻力的平抛，速度何时最小？，句 distance",
+        "两圆上部交点的运动，句 geometry",
+        "有阻力的平抛，速度何时最小？，句 distance_e2_1",
+        "有阻力的平抛，速度何时最小？，句 distance_e2_2",
+        "有阻力的平抛，速度何时最小？，句 foot_e2_2"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "速率极小取决于垂足落在实际速度段及两轴等比例。"
+    },
+    "圆周角": {
+      "reading": "yuan2 zhou1 jiao3",
+      "domain": "力学与数学方法",
+      "sha256": "037a25bb66df87ca9a73bfe966a67e39796df3b885e7c2e3cd3f3021f05b7f7d",
+      "observed_at": [
+        "有阻力的平抛，速度何时最小？，句 twocross"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "以直径为弦的圆周角例避开端点退化。"
+    },
+    "有理分式": {
+      "reading": "you3 li3 fen1 shi4",
+      "domain": "力学与数学方法",
+      "sha256": "df28f8364b8466f04a8632e5a49b517314efb3ab4fd08c5d7f4e4211beb46386",
+      "observed_at": [
+        "弹簧腿机器人：支撑阶段运动与转角，句 s03-half-angle-c10"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "约分后仍保留 x≠1 和原式同域。"
+    },
+    "待定系数": {
+      "reading": "dai4 ding4 xi4 shu4",
+      "domain": "力学与数学方法",
+      "sha256": "1542538b4a9dbb9b9e653a6c085612addf5b087ae7728ce230b289a7a957b653",
+      "observed_at": [
+        "第42届全国中学生物理竞赛复赛第一题｜冷原子自由下落与飞行时间测温，句 norm-4"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "高斯型概率密度的归一条件唯一确定常数。"
+    },
+    "对数斜率": {
+      "reading": "dui4 shu4 xie2 lü4",
+      "domain": "力学与数学方法",
+      "sha256": "c9d14de47855ed8dc0267c7db87c6fe55cab62d519596e3c1cd802e35de04847",
+      "observed_at": [
+        "第42届全国中学生物理竞赛复赛第一题｜冷原子自由下落与飞行时间测温，句 early-4",
+        "第42届全国中学生物理竞赛复赛第一题｜冷原子自由下落与飞行时间测温，句 npeak-2"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "终稿指明半对数纵轴和自然对数，避免与双对数斜率混淆。"
+    },
+    "引力参数": {
+      "reading": "yin3 li4 can1 shu4",
+      "domain": "力学与数学方法",
+      "sha256": "c5ad42a2d23334570927a7e616ec693d1503b79e9696433b3773be24fdb79ce8",
+      "observed_at": [
+        "导电绳索卫星｜第43届复赛第4题，句 circular-law",
+        "导电绳索卫星｜第43届复赛第4题，句 radial-expansion"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "给定中心天体使用 GM，例句给出小卫星的质量近似。"
+    },
+    "原子流": {
+      "reading": "yuan2 zi3 liu2",
+      "domain": "力学与数学方法",
+      "sha256": "ebb20981bd2a1ab84d70dca4ccf1ef46e5874d7a7cd95e85b6f1885e29f68131",
+      "observed_at": [
+        "第42届全国中学生物理竞赛复赛第一题｜冷原子自由下落与飞行时间测温，句 setup-3",
+        "第42届全国中学生物理竞赛复赛第一题｜冷原子自由下落与飞行时间测温，句 beam-3",
+        "第42届全国中学生物理竞赛复赛第一题｜冷原子自由下落与飞行时间测温，句 flux-1",
+        "第42届全国中学生物理竞赛复赛第一题｜冷原子自由下落与飞行时间测温，句 strong-3",
+        "第42届全国中学生物理竞赛复赛第一题｜冷原子自由下落与飞行时间测温，句 recap-2"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "复读终稿，线数密度乘当地粒子的平均纵向速度，区别于按穿越事件加权。"
+    },
+    "等离子体": {
+      "reading": "deng3 li2 zi3 ti3",
+      "domain": "电磁学与电路",
+      "sha256": "502cc44115cbf3f371f6cc0203e5cac212b3ee7b0a76f8f9194291bea4990d41",
+      "observed_at": [
+        "第42届全国中学生物理竞赛复赛第二题｜重离子束探针与等离子体电势，句 probe-1",
+        "导电绳索卫星｜第43届复赛第4题，句 magnetic-direction",
+        "等离子体的振荡、屏蔽与电磁波｜第43届复赛第6题，句 p3-equation",
+        "第42届全国中学生物理竞赛复赛第二题｜重离子束探针与等离子体电势，句 probe-2"
+      ],
+      "prior_lookup": true,
+      "text_review": "reviewed",
+      "review_note": "用集体响应描述等离子体，宏观准中性与局部电荷分离可并存。"
+    },
+    "重离子": {
+      "reading": "zhong4 li2 zi3",
+      "domain": "电磁学与电路",
+      "sha256": "176a6623e2b150610faaf4f6b5bc43ac933e7e484a775a770ba55a199de2138a",
+      "observed_at": [
+        "第42届全国中学生物理竞赛复赛第二题｜重离子束探针与等离子体电势，句 probe-1",
+        "第42届全国中学生物理竞赛复赛第二题｜重离子束探针与等离子体电势，句 potential-3"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "重为质量义 zhòng，电离后电荷数另行说明。"
+    },
+    "铊离子": {
+      "reading": "ta1 li2 zi3",
+      "domain": "电磁学与电路",
+      "sha256": "98ef2d9b1e78ee58dfb7ff8621996332907759187c5543205f2a2e84f4830ea8",
+      "observed_at": [
+        "第42届全国中学生物理竞赛复赛第二题｜重离子束探针与等离子体电势，句 potential-3"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "铊读 tā，元素符号 Tl，与钽 Ta 有别。"
+    },
+    "一次离子": {
+      "reading": "yi1 ci4 li2 zi3",
+      "domain": "电磁学与电路",
+      "sha256": "fcb7298c2444d5f76028fcb0c420fa0febb7c42bbd6369ca49d49788c3eea9bb",
+      "observed_at": [
+        "第42届全国中学生物理竞赛复赛第二题｜重离子束探针与等离子体电势，句 potential-1",
+        "第42届全国中学生物理竞赛复赛第二题｜重离子束探针与等离子体电势，句 numeric-1"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "按束源的入射身份命名，和电荷价态区分。"
+    },
+    "二次离子": {
+      "reading": "er4 ci4 li2 zi3",
+      "domain": "电磁学与电路",
+      "sha256": "f90157b044b144003d30a66ebde2bd2f51802b2960a29dd861a2783b827302d9",
+      "observed_at": [
+        "第42届全国中学生物理竞赛复赛第二题｜重离子束探针与等离子体电势，句 numeric-3",
+        "第42届全国中学生物理竞赛复赛第二题｜重离子束探针与等离子体电势，句 recap-2"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "例中二次电离生成的新离子，其电荷状态与“一次、二次”分别表述。"
+    },
+    "量子霍尔电阻": {
+      "reading": "liang4 zi3 huo4 er3 dian4 zu3",
+      "domain": "电磁学与电路",
+      "sha256": "46db215fbfc4a6773f54c4a2dbf2db6ac3a305c3ab0f388aea9b9c19ea4d5498",
+      "observed_at": [
+        "第42届全国中学生物理竞赛复赛第三题｜量子霍尔电阻的精密测量，句 ports-1"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "整数量子霍尔平台上区分电压与横向电阻，平方只作用于 e。"
+    },
+    "接触电阻": {
+      "reading": "jie1 chu4 dian4 zu3",
+      "domain": "电磁学与电路",
+      "sha256": "84d2b7caab61633c26814e7c41fd4f07b31e09142d941ec735d19bcb763e3179",
+      "observed_at": [
+        "第42届全国中学生物理竞赛复赛第三题｜量子霍尔电阻的精密测量，句 edge-2",
+        "第42届全国中学生物理竞赛复赛第三题｜量子霍尔电阻的精密测量，句 edge-3",
+        "第42届全国中学生物理竞赛复赛第三题｜量子霍尔电阻的精密测量，句 edge-5",
+        "第42届全国中学生物理竞赛复赛第三题｜量子霍尔电阻的精密测量，句 single-3"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "四端测量例将供电触点压降与独立电压引线区分。"
+    },
+    "接触压降": {
+      "reading": "jie1 chu4 ya1 jiang4",
+      "domain": "电磁学与电路",
+      "sha256": "88d8e441c4b2a1fd0897c078c616315fd71a00e141c5fbc4d752969511c24d98",
+      "observed_at": [
+        "第42届全国中学生物理竞赛复赛第三题｜量子霍尔电阻的精密测量，句 edge-5",
+        "第42届全国中学生物理竞赛复赛第三题｜量子霍尔电阻的精密测量，句 link-2",
+        "第42届全国中学生物理竞赛复赛第三题｜量子霍尔电阻的精密测量，句 link-3",
+        "第42届全国中学生物理竞赛复赛第三题｜量子霍尔电阻的精密测量，句 drive-2"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "电阻性接头的电压降按电流方向定义，单位伏特。"
+    },
+    "补偿电流": {
+      "reading": "bu3 chang2 dian4 liu2",
+      "domain": "电磁学与电路",
+      "sha256": "b574087674925ff00c8ff885a072aa1617d646faa9c3a6cc98f12b7d2a5b667e",
+      "observed_at": [
+        "第42届全国中学生物理竞赛复赛第三题｜量子霍尔电阻的精密测量，句 drive-3",
+        "第42届全国中学生物理竞赛复赛第三题｜量子霍尔电阻的精密测量，句 buses-2",
+        "第42届全国中学生物理竞赛复赛第三题｜量子霍尔电阻的精密测量，句 third-4",
+        "第42届全国中学生物理竞赛复赛第三题｜量子霍尔电阻的精密测量，句 scale-3"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "辅助支路的电流重分配与总电源电流有别。"
+    },
+    "端口电压": {
+      "reading": "duan1 kou3 dian4 ya1",
+      "domain": "电磁学与电路",
+      "sha256": "81588e39461170a5a5281e020971a49d0fc32f987ecf913fb8a4c49db5129fdb",
+      "observed_at": [
+        "非线性电阻网络｜第43届复赛第1题，句 read-entry",
+        "非线性电阻网络｜第43届复赛第1题，句 signed-example",
+        "非线性电阻网络｜第43届复赛第1题，句 signed-reference",
+        "非线性电阻网络｜第43届复赛第1题，句 where-voltage"
+      ],
+      "prior_lookup": true,
+      "text_review": "reviewed",
+      "review_note": "A、B 极性确定后用 A 点电势减 B 点电势，绝对参考无关。"
+    },
+    "端口电流": {
+      "reading": "duan1 kou3 dian4 liu2",
+      "domain": "电磁学与电路",
+      "sha256": "c5992d787e35ab009eec91cc4dd5d56daa266b8c7cac4b55e602fb05b2fae245",
+      "observed_at": [
+        "第42届全国中学生物理竞赛复赛第三题｜量子霍尔电阻的精密测量，句 ports-2",
+        "非线性电阻网络｜第43届复赛第1题，句 bridge-count-direct",
+        "第42届全国中学生物理竞赛复赛第三题｜量子霍尔电阻的精密测量，句 single-1"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "逐字段复读改稿。按从 A 流入为正；6 V、3 Ω 得 2 A，两端子按流入各有相反符号。"
+    },
+    "等离子体角频率": {
+      "reading": "deng3 li2 zi3 ti3 jiao3 pin2 lü4",
+      "domain": "电磁学与电路",
+      "sha256": "44c6eebd426b6bc5e5eede64e8e41901168398c17d327a6a77ef946167f7c89c",
+      "observed_at": [
+        "等离子体的振荡、屏蔽与电磁波｜第43届复赛第6题，句 p3-equation",
+        "等离子体的振荡、屏蔽与电磁波｜第43届复赛第6题，句 p5-why",
+        "等离子体的振荡、屏蔽与电磁波｜第43届复赛第6题，句 p8-eps",
+        "等离子体的振荡、屏蔽与电磁波｜第43届复赛第6题，句 p9-observe"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "电子小振荡和固定离子背景界定了根号密度规律。"
+    },
+    "德拜长度": {
+      "reading": "de2 bai4 chang2 du4",
+      "domain": "电磁学与电路",
+      "sha256": "ce3c2104ee68cf8fa97f4b9d53d717fb8cbff9e6bc9ae8c835ac29cb1e55fc72",
+      "observed_at": [
+        "等离子体的振荡、屏蔽与电磁波｜第43届复赛第6题，句 p5-length",
+        "等离子体的振荡、屏蔽与电磁波｜第43届复赛第6题，句 p5-sub",
+        "等离子体的振荡、屏蔽与电磁波｜第43届复赛第6题，句 p6-near",
+        "等离子体的振荡、屏蔽与电磁波｜第43届复赛第6题，句 p6-plot"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "固定密度、固定离子背景和线性电子响应限定了根号温度关系。"
+    },
+    "库仑势": {
+      "reading": "ku4 lun2 shi4",
+      "domain": "电磁学与电路",
+      "sha256": "0f1f7b1f5f8a4eb239b96b69fb68357ce81bac04c290d30e102df3c7eb4653a8",
+      "observed_at": [
+        "等离子体的振荡、屏蔽与电磁波｜第43届复赛第6题，句 p6-near",
+        "等离子体的振荡、屏蔽与电磁波｜第43届复赛第6题，句 p6-plot",
+        "等离子体的振荡、屏蔽与电磁波｜第43届复赛第6题，句 p11-screen"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "电势用伏特，表达式以无穷远为参考，与试探电荷势能区分。"
+    },
+    "太阳风": {
+      "reading": "tai4 yang2 feng1",
+      "domain": "电磁学与电路",
+      "sha256": "a14d104c80e8bc32cc635e42ee64eb74c3e94520f89382e1412fa35209387796",
+      "observed_at": [
+        "等离子体的振荡、屏蔽与电磁波｜第43届复赛第6题，句 p10-estimate",
+        "等离子体的振荡、屏蔽与电磁波｜第43届复赛第6题，句 p10-light",
+        "等离子体的振荡、屏蔽与电磁波｜第43届复赛第6题，句 p11-light"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "粒子流与电磁辐射不同，可见光与典型太阳风等离子体频率的比较成立。"
+    },
+    "自由面电流": {
+      "reading": "zi4 you2 mian4 dian4 liu2",
+      "domain": "电磁学与电路",
+      "sha256": "97851faadcf349cf4f1eb2d9a36225a2fd1bf253ef1aafa4bc1d3ae3bbcf8c07",
+      "observed_at": [
+        "磁偶极子的镜像与稳定取向｜第43届复赛第3题，句 i-boundary"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "以磁场强度 H 的切向跃变说明自由面电流，区别于磁化束缚电流。"
+    },
+    "导电绳索": {
+      "reading": "dao3 dian4 sheng2 suo3",
+      "domain": "电磁学与电路",
+      "sha256": "eeeaafa4ff6923205186f4e697d54f39dee0eb74743dd9e2b19cd9868a4700f0",
+      "observed_at": [
+        "导电绳索卫星｜第43届复赛第4题，句 read-orbit"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "切割地磁场产生电动势，持续电流需闭合回路。"
+    },
+    "光子晶体": {
+      "reading": "guang1 zi3 jing1 ti3",
+      "domain": "几何光学与波动光学",
+      "sha256": "7a1364a6a580f0545d68bebc936fa340aaeee36d35beca039364beaaf506c655",
+      "observed_at": [
+        "第43届复赛第七题，第 23 行；题七总题干首段"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "介电性质的周期与原子晶格周期分清，反射增强只限某些频段。"
+    },
+    "反射谱": {
+      "reading": "fan3 she4 pu3",
+      "domain": "几何光学与波动光学",
+      "sha256": "e0b9de86549e5ac9297f2c00c6235cac1a91fa174e9ff22500818f1c74621b2f",
+      "observed_at": [
+        "第43届复赛第7题｜一维光子晶体的反射与缺级，句 sum-5"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "横轴为频率或波长，纵轴明示为反射率或反射振幅。"
+    },
+    "光焦度": {
+      "reading": "guang1 jiao1 du4",
+      "domain": "几何光学与波动光学",
+      "sha256": "40907ef287b7423556ada092114fa7feb8a582ab6057fb1fe2b6b806f75a8c27",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 2302 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "空气中的 0.20 米会聚薄透镜对应正 5 逆米。"
+    },
+    "无焦系统": {
+      "reading": "wu2 jiao1 xi4 tong3",
+      "domain": "几何光学与波动光学",
+      "sha256": "e58af1cc55ab80edf482f256a543f69530f5a7356c29973f7a7927546567a68a",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 2303 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "复读修正后的前镜像方焦点、后镜物方焦点，出射光平行。"
+    },
+    "物镜": {
+      "reading": "wu4 jing4",
+      "domain": "几何光学与波动光学",
+      "sha256": "d9ef5b567a01bd664e2c18079ff92b6463d23897a0915492f24309f892b4d3f7",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 2347 页",
+        "物理竞赛一轮讲义，PDF 第 2304 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "复合显微镜的第一次成像为放大实像，和目镜作用区分。"
+    },
+    "目镜": {
+      "reading": "mu4 jing4",
+      "domain": "几何光学与波动光学",
+      "sha256": "246db7a7697fe2c1bd36a7bed2504c3ac0be97dfbcb6f4a97f4e0bcfb9ddf961",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 2347 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "开普勒系统正常调焦下，中间像在目镜物方焦平面。"
+    },
+    "近点": {
+      "reading": "jin4 dian3",
+      "domain": "几何光学与波动光学",
+      "sha256": "bf0b8fbf9cd19295c7ada9ccdddc530fee5a49c50c12f7a2247beaed43ee96cb",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 2343 页",
+        "物理竞赛一轮讲义，PDF 第 2374 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "个体近点取决于调节能力，例中二十五厘米明确属于该观察者。"
+    },
+    "远点": {
+      "reading": "yuan3 dian3",
+      "domain": "几何光学与波动光学",
+      "sha256": "84bae444e7a420e8b540db7072d5cbe0a46ebfe3efe1226370f807e3f04f61aa",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 2351 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "正视眼放松调节时接收平行光；第三声连读提示使用本调。"
+    },
+    "明视距离": {
+      "reading": "ming2 shi4 ju4 li2",
+      "domain": "几何光学与波动光学",
+      "sha256": "fde4e715d5b80a9867f939bde380cfefc6240a8bf332cf8665c50bccfee14e50",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 2374 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "常用二十五厘米是比较角放大率的参照，区别于个体近点。"
+    },
+    "光学间隔": {
+      "reading": "guang1 xue2 jian1 ge2",
+      "domain": "几何光学与波动光学",
+      "sha256": "23168d9fed342f7b63da27e123adbcb599112c1f00f77d1cc34026ab187ed148",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 2347 页",
+        "物理竞赛一轮讲义，PDF 第 2348 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "修订终稿指明两薄透镜近似；间距扣除物镜和目镜焦距。"
+    },
+    "约化倾角": {
+      "reading": "yue1 hua4 qing1 jiao3",
+      "domain": "几何光学与波动光学",
+      "sha256": "f334d739b0e9e918441beb2695dc619159abaed366f7d4dd211f190db6088b21",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 2305 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "限定近轴小角度，平面正交界面上 nθ 连续。"
+    },
+    "主极大": {
+      "reading": "zhu3 ji2 da4",
+      "domain": "几何光学与波动光学",
+      "sha256": "175c9c8f859e219424ad194299bb22005d1e10a5f9916edf7b8c304a3b6bc449",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 2393 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "修订终稿明示正入射和相对法线量角，衍射包络可使候选级次缺失。"
+    },
+    "衍射包络": {
+      "reading": "yan3 she4 bao1 luo4",
+      "domain": "几何光学与波动光学",
+      "sha256": "c7a657479f90d9dbe25aba56dc3ddf26abe8a2c73d84a319c9ce63d93845f243",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 2393 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "保持缝间距、缝数时，增大缝宽使中央包络变窄。"
+    },
+    "比旋光度": {
+      "reading": "bi3 xuan2 guang1 du4",
+      "domain": "几何光学与波动光学",
+      "sha256": "19f68ae80f1d4816a1d5a032e3b47c70e6df19e042ee90f7ee40b8ca1a51d0aa",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 2395 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "以液层长度和质量浓度之积归一，固定温度、溶剂与波长。"
+    },
+    "透振轴": {
+      "reading": "tou4 zhen4 zhou2",
+      "domain": "几何光学与波动光学",
+      "sha256": "ea71f1910a0ce710eaa055b7c14a9e626117bc5eb0a06675e73d6be57ad20b95",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 2394 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "线偏振光和理想检偏器正交时透过光强为零。"
+    },
+    "掠射": {
+      "reading": "lüe4 she4",
+      "domain": "几何光学与波动光学",
+      "sha256": "645652ac0bdbfecb4785bb9cad90e3440907e01bebb4238e3b79bf2a0bf4b42a",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 2392 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "按法线量角为九十度，掠读 lüè。"
+    },
+    "出射角": {
+      "reading": "chu1 she4 jiao3",
+      "domain": "几何光学与波动光学",
+      "sha256": "bef73e450e710a6466b8a837edf3437f92786dbae0ae2d948abe561954771cb1",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 2214 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "按最后一个界面的法线量角，区别于棱镜整体偏向角。"
+    },
+    "等光程曲面": {
+      "reading": "deng3 guang1 cheng2 qu1 mian4",
+      "domain": "几何光学与波动光学",
+      "sha256": "826ddfcaf6db1969adce392be1471665443091b2252c0774328b608a1c2dd07a",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 2220 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "光学设计曲面有指定的入、出波前，与标量光程概念的用途不同。"
+    },
+    "共轭平面": {
+      "reading": "gong4 e4 ping2 mian4",
+      "domain": "几何光学与波动光学",
+      "sha256": "e42fad3be63ce42b8785baaf3d89916df11ed9bb26de7d821d0eccb1eb5bc322",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 2303 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "限定理想近轴成像；主平面是一对横向放大率为正一的共轭平面。"
+    },
+    "定容热容": {
+      "reading": "ding4 rong2 re4 rong2",
+      "domain": "热学",
+      "sha256": "edfadbf33f23d2e723b5a352c8b731b95dba29384263464513c769ee951f9b2f",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 1131 页",
+        "物理竞赛一轮讲义，PDF 第 1132 页",
+        "物理竞赛一轮讲义，PDF 第 1151 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "读音 dìng róng rè róng 与提示一致。词义限定一定量、组成固定的简单可压缩物质，例句又限定刚性容器、缓慢加热且只交换热量，因此微小吸热量等于整份气体定容热容乘微小温升。整份样品的热容与按物质的量折算的摩尔热容区分正确。"
+    },
+    "等压线": {
+      "reading": "deng3 ya1 xian4",
+      "domain": "热学",
+      "sha256": "b1dc877ac683481fd3d99ec8fc338ccaaabebba352779018981846f8e7c9b9e5",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 1095 页",
+        "物理竞赛一轮讲义，PDF 第 1184 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "横轴体积、纵轴压强时等压线水平，词义和例句正确。修订后flow先说明两轴再读术语，与例句顺序一致；压读 yā。"
+    },
+    "等容线": {
+      "reading": "deng3 rong2 xian4",
+      "domain": "热学",
+      "sha256": "d5b6f476f12ab2f3aba746aa4f2c3311474b7f34c912da1a3487a7ddee247fb1",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 1095 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "在p–V图中竖直等容线上移是压强增加而体积固定。对一定量理想气体的p–T图，过原点的直线是理想关系的数学表示，两个图轴条件均明确。"
+    },
+    "净功": {
+      "reading": "jing4 gong1",
+      "domain": "热学",
+      "sha256": "a77e6a1774394bac3924232673d617294e3dc1abedfa2230f9fd0603c057fd78",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 1134 页",
+        "物理竞赛一轮讲义，PDF 第 1146 页",
+        "物理竞赛一轮讲义，PDF 第 1147 页"
+      ],
+      "prior_lookup": true,
+      "text_review": "reviewed",
+      "review_note": "净功按同一符号约定作代数相加；5 J加负3 J为2 J，循环内能回到原值而净功可正，状态量与过程量区分正确。"
+    },
+    "多方指数": {
+      "reading": "duo1 fang1 zhi3 shu4",
+      "domain": "热学",
+      "sha256": "e76e2c0061799d3b8ad2c7c26aad1afff8a7e0ac09098f018b908bdb9c71dc0c",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 1165 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "定义对应pV的固定幂次关系；一定量理想气体等温时pV恒定，所以指数为一。过程指数与由物性决定的比热容比正确分开。"
+    },
+    "单原子气体": {
+      "reading": "dan1 yuan2 zi3 qi4 ti3",
+      "domain": "热学",
+      "sha256": "82e7f8b89d9f2502a4413990e6f802c89279c403fb85dd37b26195c19bd4aa8f",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 1131 页",
+        "物理竞赛一轮讲义，PDF 第 1146 页",
+        "物理竞赛一轮讲义，PDF 第 1154 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "原子中的子标第三声，与既有学科读法一致。常温稀薄氦气以单原子组成，内能主要来自平动，升温使平均平动动能增加；电子激发留在相应温区讨论。"
+    },
+    "双原子气体": {
+      "reading": "shuang1 yuan2 zi3 qi4 ti3",
+      "domain": "热学",
+      "sha256": "02d9e6d3433dfa08dcdccd51acb45c13c99448459920a15039609f2023906e96",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 1177 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "常温氮气的刚性双原子近似适当，平动与转动均应计入；振动贡献小的温区条件已经明确。"
+    },
+    "水蒸气分压": {
+      "reading": "shui3 zheng1 qi4 fen1 ya1",
+      "domain": "热学",
+      "sha256": "538b3537525ef24b0dfd785aec0c9853cc625c0ce4649e2c64b71ca8bd584531",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 1200 页",
+        "物理竞赛一轮讲义，PDF 第 1201 页",
+        "物理竞赛一轮讲义，PDF 第 1207 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "分读 fēn。理想混合气体分压的同温同体积定义正确，实际分压除以同温饱和蒸气压得到相对湿度；例句分母的同温条件已保留。"
+    },
+    "摩尔体积": {
+      "reading": "mo2 er3 ti3 ji1",
+      "domain": "热学",
+      "sha256": "450e6bc18465f93adfb0649888f58de434e06922e4b362d44a97d078acb0ac02",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 1195 页",
+        "物理竞赛一轮讲义，PDF 第 1196 页",
+        "物理竞赛一轮讲义，PDF 第 1225 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "以体积除以物质的量定义，固定气体量下总体积减半则摩尔体积减半；比体积按单位质量计，辨析正确。"
+    },
+    "显热": {
+      "reading": "xian3 re4",
+      "domain": "热学",
+      "sha256": "e707fad5855c05f927607f00f5a793cc295ee00d1142a635c781da554a10dba7",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 1196 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "一个标准大气压下20至30摄氏度的液态水保持单相，吸热引起升温属于显热；定压沸腾纯水的潜热对照正确。"
+    },
+    "热力学温度": {
+      "reading": "re4 li4 xue2 wen1 du4",
+      "domain": "热学",
+      "sha256": "8640da78c654ff372811bcbf7d3b91c0eb844cdd6f3f5f3fb689ab8910ce0a1f",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 1093 页",
+        "物理竞赛一轮讲义，PDF 第 1095 页",
+        "物理竞赛一轮讲义，PDF 第 1120 页"
+      ],
+      "prior_lookup": true,
+      "text_review": "reviewed",
+      "review_note": "物理量与开尔文单位对应，卡诺型两热源可逆热机使用绝对温度比；温差摄氏度与开尔文数值相同、零点不同的辨析正确。"
+    },
+    "热接触": {
+      "reading": "re4 jie1 chu4",
+      "domain": "热学",
+      "sha256": "e902d0284a56b406659927efea52a1683ce875ae7dd9cd8a399c23c419cca25f",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 1093 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "热接触表示存在传热通道，例句先说明水较热再描述温度计读数上升，达到同温的热平衡与建立接触的过程有清楚区别。"
+    },
+    "电功": {
+      "reading": "dian4 gong1",
+      "domain": "热学",
+      "sha256": "756c5a1e1ab77bbc35094b06bafa9f6aa755d10582b68c3b5eee97bc1b822e68",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 1133 页",
+        "物理竞赛一轮讲义，PDF 第 1155 页",
+        "物理竞赛一轮讲义，PDF 第 1157 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "例句明确电热丝和水共同构成系统，电功由外界沿导线输入绝热容器；绝热与电功输入相容，能量传递与传递速率的区别正确。"
+    },
+    "摩尔内能": {
+      "reading": "mo2 er3 nei4 neng2",
+      "domain": "热学",
+      "sha256": "acfe1ebe771cdfac59e32112ac545fda709140a38ff52f20e8d5c3abcbb1638e",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 1132 页",
+        "物理竞赛一轮讲义，PDF 第 1226 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "修订后的例句明确两瓶氦气当前具有相同温度和压强，保证同态时摩尔内能相同，再按各自物质的量比较总内能；不再从分装前同态直接推断分装后同态。"
+    },
+    "等熵过程": {
+      "reading": "deng3 shang1 guo4 cheng2",
+      "domain": "热学",
+      "sha256": "f7faf0a0a56cd17899c751076ecbdf936dc6aaa498206682e979d631e3bd1aac",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 1171 页",
+        "物理竞赛一轮讲义，PDF 第 1187 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "熵读 shāng。封闭、可逆、绝热条件共同保证过程中熵不变；绝热而存在内部耗散时熵产生的对照成立。"
+    },
+    "平均平动动能": {
+      "reading": "ping2 jun1 ping2 dong4 dong4 neng2",
+      "domain": "热学",
+      "sha256": "3a328ac25caec57440cdc42ae697a90fe4ac56e39f8ce08e830eb0a1325708f3",
+      "observed_at": [
+        "物理竞赛一轮讲义，PDF 第 1130 页",
+        "物理竞赛一轮讲义，PDF 第 1142 页",
+        "物理竞赛一轮讲义，PDF 第 1143 页"
+      ],
+      "prior_lookup": false,
+      "text_review": "reviewed",
+      "review_note": "明确统计的是粒子质心的平动部分。经典热平衡同温氦、氩的平均平动动能相等，较重氩的方均根速率较小；两个动字的语流提示保留完整术语。"
+    }
+  },
+  "revised_cards": {
+    "分子数密度": {
+      "example": {
+        "before": "分子数密度乘气体体积，得到该体积内的分子总数。",
+        "after": "气体的分子数密度处处相同时，用它乘气体体积就得到分子总数。"
+      },
+      "contrast": {
+        "before": "分子数密度按体积计，碰壁通量按面积和时间计。",
+        "after": "数密度按体积计。密度随位置变化时，把各体积元里的分子数相加便得到总数。"
+      }
+    },
+    "摩尔热容量": {
+      "contrast": {
+        "before": "容读 róng，热容与比热容相差质量因子。",
+        "after": "摩尔热容量按物质的量计算，单位是焦耳每摩尔每开尔文；比热容按质量计算。"
+      }
+    },
+    "热力学温标": {
+      "contrast": {
+        "before": "学读 xué，热学中的过程量与状态量分别命名。",
+        "after": "热力学温标从绝对零度起算。温度升高一开尔文，对应的摄氏温差是一摄氏度。"
+      }
+    },
+    "相交": {
+      "example": {
+        "before": "两个不同的轨道平面相交时，它们的交线通过共同的中心天体。",
+        "after": "两颗卫星绕同一中心天体运动，若轨道平面不同，这两个平面就沿一条通过该天体中心的直线相交。"
+      },
+      "contrast": {
+        "before": "轨道相交描述空间位置，相遇还需要到达时间相同。",
+        "after": "两轨道平面的交线给出共同方向。判断两颗卫星能否相遇，还要比较它们的位置和到达时间。"
+      }
+    },
+    "光程": {
+      "contrast": {
+        "before": "程读 chéng，光程与几何路程相差折射率因子。",
+        "after": "均匀介质中，光程等于折射率乘几何路程。沿途折射率变化时，要沿光路把每小段的光程相加。"
+      }
+    },
+    "热平衡态": {
+      "sense": {
+        "before": "宏观热学性质稳定的平衡状态",
+        "after": "系统内部各部分达到共同温度、彼此没有净热流时所处的热学状态。"
+      },
+      "contrast": {
+        "before": "态表示状态，热平衡描述系统间的平衡关系。",
+        "after": "两端保持温差的导体可以有稳定的热流；两端达到热平衡时，温差和净热流都为零。"
+      }
+    },
+    "三相交流电": {
+      "flow": {
+        "before": "三相交流电连续读，三相内部保持衔接。",
+        "after": "先读“三相”，相读 xiàng，再连上“交流电”。几何里两条线“相交”的相读 xiāng。"
+      }
+    },
+    "偏转角": {
+      "flow": {
+        "before": "偏转与角相接，再读半角关系。",
+        "after": "“偏转”的转读 zhuǎn，把“偏转角”一口气读完；再说动量变化与半角的关系。"
+      }
+    },
+    "对角线": {
+      "contrast": {
+        "before": "角读 jiǎo，弧度与角度制分别报单位。",
+        "after": "对角线连接多边形中两个不相邻的顶点；相邻顶点之间的线段是边。"
+      }
+    },
+    "平行": {
+      "contrast": {
+        "before": "行读 xíng，行业中的行读 háng。",
+        "after": "同一平面内的两条不同直线保持相同方向时平行；一张表格的上一行读 háng。"
+      }
+    },
+    "平行光": {
+      "contrast": {
+        "before": "行读 xíng，行业中的行读 háng。",
+        "after": "平行光描述光线方向一致。经会聚透镜近轴成像时，沿主轴入射的光束会聚到像方焦点，倾斜入射的光束会聚到像方焦平面的离轴像点。"
+      }
+    },
+    "平行光干涉": {
+      "contrast": {
+        "before": "行读 xíng，行业中的行读 háng。",
+        "after": "每束光内部的光线相互平行，两束光的传播方向可以成小角度；条纹间距随这个夹角改变。"
+      }
+    },
+    "平行光束": {
+      "contrast": {
+        "before": "行读 xíng，行业中的行读 háng。",
+        "after": "光线彼此平行描述方向；一束光是否沿主轴传播，还取决于整束光的入射方向。"
+      }
+    },
+    "平行出射": {
+      "contrast": {
+        "before": "行读 xíng，行业中的行读 háng。",
+        "after": "平行出射描述各出射光线方向相同。点光源在物方焦平面上偏离主轴时，整束出射光也会倾斜。"
+      }
+    },
+    "平行分量": {
+      "contrast": {
+        "before": "行读 xíng，行业中的行读 háng。",
+        "after": "平行分量沿所选参照方向，垂直分量与该方向成直角；各分量的数值由所选参照方向确定。"
+      }
+    },
+    "平行平板": {
+      "contrast": {
+        "before": "行读 xíng，行业中的行读 háng。",
+        "after": "均匀介质平板的两面平行，外侧介质相同时斜入射光可有侧向位移，出射方向与入射方向相同。"
+      }
+    },
+    "平行板": {
+      "contrast": {
+        "before": "行读 xíng，行业中的行读 háng。",
+        "after": "平行指两板的几何关系；板间场还取决于电荷、板间距以及离板边缘有多远。"
+      }
+    },
+    "平行板电容器": {
+      "contrast": {
+        "before": "行读 xíng，行业中的行读 háng。",
+        "after": "介质相同且边缘效应可忽略时，增大正对面积会增大电容，增大板间距会减小电容。"
+      }
+    },
+    "平面平行运动": {
+      "contrast": {
+        "before": "行读 xíng，行业中的行读 háng。",
+        "after": "刚体作平面平行运动时，各点在平行于同一固定平面的平面内运动；滚动时各点可以有不同速度。"
+      }
+    },
+    "接地平行板": {
+      "contrast": {
+        "before": "行读 xíng，行业中的行读 háng。",
+        "after": "各板接地时电势由地电势确定，板上的感应电荷可随板间点电荷的位置改变。"
+      }
+    },
+    "光程差": {
+      "example": {
+        "before": "同相相干光在相同反射条件下相遇，光程差为真空波长整数倍处形成亮纹。",
+        "after": "两束同偏振、同相出发的相干光在相同反射条件下相遇，光程差为真空波长的整数倍时形成亮纹。"
+      }
+    },
+    "出瞳": {
+      "example": {
+        "before": "观察望远镜时，把眼睛放在出瞳附近，可以接收镜头送出的完整视场光束。",
+        "after": "观察开普勒望远镜时，把眼瞳放在实出瞳处并使它覆盖出瞳，可接收完整的轴上出射光束。"
+      }
+    },
+    "亥姆霍兹涡旋定理": {
+      "sense": {
+        "before": "理想流体在相应保守条件下涡线随流体输运、涡管强度保持的规律。",
+        "after": "在无黏正压流体、体力保守的条件下，涡线随流体输运且物质涡管强度保持的规律。"
+      },
+      "example": {
+        "before": "无黏不可压缩流体只受保守体力时，亥姆霍兹涡旋定理使涡线可随物质质点一起追踪。",
+        "after": "均质无黏不可压缩流体只受保守体力时，亥姆霍兹涡旋定理说明涡线可随同一批流体质点一起追踪。"
+      }
+    }
+  }
+}

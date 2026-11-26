@@ -1,0 +1,24 @@
+{
+  "recognition_reviewed": true,
+  "formulas_reviewed": true,
+  "solution_reviewed": true,
+  "formula_format": "latex",
+  "statement_file": "statement.md",
+  "solution_file": "student.tex",
+  "solution_origin": "self_solved",
+  "problem_sources": [
+    {
+      "file": "source.pdf",
+      "sha256": "3f5653d4c23f2e19b7673ca85ab60f8de0e8a0b203343feafa3a1174d47d936b"
+    }
+  ],
+  "solution_sources": [],
+  "diagram": {
+    "mode": "redrawn",
+    "sources": [
+      "incline.tikz",
+      "forces.tikz"
+    ]
+  },
+  "review_note": "自编示例：PDF 条件逐项转写；沿斜面求 a=5，再求 v=2√5，TikZ 保留同一倾角和位移。"
+}

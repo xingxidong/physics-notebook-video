@@ -45,6 +45,8 @@ def compile_lesson(project,lesson=None):
     project=Path(project).resolve()
     lesson=json.loads((project/'lesson.json').read_text()) if lesson is None else copy.deepcopy(lesson)
     lesson,speech_meta=apply_speech_plan(project,lesson);lesson['_speech_plan_meta']=speech_meta
+    from term_inventory import apply as apply_inventory
+    lesson=apply_inventory(project,lesson)
     if not lesson.get('title') or not lesson.get('pages'):raise ValueError('A lesson needs a title and pages')
     cache=project/'cache/hanzi';cache.mkdir(parents=True,exist_ok=True)
     for seed in (ROOT/'assets/hanzi').glob('*.json'):
@@ -62,6 +64,8 @@ def compile_lesson(project,lesson=None):
         camera=page.get('camera',lesson.get('camera','static'))
         if camera not in ('static','focus'):raise ValueError('camera must be static or focus')
         cooked={'id':pid,'title':page.get('title',lesson['title']),'show_title':page.get('show_title',lesson.get('show_titles',True)),'camera':camera,'cues':[],'components':[],'anchors':{},'index':pi};component_ids=set()
+        cooked['paper']=page.get('paper',lesson.get('paper','grid'))
+        if cooked['paper'] not in ('grid','plain'):raise ValueError('paper must be grid or plain')
         occupied = {}
         if layout_spec:
             cooked['layout']=layout_spec
@@ -247,6 +251,9 @@ def prepare(project,lesson,pages,args):
                          'start':0.,'end':global_t,'duration':global_t,'frames':frames,'cues':[],
                          'strokes':[],'camera':'static','audio_sha256':digest(silence),
                          'image':opening_image(profile,font_path(lesson,project))})
+    if not args.draft and cfg.get('backend') in ('minimax','qwen'):
+        from card_speech import lesson_inputs, merged_provider, restore_script_words
+        card_inputs=lesson_inputs({**lesson,'pages':pages})
     for p in pages:
         local=.35;pcm=bytearray(b'\0'*round(local*SR)*2);events=initial_strokes(p,fps);cues=[];focuses=[]
         records=[]
@@ -268,17 +275,28 @@ def prepare(project,lesson,pages,args):
                         following = p['cues'][index]
                         if cfg.get('backend') == 'minimax' and following.get('minimax_pronunciation') != cue.get('minimax_pronunciation'):
                             break
+                        if cfg.get('backend') == 'minimax':
+                            try:
+                                merged_provider([card_inputs[p['id'],member['id']] for member in [*members,following]])
+                            except ValueError:
+                                break
                         members.append(following);index+=1
                     if cfg.get('backend')=='user':
                         raise ValueError(f'{cue["id"]}: speech_group is unavailable with user-supplied audio files')
                     spoken_texts = [member.get('spoken_tts', member['tts']) for member in members]
                     grouped={**cue,'id':'speech-group-'+group,'tts':' '.join(spoken_texts)}
+                    if cfg.get('backend') == 'minimax':
+                        grouped['_card_provider']=merged_provider([card_inputs[p['id'],m['id']] for m in members])
+                    elif cfg.get('backend') == 'qwen':
+                        grouped['_qwen_input']=' '.join(card_inputs[p['id'],m['id']]['local_text'] for m in members)
                     audio=synth(project,cfg,grouped);voice_hits+=bool(audio['cache_hit']);voice_new+=not audio['cache_hit']
                     with wave.open(audio['file']) as w:clip=w.readframes(w.getnframes())
                     edge_report=None
                     if cfg.get('trim_edges',False):
                         from audio_edges import trim
                         clip,audio,edge_report=trim(clip,audio,SR,cfg['trim_edges'])
+                    if '_card_provider' in grouped:
+                        audio=restore_script_words(audio,grouped['_card_provider']['provider_text'],grouped['tts'])
                     pieces=split_group(audio,spoken_texts)
                     for member,piece_index,piece in zip(members,range(len(members)),pieces):
                         start=round(piece['start']*SR)*2;stop=round(piece['end']*SR)*2
@@ -289,12 +307,19 @@ def prepare(project,lesson,pages,args):
                                         member['pause'] if piece_index==len(members)-1 else 0,
                                         edge_report if piece_index==0 else None))
                     continue
-                audio=synth(project,cfg,{**cue,'tts':cue.get('spoken_tts',cue['tts'])});voice_hits+=bool(audio['cache_hit']);voice_new+=not audio['cache_hit']
+                request={**cue,'tts':cue.get('spoken_tts',cue['tts'])}
+                if cfg.get('backend') == 'minimax':
+                    request['_card_provider']=merged_provider([card_inputs[p['id'],cue['id']]])
+                elif cfg.get('backend') == 'qwen':
+                    request['_qwen_input']=card_inputs[p['id'],cue['id']]['local_text']
+                audio=synth(project,cfg,request);voice_hits+=bool(audio['cache_hit']);voice_new+=not audio['cache_hit']
                 with wave.open(audio['file']) as w:clip=w.readframes(w.getnframes())
                 edge_report=None
                 if cfg.get('trim_edges',False):
                     from audio_edges import trim
                     clip,audio,edge_report=trim(clip,audio,SR,cfg['trim_edges'])
+                if '_card_provider' in request:
+                    audio=restore_script_words(audio,request['_card_provider']['provider_text'],request['tts'])
                 records.append((cue,audio,clip,cue['pause_before'],cue['pause'],edge_report))
         for cue,audio,clip,pause_before,pause_after,edge_report in records:
             pcm.extend(b'\0'*round(pause_before*SR)*2)
@@ -303,7 +328,7 @@ def prepare(project,lesson,pages,args):
             if cue.get('symbol_readings'):
                 audio = {**audio, 'words': display_words(cue['tts'], cue['symbol_readings'], audio.get('words', []))}
             for e in schedule(cue,audio,classroom=classroom):e.update(start=e['start']+local,end=e['end']+local);events.append(e)
-            delivery={k:cue[k] for k in ('role','speed','pitch','volume','emotion','emphasis','pause_reason','speech_group','spoken_tts','symbol_readings') if k in cue}
+            delivery={k:cue[k] for k in ('role','speed','pitch','volume','emotion','emphasis','pause_reason','speech_group','spoken_tts','symbol_readings','minimax_pronunciation') if k in cue}
             cues.append({'id':cue['id'],'text':cue['text'],'tts':cue['tts'],'start':local,'end':local+audio['duration'],'pause_before':pause_before,'pause':pause_after,'timing':'estimated' if args.draft else 'measured','words':audio.get('words',[]),**delivery})
             tone_entries=audio.get('signature',{}).get('pronunciation_dict',{}).get('tone',[])
             if tone_entries:cues[-1]['minimax_tone_entries']=tone_entries
@@ -315,6 +340,7 @@ def prepare(project,lesson,pages,args):
             pcm.extend(b'\0'*round(pause_after*SR)*2)
         frames=math.ceil(len(pcm)/(2*SR)*fps);target=round(frames/fps*SR)*2;pcm.extend(b'\0'*max(0,target-len(pcm)))
         seconds=len(pcm)/(2*SR);prepared={'id':p['id'],'title':p['title'],'show_title':p.get('show_title',True),'index':p['index'],'start':global_t,'end':global_t+seconds,'duration':seconds,'frames':frames,'cues':cues,'strokes':events,'audio_sha256':digest(bytes(pcm))}
+        prepared['paper']=p.get('paper','grid')
         if p.get('layout'):prepared['layout']=p['layout']
         if p.get('layout_report'):prepared['layout_report']=p['layout_report']
         if p.get('problem_id'):prepared['problem_id']=p['problem_id']
@@ -351,6 +377,7 @@ def paper(page,font,scale=1):
     for x in range(75,1210,26):d.line(box((x,86,x,678)),fill='#e8eeec',width=max(1,round(scale)))
     for y in range(86,679,26):d.line(box((64,y,1205,y)),fill='#e8eeec',width=max(1,round(scale)))
     d.line(box((113,86,113,678)),fill='#e5bdb6',width=max(1,round(scale)))
+    if page.get('paper')=='plain':d.rounded_rectangle(box((35,8,1231,700)),round(9*scale),fill='#ffffff')
     if page.get('show_title',True):d.text((75*scale,29*scale),page['title'],font=ImageFont.truetype(str(font),round(24*scale)),fill='#344940')
     if page['index']>=0:
         d.text((1150*scale,659*scale),f'{page["index"]+1:02d}',font=ImageFont.truetype(str(font),round(16*scale)),fill='#83958a')
@@ -427,7 +454,7 @@ def export_boards(project,data,font):
 def video(project,data,font,width):
     if data['draft']:raise ValueError('Draft timing cannot be exported as a narrated final video')
     cache=project/'cache/video';cache.mkdir(parents=True,exist_ok=True);keys=[];new=reused=0;scale=width/W
-    engine=digest(Path(__file__).read_bytes()+(ROOT/'scripts/ink.py').read_bytes()+(ROOT/'scripts/models.py').read_bytes()+(ROOT/'scripts/pursuit.py').read_bytes()+(ROOT/'scripts/cards.py').read_bytes()+(ROOT/'scripts/layout.py').read_bytes()+(ROOT/'scripts/components.py').read_bytes()+font.read_bytes())
+    engine=digest(Path(__file__).read_bytes()+(ROOT/'scripts/ink.py').read_bytes()+(ROOT/'scripts/models.py').read_bytes()+(ROOT/'scripts/incline_motion.py').read_bytes()+(ROOT/'scripts/pursuit.py').read_bytes()+(ROOT/'scripts/cards.py').read_bytes()+(ROOT/'scripts/layout.py').read_bytes()+(ROOT/'scripts/components.py').read_bytes()+font.read_bytes())
     for page in data['pages']:
         local={k:v for k,v in page.items() if k not in ('start','end')};key=digest([local,width,data['fps'],engine]);target=cache/(key+'.mp4');keys.append(key)
         if target.exists():reused+=1;continue
@@ -455,6 +482,9 @@ def run_build(project,args):
     from feedback_bank import check as check_feedback
     check_feedback(project, enforce=not args.draft)
     project=Path(project).resolve();lesson,pages=compile_lesson(project);font=font_path(lesson,project)
+    if not args.draft:
+        from final_review import invalidate
+        invalidate(project)
     from teaching import audit as audit_teaching
     from lesson_review import require as require_review
     renderer=args.renderer or lesson.get('renderer','motion-canvas' if lesson.get('kind')=='problem' else 'notebook')
@@ -519,17 +549,20 @@ def run_build(project,args):
         if lesson.get('review_required'):
             from lesson_review import export_delivery
             export_delivery(project,lesson)
+        if not data.get('draft') and data.get('lesson_sha256'):
+            from production_workflow import checkpoint
+            checkpoint(project,lesson,data,project/'video.mp4')
     stats['renderer']=renderer;stats.update(layout_quality=layout_report['status'],layout_warnings=len(layout_report['warnings']),component_quality=component_report['status'],component_warnings=len(component_report['warnings']),components=sum(component_report['counts'].values()),teaching_quality=teaching_report['status'],motion_scenes=teaching_report['motion_scenes'],derivation_steps=teaching_report['derivation_steps'])
     stats.update(duration=data['duration'],draft=args.draft,pages=len(data['pages']),backend=data['speech']['backend']);write_json(project/'build-report.json',stats);print(json.dumps(stats,ensure_ascii=False))
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__);subs=parser.add_subparsers(dest='command',required=True)
     init=subs.add_parser('init',help='Start a lesson from a worked example')
-    init.add_argument('project');init.add_argument('--title');init.add_argument('--backend',choices=['glm','doubao','minimax','edge','user'],default='glm')
+    init.add_argument('project');init.add_argument('--title');init.add_argument('--backend',choices=['glm','doubao','minimax','edge','qwen','user'])
     template=init.add_mutually_exclusive_group()
     template.add_argument('--kind',choices=['problem','concept'],help='Start with the exercise or new-concept lesson example')
     template.add_argument('--example',choices=['starter','gauss','components','incline','pursuit','electric-field-intro','dimension-board'])
-    build=subs.add_parser('build');build.add_argument('project');build.add_argument('--draft',action='store_true');build.add_argument('--video',action='store_true');build.add_argument('--backend',choices=['glm','doubao','minimax','edge','user']);build.add_argument('--voice');build.add_argument('--fps',type=int,choices=[12,24,30],default=24);build.add_argument('--width',type=int,choices=[1280,1920],default=1280)
+    build=subs.add_parser('build');build.add_argument('project');build.add_argument('--draft',action='store_true');build.add_argument('--video',action='store_true');build.add_argument('--backend',choices=['glm','doubao','minimax','edge','qwen','user']);build.add_argument('--voice');build.add_argument('--fps',type=int,choices=[12,24,30],default=24);build.add_argument('--width',type=int,choices=[1280,1920],default=1280)
     check=subs.add_parser('check');check.add_argument('project')
     board_check=subs.add_parser('board-check',help='Check visible relationships and motion on a silent timeline')
     board_check.add_argument('project');board_check.add_argument('--strict',action='store_true')
@@ -550,7 +583,7 @@ def main():
     voice_check.add_argument('--listen',metavar='CUE_ID',help='Extract a listening clip from the existing narration')
     voice_check.add_argument('--term-reel',action='store_true',help='Export a WAV and index of letters and polyphonic terms from measured audio')
     voice_check.add_argument('--context',action='store_true',help='Include neighboring cues when using --listen')
-    batch=subs.add_parser('batch');batch.add_argument('manifest');batch.add_argument('--jobs',type=int,choices=[1,2,3,4],default=2);batch.add_argument('--draft',action='store_true');batch.add_argument('--video',action='store_true');batch.add_argument('--backend',choices=['glm','doubao','minimax','edge','user']);batch.add_argument('--voice');batch.add_argument('--fps',type=int,choices=[12,24,30],default=24);batch.add_argument('--width',type=int,choices=[1280,1920],default=1280)
+    batch=subs.add_parser('batch');batch.add_argument('manifest');batch.add_argument('--jobs',type=int,choices=[1,2,3,4],default=2);batch.add_argument('--draft',action='store_true');batch.add_argument('--video',action='store_true');batch.add_argument('--backend',choices=['glm','doubao','minimax','edge','qwen','user']);batch.add_argument('--voice');batch.add_argument('--fps',type=int,choices=[12,24,30],default=24);batch.add_argument('--width',type=int,choices=[1280,1920],default=1280)
     subs.add_parser('doctor')
     for target in (build,batch):
         target.add_argument('--renderer',choices=['notebook','motion-canvas','manim'])
@@ -560,9 +593,50 @@ def main():
     setup_cmd=subs.add_parser('setup-renderers');setup_cmd.add_argument('--runtime',required=True)
     preview=subs.add_parser('preview',help='Render silent native preview without changing final audio, timeline or video')
     preview.add_argument('project');preview.add_argument('--renderer',choices=['manim','motion-canvas'],default='manim');preview.add_argument('--runtime');preview.add_argument('--width',type=int,choices=[1280,1920],default=1280);preview.add_argument('--fps',type=int,choices=[12,24,30],default=24)
+    pronunciation=subs.add_parser('pronunciation-check',help='逐词列出课堂口播中要审听的字和读法')
+    source=pronunciation.add_mutually_exclusive_group(required=True)
+    source.add_argument('--text', help='直接检查一段讲稿')
+    source.add_argument('--project', help='按课程的实际配音配置检查所有句子')
     feedback=subs.add_parser('feedback-check',help='Check this lesson against past viewer feedback before production')
     feedback.add_argument('project')
+    inventory=subs.add_parser('term-inventory',help='Prepare all sentences and board context for semantic vocabulary review')
+    inventory.add_argument('project')
+    from production_workflow import register, dispatch
+    register(subs)
+    from final_review import register as register_final, dispatch as dispatch_final
+    register_final(subs)
     args=parser.parse_args()
+    if args.command in ('review-final','finalize'):
+        print(json.dumps(dispatch_final(args),ensure_ascii=False,indent=2));return
+    if args.command=='term-inventory':
+        from term_inventory import draft as draft_inventory
+        from production_workflow import effective
+        project=Path(args.project).resolve()
+        print(json.dumps(draft_inventory(project,effective(project)),ensure_ascii=False,indent=2));return
+    if args.command in ('status','revise','repair-reel','handout-pack'):
+        print(json.dumps(dispatch(args),ensure_ascii=False,indent=2))
+        return
+    if args.command=='pronunciation-check':
+        from pronunciation import tone_targets
+        if args.text is not None:
+            rows = tone_targets(args.text)
+            issues = []
+        else:
+            from feedback_bank import check as check_feedback
+            report = check_feedback(args.project)
+            rows = report['tone_targets']
+            issues = [item for item in report['findings'] if item['severity']=='error']
+        if not rows:
+            print('当前词表未命中这段口播。')
+        for row in rows:
+            location = f"{row['page']} / {row['cue']}　" if 'cue' in row else ''
+            sounds = '，'.join(f"{c['char']} {c['reading'] or '按句意定音'}" for c in row['characters'])
+            print(f"{location}第{row['offset']+1}字起　{row['term']}　{sounds or row['expected'] or '按句意定音'}")
+        for item in issues:
+            print(item['message'], file=sys.stderr)
+        if issues:
+            sys.exit(1)
+        return
     if args.command in ('feedback-check','review-plan','preview','render'):
         from feedback_bank import check as check_feedback
         report=check_feedback(args.project,enforce=args.command=='render')
@@ -635,6 +709,10 @@ def main():
         project=Path(args.project).resolve()
         lesson,pages=compile_lesson(project)
         from lesson_review import fingerprint,require_unchanged
+        if args.command=='review-plan':
+            from handout_bundle import main_source,build as build_handout
+            if main_source(project,lesson):
+                build_handout(project,lesson)
         source_revision=fingerprint(project,lesson)
         if args.command=='approve-plan':
             approve(project,lesson,args.feedback)
@@ -708,15 +786,25 @@ def main():
             current,pages=compile_lesson(project);report=audit_teaching(project,current,pages);write_json(project/'teaching-report.json',report)
             if report['errors']:raise ValueError('Resolve teaching-report.json errors before rendering')
             if data.get('lesson_sha256')!=digest(current):raise ValueError('Problem source changed; rebuild its measured timeline before rendering')
+            from board_review import check as check_board
+            board = check_board(current,pages,data)
+            write_json(project/'board-review-report.json',board)
+            if board['warnings'] and lesson.get('review_required'):
+                raise ValueError('实际落笔和板书检查未通过，见 board-review-report.json。')
             from knowledge_board import inspect_timeline
             knowledge_report=inspect_timeline(report['knowledge_notes'],data)
             write_json(project/'knowledge-board-report.json',knowledge_report)
             if knowledge_report['errors']:raise ValueError('Resolve knowledge-board-report.json errors before rendering')
+        from final_review import invalidate
+        invalidate(project)
         if args.renderer=='notebook':stats=video(project,data,font,args.width)
         else:stats=render(project,data,font,args.width,args.renderer,args.runtime)
         if lesson.get('review_required'):
             from lesson_review import export_delivery
             export_delivery(project,lesson)
+        if not data.get('draft') and data.get('lesson_sha256'):
+            from production_workflow import checkpoint
+            checkpoint(project,lesson,data,project/'video.mp4')
         stats.update(duration=data['duration'],renderer=args.renderer)
         write_json(project/('render-report-'+args.renderer+'.json'),stats);print(json.dumps(stats,ensure_ascii=False));return
     if args.command=='batch':
@@ -738,6 +826,7 @@ def main():
         from voice import DEFAULTS
         from speech_plan import externalize
         from engine_render import local_config
+        from qwen_setup import managed_config
         p=Path(args.project).resolve();p.mkdir(parents=True,exist_ok=True)
         if (p/'lesson.json').exists():raise ValueError('lesson.json already exists; edit it or choose another project')
         example=args.example or {'problem':'pursuit','concept':'dimension-board'}.get(args.kind,'starter')
@@ -745,8 +834,10 @@ def main():
         if args.title:data['title']=args.title
         data.setdefault('show_titles',False);data.setdefault('camera','static')
         data['review_required']=True
-        local_speech=(local_config().get('speech_defaults') or {}).get(args.backend,{})
-        data['speech']={'backend':args.backend,'voice':local_speech.get('voice',DEFAULTS[args.backend]),'speed':1.0,'audio_mastering':True,'delivery_profile':'classroom','trim_edges':True}
+        data['term_inventory_version']=2
+        backend=args.backend or ('qwen' if managed_config() else 'glm')
+        local_speech=(local_config().get('speech_defaults') or {}).get(backend,{})
+        data['speech']={'backend':backend,'voice':local_speech.get('voice',DEFAULTS[backend]),'speed':1.0,'audio_mastering':True,'delivery_profile':'classroom','trim_edges':True}
         if local_speech.get('model'):data['speech']['model']=local_speech['model']
         for field in ('plain_pronunciation', 'minimax_pronunciation'):
             if field in local_speech:
@@ -774,7 +865,21 @@ def main():
                               '\n\n![图 1 追及情景与所用物理量](review-preview/pages/p01.png)\n\n'+
                               (stem/'solution.md').read_text()+
                               '\n[图 1 的可编辑 TikZ](review-preview/tikz/p01.tikz)\n')
-        data,plan=externalize(data);write_json(p/'lesson.json',data);write_json(p/'speech-plan.json',plan);print(p/'lesson.json');return
+        if example in ('pursuit','dimension-board'):
+            template_dir=ROOT/'assets/examples'/example
+            links=json.loads((template_dir/'step-links.json').read_text())
+            for page in data['pages']:
+                for step in page.get('derivation_steps',[]):
+                    step.update(links[step['id']])
+            for name in ('学生讲义.tex','model.tikz'):
+                shutil.copy2(template_dir/name,p/name)
+            data.update(workflow_version=1, handout_source='学生讲义.tex', handout='学生讲义.tex')
+        data,plan=externalize(data)
+        write_json(p/'lesson.json',data)
+        write_json(p/'speech-plan.json',plan)
+        from feedback_bank import preparation
+        preparation(p,data)
+        print(p/'lesson.json');return
     if args.command=='check':
         from layout import audit_lesson
         from components import audit_components

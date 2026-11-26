@@ -151,6 +151,8 @@ def audit(project,lesson,pages):
                 if missing:
                     labels='、'.join(sorted(missing))
                     error('closure-content',f'closure.points 缺少 {labels}。总结要回到具体模型或开场问题，说清关键依据，再落到结论或用法。')
+    from step_review import source_check
+    errors.extend(source_check(project,lesson))
     status='attention' if errors or warnings else 'pass' if required or concept or motion_count or step_count else 'not_applicable'
     return {'kind':lesson.get('kind'),'status':status,'required':required or concept,'source_intake_required':required,'structural_checks_only':True,'physics_correctness':'not_evaluated_by_this_checker','coverage':coverage,
             'recognized_problem_pages':sum(bool(p.get('problem_card')) for p in pages),'problem_checks':groups,

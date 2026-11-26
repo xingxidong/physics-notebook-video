@@ -1,0 +1,220 @@
+{
+  "backend": "user",
+  "items": [
+    {
+      "id": "measure",
+      "text": "先沿着斜面测量长度，再写出这个物理量的单位。",
+      "targets": [
+        {
+          "term": "测量",
+          "offset": 5,
+          "pinyin": "ce4 liang2",
+          "sense": "测量动作"
+        },
+        {
+          "term": "长度",
+          "offset": 7,
+          "pinyin": "chang2 du4",
+          "sense": "长短"
+        },
+        {
+          "term": "物理量",
+          "offset": 15,
+          "pinyin": "wu4 li3 liang4",
+          "sense": "量名"
+        }
+      ],
+      "flow": "测量、长度、物理量各自连读；逗号处换气。",
+      "reference_audio": "audio/measure.mp3",
+      "reference_status": "synthetic_comparison_only",
+      "judgment": "pending",
+      "audio": "audio/measure.wav",
+      "duration": 5.1,
+      "audio_sha256": "da442e57bdfcd49c9bd88d670dbf2f5e4ad523f9222277b5dcc2d2174b641831",
+      "synthesis_signature": {
+        "backend": "user",
+        "voice": "",
+        "model": "",
+        "speed": 1.0,
+        "pitch": "+0Hz",
+        "volume": 1.0,
+        "tts": "先沿着斜面测量长度，再写出这个物理量的单位。",
+        "adapter": 2,
+        "resource_id": "seed-tts-2.0",
+        "host": "https://api.minimaxi.com",
+        "emotion": null,
+        "source_sha256": "93c80993cf32a3c9121ae7e3ac5f651c0d251b3f2caff2816620a3ba8c092437"
+      },
+      "synthesis": null,
+      "planned_input": {
+        "source": "先沿着斜面测量长度，再写出这个物理量的单位。",
+        "provider_text": "先沿着斜面测量长度，再写出这个物理量的单位。",
+        "pinyin": {
+          "沿着": "yan2 zhe5",
+          "斜面": "xie2 mian4",
+          "测量": "ce4 liang2",
+          "长度": "chang2 du4",
+          "物理量": "wu4 li3 liang4"
+        },
+        "local_text": "先沿着斜面测梁常度，再写出这个物理量的单位。",
+        "targets": [
+          {
+            "term": "斜面",
+            "offset": 3,
+            "expected": "xie2 mian4"
+          },
+          {
+            "term": "测量",
+            "offset": 5,
+            "expected": "ce4 liang2",
+            "flow": "“测量”连续，第二个字自然上扬。"
+          },
+          {
+            "term": "长度",
+            "offset": 7,
+            "expected": "chang2 du4",
+            "flow": "长读第二声，长度两字连读。"
+          },
+          {
+            "term": "物理量",
+            "offset": 15,
+            "expected": "wu4 li3 liang4",
+            "flow": "“量”紧跟“物理”。"
+          }
+        ],
+        "conflicts": [],
+        "provider_exclusions": [],
+        "symbols": []
+      },
+      "review_status": "pending"
+    },
+    {
+      "id": "mixed-q",
+      "text": "水平分量是 u 乘 q，竖直分量是负 v 乘 q。",
+      "targets": [
+        {
+          "term": "分量",
+          "offset": 2,
+          "pinyin": "fen1 liang4",
+          "sense": "矢量投影"
+        },
+        {
+          "term": "分量",
+          "offset": 14,
+          "pinyin": "fen1 liang4",
+          "sense": "矢量投影"
+        }
+      ],
+      "flow": "按 u /juː/、q /kjuː/、v /viː/、q /kjuː/ 的顺序；每个字母整体融入中文。",
+      "reference_audio": "audio/mixed-q.mp3",
+      "reference_status": "synthetic_comparison_only",
+      "judgment": "pending",
+      "audio": "audio/mixed-q.wav",
+      "duration": 4.55,
+      "audio_sha256": "133498d6d9d2543404f6d7dd485a07efcd6197177b713eb128aa9b4437a5f6aa",
+      "synthesis_signature": {
+        "backend": "user",
+        "voice": "",
+        "model": "",
+        "speed": 1.0,
+        "pitch": "+0Hz",
+        "volume": 1.0,
+        "tts": "水平分量是 u 乘 q，竖直分量是负 v 乘 q。",
+        "adapter": 2,
+        "resource_id": "seed-tts-2.0",
+        "host": "https://api.minimaxi.com",
+        "emotion": null,
+        "source_sha256": "10d7450781c655607d34b8f44f4ab9093330fcdf4cb22da113e8f3d3549c8756"
+      },
+      "synthesis": null,
+      "planned_input": {
+        "source": "水平分量是 u 乘 q，竖直分量是负 v 乘 q。",
+        "provider_text": "水平分量是 u 乘 q，竖直分量是负 v 乘 q。",
+        "pinyin": {
+          "水平分量": "shui3 ping2 fen1 liang4",
+          "竖直分量": "shu4 zhi2 fen1 liang4"
+        },
+        "local_text": "水平分亮是 u 乘 q，竖直分亮是负 v 乘 q。",
+        "targets": [
+          {
+            "term": "水平",
+            "offset": 0,
+            "expected": "shui3 ping2"
+          },
+          {
+            "term": "水平分量",
+            "offset": 0,
+            "expected": "shui3 ping2 fen1 liang4"
+          },
+          {
+            "term": "分量",
+            "offset": 2,
+            "expected": "fen1 liang4",
+            "flow": "“分”用第一声，“量”用第四声，两字成词。"
+          },
+          {
+            "term": "竖直",
+            "offset": 12,
+            "expected": "shu4 zhi2"
+          },
+          {
+            "term": "竖直分量",
+            "offset": 12,
+            "expected": "shu4 zhi2 fen1 liang4"
+          },
+          {
+            "term": "分量",
+            "offset": 14,
+            "expected": "fen1 liang4",
+            "flow": "“分”用第一声，“量”用第四声，两字成词。"
+          }
+        ],
+        "conflicts": [],
+        "provider_exclusions": [],
+        "symbols": [
+          {
+            "symbol": "u",
+            "offset": 6,
+            "core_end": 7,
+            "end": 7,
+            "expression": "u",
+            "expected": "U /juː/",
+            "listen_for": "开头从 /j/ 滑入 /uː/，和同句 q 的 /k/ 起音区分。 已有反馈：成片复查：“减去 u 乘 t”中的字母容易听成“又”。",
+            "example": "把 u 乘 q 写在这一项。"
+          },
+          {
+            "symbol": "q",
+            "offset": 10,
+            "core_end": 11,
+            "end": 11,
+            "expression": "q",
+            "expected": "Q /kjuː/",
+            "listen_for": "听起首的 /k/ 和紧接的 /juː/，整次 q 只含一个元音核。两处 q 分别听。 已有反馈：成片复查：密度比和分母中的 q 与 u 易混。",
+            "example": "水平分量是 u 乘 q，竖直分量是负 v 乘 q。"
+          },
+          {
+            "symbol": "v",
+            "offset": 19,
+            "core_end": 20,
+            "end": 20,
+            "expression": "v",
+            "expected": "V /viː/",
+            "listen_for": "上齿与下唇形成 /v/，随后接 /iː/。遇到 v₀ 时再接一次“零”。 已有反馈：用户报告板书 v₀ 听起来像“ve0”；需分辨正常 V 韵尾与额外元音。",
+            "example": "把初速 v₀ 代进去。"
+          },
+          {
+            "symbol": "q",
+            "offset": 23,
+            "core_end": 24,
+            "end": 24,
+            "expression": "q",
+            "expected": "Q /kjuː/",
+            "listen_for": "听起首的 /k/ 和紧接的 /juː/，整次 q 只含一个元音核。两处 q 分别听。 已有反馈：成片复查：密度比和分母中的 q 与 u 易混。",
+            "example": "水平分量是 u 乘 q，竖直分量是负 v 乘 q。"
+          }
+        ]
+      },
+      "review_status": "pending"
+    }
+  ]
+}

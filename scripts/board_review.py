@@ -161,6 +161,9 @@ def check(lesson,pages,timeline):
                     if min(s['end'] for s in drawn)<=time and overlap(box,label_box):
                         finding('motion-label',f'「{name}」挡住板书 {block.get("id") or block["action"]}。')
 
+    from step_review import inspect as inspect_steps
+    issues, evidence = inspect_steps(lesson,timeline)
+    warnings.extend(issues)
     order=lambda item:(item['time'],item['page'],item['code'])
     coverage=[{'page':p['id'],
                'visibility_checkpoints':sum(c['page']==p['id'] for c in checkpoints),
@@ -170,6 +173,6 @@ def check(lesson,pages,timeline):
               for p in pages]
     return {'status':'attention' if warnings else 'pass' if managed else 'not_applicable',
             'timing':'estimated' if timeline.get('draft') else 'measured',
-            'managed_pages':len(managed),'checkpoints':sorted(checkpoints,key=order),
+            'derivation_evidence':evidence,'managed_pages':len(managed),'checkpoints':sorted(checkpoints,key=order),
             'coverage':coverage,
             'warnings':sorted(warnings,key=order)}

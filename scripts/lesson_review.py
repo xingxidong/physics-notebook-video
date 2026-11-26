@@ -90,11 +90,12 @@ def handout(project,lesson):
     return path
 
 
-def fingerprint(project,lesson):
+def dependency_hashes(project,lesson):
     assets=lesson.get('review_assets',[])
     if not isinstance(assets,list) or any(not isinstance(name,str) for name in assets):
         raise ValueError('review_assets 须列出项目内的素材路径。')
-    names=set(assets)
+    from handout_bundle import source_files
+    names=set(assets) | {str(p.relative_to(project)) for p in source_files(project,lesson)}
     for key in ('course_outline','duration_plan','handout','input_manifest','article_coverage'):
 
         if isinstance(lesson.get(key),str):
@@ -113,8 +114,18 @@ def fingerprint(project,lesson):
             if scene.get('source'):
                 names.add(scene['source'])
             names.update(scene.get('dependencies',[]))
+        for cue in page.get('cues',[]):
+            if cue.get('audio'):
+                names.add(cue['audio'])
+            if cue.get('alignment'):
+                names.add(cue['alignment'])
     files={name:hashlib.sha256(local_file(project,name).read_bytes()).hexdigest()
            for name in sorted(names)}
+    return files
+
+
+def fingerprint(project,lesson):
+    files=dependency_hashes(project,lesson)
     value={'lesson':lesson,'opening':opening(lesson),'files':files}
     return hashlib.sha256(json.dumps(value,sort_keys=True,ensure_ascii=False).encode()).hexdigest()
 
@@ -220,6 +231,14 @@ def plan_text(project,lesson,pages,timing,layout,teaching,*,duration=None,langua
         for item in quality.get('findings',[]):
             lines.append('- '+item['message'])
         lines.append('')
+    from step_review import steps,enabled
+    linked_steps=[(pid,s) for pid,s in steps(lesson) if enabled(lesson,s)]
+    if linked_steps:
+        lines.extend(['## 逐步核对口播、板书与讲义',''])
+        for pid,s in linked_steps:
+            lines.extend([f"**{pid}/{s.get('id')}**　{s.get('question','')}",
+                          f"口播「{s.get('spoken_anchor','')}」　板书 `{s.get('action_id')}`　讲义 `{s.get('handout_label')}`",
+                          '先呈现：'+'、'.join(s.get('requires_visible',[])) if s.get('requires_visible') else '', ''])
     lines.extend(['## 审阅','',
                   '请先确认本课重难点、推导、口播、片头和学生讲义，再确认可进入正式制作。','',
                   '[横屏尺寸板书检查图](review-preview/contact-sheet.png) · [无配音板书预览](review-preview/preview.html)',''])
@@ -231,6 +250,10 @@ def plan_text(project,lesson,pages,timing,layout,teaching,*,duration=None,langua
     for finding in [*teaching.get('errors',[]),*layout.get('warnings',[]),*timing.get('warnings',[])]:
         lines.append('- '+finding['message'])
     linked=lesson.get('handout','讲义.md')
+    if (project/'handout-delivery/receipt.json').is_file():
+        from handout_bundle import main_source,verified
+        if main_source(project,lesson) and verified(project,lesson):
+            linked='handout-delivery/学生讲义.pdf'
     if local_file(project,linked,required=False).is_file():
         lines.extend(['',f'[学生讲义]({linked})',''])
     return '\n'.join(lines)+'\n'
@@ -295,8 +318,10 @@ def require(project,lesson,renderer=None):
             raise ValueError('正式动画应使用教案中已确认的原生预览引擎。')
 
 
-def export_delivery(project,lesson):
+def export_delivery(project,lesson,*,publish=False,video_file='video.mp4'):
     import zipfile
+    from final_review import invalidate
+    invalidate(project)
 
     document=handout(project,lesson)
     files={document}
@@ -309,9 +334,24 @@ def export_delivery(project,lesson):
             if not dep.is_relative_to(project) or not dep.is_file():
                 raise ValueError(f'学生讲义的本地链接无法打包：{target}')
             files.add(dep)
-    record={'video':'video.mp4','handout':str(document.relative_to(project)),
+    media=local_file(project,video_file)
+    record={'video':str(media.relative_to(project)),'handout':str(document.relative_to(project)),
             'boards':'boards.pdf','tikz':'tikz/boards.tex'}
-    if len(files)>1:
+    from term_flow import inspect as check_term_flow, manifest_entry
+    from feedback_bank import save_report
+    timeline = json.loads((project/'timeline.json').read_text())
+    report = check_term_flow(project, timeline, media, lesson=lesson)
+    save_report(project/'final-term-flow.json', report)
+    record['term_review'] = manifest_entry(report)
+    from speech_context import review_course
+    context = review_course(project,timeline,media,lesson)
+    record['speech_context'] = manifest_entry(context)
+    from handout_bundle import main_source, build as build_handout, verified
+    if main_source(project,lesson):
+        receipt=json.loads((project/'handout-delivery/receipt.json').read_text()) if verified(project,lesson) else build_handout(project,lesson)
+        record.update(handout=receipt['pdf'], handout_bundle=receipt['archive'],
+                      handout_receipt='handout-delivery/receipt.json')
+    elif len(files)>1:
         bundle=project/'学生讲义.zip'
         part=bundle.with_suffix('.part.zip')
         with zipfile.ZipFile(part,'w',compression=zipfile.ZIP_DEFLATED) as archive:
@@ -322,4 +362,15 @@ def export_delivery(project,lesson):
     subtitles=project/'subtitles.srt'
     if subtitles.is_file():
         record['subtitles']=subtitles.name
-    write_json(project/'delivery-files.json',record)
+    record['status']='awaiting_review'
+    write_json(project/'delivery-candidate.json',record)
+    if publish:
+        if report.get('inventory_pending') or report['remaining'] or context['remaining']:
+            raise ValueError('术语、字母或整句仍有待审项，不能标记为可交付。')
+        from final_review import require
+        reviewed=require(project,lesson,media)
+        for name in ('video','handout','boards','tikz'):
+            local_file(project,record[name])
+        record.update(status='reviewed',review_binding=reviewed['review_binding'])
+        write_json(project/'delivery-files.json',record)
+    return record

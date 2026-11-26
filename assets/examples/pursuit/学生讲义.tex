@@ -1,0 +1,45 @@
+\documentclass[UTF8,fontset=fandol]{ctexart}
+
+\usepackage{amsmath,tikz}
+
+\begin{document}
+
+\section*{追逐运动：把两个速度投影合成一个导数}
+
+目标点 $F$ 水平向右以恒定速率 $v_F$ 运动，追逐点 $D$ 以恒定速率 $v_D>v_F$ 沿视线追赶。初始两点上下对齐，相距 $L$。图 1 画出追赶中的一个时刻。求怎样把夹角从间距 $r$ 和水平领先量 $x$ 的变化率中消去。
+
+\begin{center}\input{model.tikz}\\ 图 1\end{center}
+
+沿图 1 的视线投影，目标点使间距增加，追逐点使间距减小。
+
+\begin{equation}\dot r=v_F\cos\theta-v_D\label{eq:s1}\end{equation}
+
+沿水平方向，蓝点的速度减去绿点的水平分量给出领先量的变化率。
+
+\begin{equation}\dot x=v_F-v_D\cos\theta\label{eq:s2}\end{equation}
+
+给第一式两边同乘追逐点速率。
+
+\begin{equation}v_D\dot r=v_Dv_F\cos\theta-v_D^2\label{eq:s3}\end{equation}
+
+给第二式两边同乘目标点速率。
+
+\begin{equation}v_F\dot x=v_F^2-v_Dv_F\cos\theta\label{eq:s4}\end{equation}
+
+两式相加，两个余弦项抵消。
+
+\begin{equation}v_D\dot r+v_F\dot x=v_F^2-v_D^2\label{eq:s5}\end{equation}
+
+追逐点速率恒定，可以移入时间导数。
+
+\begin{equation}v_D\dot r=\frac{d}{dt}(v_Dr)\label{eq:s6}\end{equation}
+
+用同样的方法把目标点速率移入时间导数。
+
+\begin{equation}v_F\dot x=\frac{d}{dt}(v_Fx)\label{eq:s7}\end{equation}
+
+两个导数相加就是和的导数。追上时 $r=x=0$，因此这条关系也给出了求追及时间的积分条件。
+
+\begin{equation}\frac{d}{dt}(v_Dr+v_Fx)=v_F^2-v_D^2\label{eq:s8}\end{equation}
+
+\end{document}

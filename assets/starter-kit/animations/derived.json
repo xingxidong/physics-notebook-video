@@ -1,0 +1,16 @@
+{
+  "collision": {
+    "v1": -1.0,
+    "v2": 2.0
+  },
+  "magnetic": {
+    "radius": 2.0,
+    "omega": 1.0
+  },
+  "film": {
+    "theta_inside": 0.33983690945412187,
+    "optical_path_nm": 848.5281374238571,
+    "reflection_phase": -3.141592653589793,
+    "phase": 6.551970120573914
+  }
+}

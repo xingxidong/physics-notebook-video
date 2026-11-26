@@ -2,10 +2,12 @@ import array
 import json
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'scripts'))
 from classroom_language import review_narration
+from lesson_quality import handout_language
 from pronunciation import ENGLISH_NAMES, letter_bindings, resolve_readings
 from voice_quality import _review_short_joins
 
@@ -24,6 +26,17 @@ class SpokenRevisions(unittest.TestCase):
                                ('截图中给出一条线。','source-in-narration'),('从手势看这个量。','unseen-gesture')]:
             self.assertIn(expected,{r['code'] for r in review_narration([{'id':'one','tts':text}])})
         self.assertFalse(review_narration([{'id':'one','tts':'箭头越短，阻力越小。'}]))
+
+    def test_teacher_editing_flags_both_media_without_flagging_physical_conditions(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            (root/'讲义.md').write_text('在惯性系中，合力为零时速度保持不变。\n本题的主线已经建立。\n这不意味着物块停下。')
+            for kind in ('concept','problem'):
+                report, scanned=handout_language(root,{'kind':kind})
+                self.assertTrue(scanned)
+                self.assertEqual([row['line'] for row in report],[2,3])
+            cues=[{'id':'a','tts':'本题的主线已经建立。这不意味着物块停下。'}]
+            self.assertEqual({r['code'] for r in review_narration(cues)},{'editorial-language','defensive-language'})
 
     def test_short_gaps_and_clicks(self):
         rate = 10000

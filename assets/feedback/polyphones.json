@@ -1,5 +1,11 @@
 [
   {
+    "key": "朝右量",
+    "expected": "chao2 you4 liang2",
+    "focus": "量",
+    "observed": "从坐标轴朝右测量角度时，动词“量”被读成第四声。"
+  },
+  {
     "key": "相位",
     "observed": "相被读成第一声",
     "expected": "xiang4 wei4",
@@ -16,5 +22,19 @@
     "expected": "fen1 liang4",
     "context_required": true,
     "observed": "矢量沿坐标轴的分量读音有误；依上下文区分矢量分量与份量、轻重。"
+  },
+  {
+    "key": "测量",
+    "observed": "作测定解时，量在录音中误读成第四声。",
+    "expected": "ce4 liang2",
+    "hint": "测梁"
+  },
+  {
+    "key": "位置矢量",
+    "expected": "wei4 zhi4 shi3 liang4",
+    "observed": "逐字补音会把术语拆开。",
+    "takeaways": [
+      "把“位置矢量”和前后短语放在同一次整句录音里，回听词内节奏和接句。"
+    ]
   }
 ]

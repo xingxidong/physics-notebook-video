@@ -66,9 +66,9 @@ class ArticleLessons(unittest.TestCase):
         line = '水平分量。掂一掂分量。'
         self.assertEqual(local_tts_text(line, matched_pronunciations(line)), '水平分亮。掂一掂分量。')
         self.assertNotIn('分量', matched_pronunciations('掂一掂分量'))
-        result = check(self.root, {'pages':[{'id':'p','cues':[{'id':'c','tts':'水平分量。掂一掂分量。'}]}]})
+        result = check(self.root, {'pages':[{'id':'p','cues':[{'id':'c','tts':'水平分量。掂一掂分量。看这个分量。'}]}]})
         words = [r for r in result['listen'] if r['key']=='分量']
-        self.assertEqual([r['expected'] for r in words], ['fen1 liang4', None])
+        self.assertEqual([r['expected'] for r in words], ['fen1 liang4', 'fen4 liang5', None])
 
     def test_final_media_floor_independent_of_timeline_and_display_rounding(self):
         source = json.loads((ROOT/'assets/dimension-board.json').read_text())

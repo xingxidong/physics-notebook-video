@@ -1,0 +1,184 @@
+[
+  {
+    "source_digest": "c8befd62135467fa4dfdae56946896a7e449490fe39a900c698a04422efd52f0",
+    "source_report_id": 125,
+    "kind": "issues",
+    "key": "formula-symbol-pause",
+    "record": {
+      "bank": "issues",
+      "key": "formula-symbol-pause",
+      "recorded": true,
+      "database": "assets/learning/feedback.sqlite3"
+    },
+    "takeaway": "公式中的字母、下标和幂次连贯朗读，停顿放在完整运算或分组之后；按本课每一次出现的位置听整句。",
+    "applies_to": "new concept and problem lessons"
+  },
+  {
+    "source_digest": "36f1e64d1143d39f14bba59bf31f9c60c8a041a911d79ea7c4584a798a09ab1d",
+    "source_report_id": 127,
+    "kind": "issues",
+    "key": "formula-symbol-pause",
+    "record": {
+      "bank": "issues",
+      "key": "formula-symbol-pause",
+      "recorded": true,
+      "database": "assets/learning/feedback.sqlite3"
+    },
+    "takeaway": "公式中的字母、下标和幂次连贯朗读，停顿放在完整运算或分组之后；按本课每一次出现的位置听整句。",
+    "applies_to": "new concept and problem lessons"
+  },
+  {
+    "source_digest": "c95044c0c72d764605eea3e80acb8b7d9212e3cf66a02d0c7eaf7cd562288eca",
+    "source_report_id": 128,
+    "kind": "issues",
+    "key": "formula-symbol-pause",
+    "record": {
+      "bank": "issues",
+      "key": "formula-symbol-pause",
+      "recorded": true,
+      "database": "assets/learning/feedback.sqlite3"
+    },
+    "takeaway": "公式中的字母、下标和幂次连贯朗读，停顿放在完整运算或分组之后；按本课每一次出现的位置听整句。",
+    "applies_to": "new concept and problem lessons"
+  },
+  {
+    "source_digest": "b354ded2c26b05ee20c10abc3959d8d4077fb63480cb18f55032a55601ae2e9d",
+    "source_report_id": 126,
+    "kind": "issues",
+    "key": "formula-symbol-pause",
+    "record": {
+      "bank": "issues",
+      "key": "formula-symbol-pause",
+      "recorded": true,
+      "database": "assets/learning/feedback.sqlite3"
+    },
+    "takeaway": "公式中的字母、下标和幂次连贯朗读，停顿放在完整运算或分组之后；按本课每一次出现的位置听整句。",
+    "applies_to": "new concept and problem lessons"
+  },
+  {
+    "source_digest": "29ba1a800c606a5aaef2487e8a397d81fc3616f51563bcf240f32a918fe5f62d",
+    "source_report_id": 45,
+    "kind": "issues",
+    "key": "gpt-sovits-v2proplus-mandarin-listening",
+    "record": {
+      "bank": "issues",
+      "key": "gpt-sovits-v2proplus-mandarin-listening",
+      "recorded": true,
+      "database": "assets/learning/feedback.sqlite3"
+    },
+    "takeaway": "更换语音模型前，用同一教师参考音色、含物理术语和字母的完整课堂句比较；记录所选版本和实际听感。",
+    "applies_to": "new concept and problem lessons"
+  },
+  {
+    "source_digest": "56edab0871c68bb6045ec5f75ea187ccb35fab14d10795ff080123a064da75ff",
+    "source_report_id": 124,
+    "kind": "issues",
+    "key": "split-physics-word",
+    "record": {
+      "bank": "issues",
+      "key": "split-physics-word",
+      "recorded": true,
+      "database": "assets/learning/feedback.sqlite3"
+    },
+    "takeaway": "把物理术语作为完整词组朗读；重配后听该词所在整句和相邻句，检查词内停顿、重复起音与突兀接缝。",
+    "applies_to": "new concept and problem lessons"
+  },
+  {
+    "source_digest": "540b653892158597d7edbafec6b3982a459bd1d46e69525ead36b9a56e0a12cc",
+    "source_report_id": 52,
+    "kind": "letters",
+    "key": "A",
+    "record": {
+      "bank": "letters",
+      "key": "A",
+      "recorded": true,
+      "database": "assets/learning/feedback.sqlite3"
+    },
+    "takeaway": "在完整课堂句中检查字母 A 的英语字母名及两侧中文，连读下标和幂次，重录后复听整句与接缝。",
+    "applies_to": "new concept and problem lessons"
+  },
+  {
+    "source_digest": "11969f6398053876dd7aeb1ab78fe833cbc94287408ca9ba28acf4b440d176f4",
+    "source_report_id": 55,
+    "kind": "letters",
+    "key": "E",
+    "record": {
+      "bank": "letters",
+      "key": "E",
+      "recorded": true,
+      "database": "assets/learning/feedback.sqlite3"
+    },
+    "takeaway": "在完整课堂句中检查字母 E 的英语字母名及两侧中文，连读下标和幂次，重录后复听整句与接缝。",
+    "applies_to": "new concept and problem lessons"
+  },
+  {
+    "source_digest": "cce295e73477e0e89cfd6166877e4dd2f11b88784e6746a3aaff52b2f303a6a9",
+    "source_report_id": 53,
+    "kind": "letters",
+    "key": "F",
+    "record": {
+      "bank": "letters",
+      "key": "F",
+      "recorded": true,
+      "database": "assets/learning/feedback.sqlite3"
+    },
+    "takeaway": "在完整课堂句中检查字母 F 的英语字母名及两侧中文，连读下标和幂次，重录后复听整句与接缝。",
+    "applies_to": "new concept and problem lessons"
+  },
+  {
+    "source_digest": "3000b65d1e9016be6c31d2511817e3cc5c7a9b25d8de96849c161cf5897b07a8",
+    "source_report_id": 50,
+    "kind": "letters",
+    "key": "Q",
+    "record": {
+      "bank": "letters",
+      "key": "Q",
+      "recorded": true,
+      "database": "assets/learning/feedback.sqlite3"
+    },
+    "takeaway": "在完整课堂句中检查字母 Q 的英语字母名及两侧中文，连读下标和幂次，重录后复听整句与接缝。确认没有额外冒出的 U 音。",
+    "applies_to": "new concept and problem lessons"
+  },
+  {
+    "source_digest": "5c99208b05b61e4c6a66b187e3537c18d8f72f1ec92ae7e9929ca35debdfee1a",
+    "source_report_id": 51,
+    "kind": "letters",
+    "key": "R",
+    "record": {
+      "bank": "letters",
+      "key": "R",
+      "recorded": true,
+      "database": "assets/learning/feedback.sqlite3"
+    },
+    "takeaway": "在完整课堂句中检查字母 R 的英语字母名及两侧中文，连读下标和幂次，重录后复听整句与接缝。",
+    "applies_to": "new concept and problem lessons"
+  },
+  {
+    "source_digest": "fb2f3db94d508d97d2268b7611fe0e5ddc113ff64d6a0241be19357d7b77a97b",
+    "source_report_id": 54,
+    "kind": "letters",
+    "key": "U",
+    "record": {
+      "bank": "letters",
+      "key": "U",
+      "recorded": true,
+      "database": "assets/learning/feedback.sqlite3"
+    },
+    "takeaway": "在完整课堂句中检查字母 U 的英语字母名及两侧中文，连读下标和幂次，重录后复听整句与接缝。",
+    "applies_to": "new concept and problem lessons"
+  },
+  {
+    "source_digest": "5c6b8f948208e8afc4dc14fd2960cc54cf5e3f0b2ba6658899a43da684077519",
+    "source_report_id": 101,
+    "kind": "polyphones",
+    "key": "位置矢量",
+    "record": {
+      "bank": "polyphones",
+      "key": "位置矢量",
+      "recorded": true,
+      "database": "assets/learning/feedback.sqlite3"
+    },
+    "takeaway": "位置矢量整词连读，矢读第三声、量读第四声；在新课中逐次检查实际音轨。",
+    "applies_to": "new concept and problem lessons"
+  }
+]

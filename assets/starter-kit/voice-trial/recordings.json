@@ -1,0 +1,5 @@
+{
+  "backend": "user",
+  "speed": 1,
+  "recordings_dir": "audio"
+}

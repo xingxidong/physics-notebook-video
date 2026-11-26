@@ -1,0 +1,7 @@
+\begin{tikzpicture}[>=stealth]
+\draw (-.6,0)--(5,0);\draw[thick] (0,.12)rectangle(.8,.52);
+\draw[->,blue] (.9,.46)--(2.1,.46) node[right]{$v_0$};
+\draw[->] (.9,.95)--(1.7,.95) node[right]{$a$};
+\node[below] at (.4,0){A};\node[below] at (4.2,0){B};
+\draw[<->] (.4,-.65)--node[below]{$x$}(4.2,-.65);
+\end{tikzpicture}

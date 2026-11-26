@@ -7,14 +7,12 @@ import wave
 from pathlib import Path
 
 
-HANDOUT_PHRASES = (
-    '本题的主线', '本题主线', '本节的主线', '本课的主线', '知识闭环',
-    '回顾整题', '并不是说', '这不意味着', '这不代表', '这不表示', '不能据此认为',
-)
-
-
 def handout_language(project, lesson):
-    """Flag familiar editorial phrases in the authored LaTeX handout."""
+    """Locate classroom prose edits in editable student handouts."""
+    from classroom_language import ANNOUNCEMENTS, prose_findings
+    from handout_bundle import source_files
+    from lesson_review import local_file
+
     findings = []
     sources = {
         source for source in lesson.get('review_assets', [])
@@ -23,21 +21,25 @@ def handout_language(project, lesson):
     default_source = project / '讲义.tex'
     if default_source.is_file():
         sources.add(default_source.name)
+    sources.update(str(p.relative_to(project)) for p in source_files(project,lesson) if p.suffix=='.tex')
+    handout = Path(lesson.get('handout', '讲义.md'))
+    if handout.suffix.lower() in ('.md', '.markdown'):
+        sources.add(str(handout))
+    checked = False
     for source in sorted(sources):
-        path = project / source
+        path = local_file(project, source, required=False)
         if not path.is_file():
             continue
+        checked = True
         for number, line in enumerate(path.read_text(encoding='utf-8').splitlines(), 1):
-            text = re.split(r'(?<!\\)%', line, maxsplit=1)[0]
-            for phrase in HANDOUT_PHRASES:
-                if phrase in text:
-                    findings.append({
-                        'code': 'handout-language',
-                        'file': source,
-                        'line': number,
-                        'message': f'{source} 第 {number} 行“{phrase}”：读前后文，改写为具体物理关系或删掉重复内容。',
-                    })
-    return findings, bool(sources)
+            text = re.split(r'(?<!\\)%', line, maxsplit=1)[0] if path.suffix == '.tex' else line
+            hits = list(prose_findings(text))
+            hits.extend(('stock-phrase', m.group(), '直接写图中关系、方程或结论。')
+                        for m in ANNOUNCEMENTS.finditer(text))
+            for kind, phrase, message in hits:
+                findings.append({'code': 'handout-language', 'kind': kind, 'file': source, 'line': number,
+                                 'message': f'{source} 第 {number} 行的“{phrase}”。{message}'})
+    return findings, checked
 
 
 def run(project,stage='plan',prepared=None,video_file=None):
@@ -69,6 +71,19 @@ def run(project,stage='plan',prepared=None,video_file=None):
                                        'report':'feedback-check.json', 'replay':[review_line(i) for i in feedback['replay']]}
         add('viewer-feedback',[dict(row,code=row['key']) for row in feedback['findings']])
         manual.extend(coverage['viewer_feedback']['replay'])
+        learned = feedback['learning_checks']['occurrences']
+        coverage['viewer_feedback']['located_checks'] = {
+            kind:sum(row['kind']==kind for row in learned) for kind in ('term','letter','formula')}
+        if stage == 'final':
+            # Declared steps already receive their own final-review task. Older lessons
+            # can still have written equations with no declared derivation step.
+            from step_review import steps, enabled
+            declared = {(str(page),str(step.get('cue_id')),step.get('action_id'))
+                        for page,step in steps(lesson) if enabled(lesson,step) and step.get('action_id')}
+            for row in learned:
+                if row['kind']=='formula' and (row['page'],row['cue'],row['action_id']) not in declared:
+                    manual.append(f"对听 {row['page']}/{row['cue']} 第 {row['action_index']+1} 个动作"
+                                  f"写出的 {row['formula']}，看运算和落笔能否逐步对应。")
         manual.extend(row.get('expected') or row['observed'] for row in feedback['manual_checks'])
         if lesson.get('source_type')=='article':
             from article_coverage import audit as audit_article
@@ -121,6 +136,7 @@ def run(project,stage='plan',prepared=None,video_file=None):
         board=check(lesson,pages,timeline)
         add('board',board['warnings'])
         coverage['board']=board.get('coverage',[])
+        coverage['derivation_evidence']=board.get('derivation_evidence',[])
         duration=duration_report(project,lesson,timeline)
         add('duration',[{'code':'duration-budget','message':m} for m in duration['issues']])
         floor = duration.get('minimum_seconds')
@@ -136,6 +152,12 @@ def run(project,stage='plan',prepared=None,video_file=None):
         try:
             handout(project,lesson)
             coverage['handout']='file-present'
+            from handout_bundle import main_source,verified
+            if stage=='final' and main_source(project,lesson):
+                if verified(project,lesson):
+                    coverage['handout']='clean-xelatex-verified'
+                else:
+                    add('handout',[{'code':'handout-source-package','message':'运行 handout-pack，交付当前源码包和空目录编译的 PDF。'}],'error')
             wording, scanned = handout_language(project, lesson)
             if scanned:
                 add('handout', wording)
@@ -160,6 +182,63 @@ def run(project,stage='plan',prepared=None,video_file=None):
             if not video.is_file():
                 add('video',[{'code':'video-missing','message':f'找不到待检查的成片 {video.name}。'}],'error')
             else:
+                from term_flow import inspect as check_term_flow, refresh_manifest
+                flow = None
+                try:
+                    flow = check_term_flow(project, timeline, video, lesson=lesson)
+                    write_json(project/'final-term-flow.json', flow)
+                    refresh_manifest(project,flow)
+                    coverage['physics_terms'] = dict(terms=flow['terms'], total=len(flow['items']),
+                                                     remaining=flow['remaining'])
+                    if flow['inventory_pending']:
+                        add('voice',[dict(code='term-inventory-pending',message=f"还有 {len(flow['inventory_pending'])} 句待制作端对照完整讲稿盘点术语，见 feedback-check.json。")],'error')
+                    if flow['remaining']:
+                        add('voice', [dict(code='final-terms-unchecked', message=
+                            f"还有 {flow['remaining']} 处物理术语须在成片中分别确认读音和连读，见 final-term-flow.json。")], 'error')
+                except (ValueError, OSError, subprocess.SubprocessError) as exc:
+                    write_json(project/'final-term-flow.json', {'status':'blocked','error':str(exc)})
+                    add('voice',[dict(code='final-terms-incomplete',message=str(exc))],'error')
+                from tone_review import inspect as check_tones
+                tones = check_tones(project, timeline, video)
+                write_json(project/'final-tone-review.json', tones)
+                cue_count = len(tones['producer_queue'])
+                coverage['final_tones'] = {'remaining': tones['remaining'], 'total': len(tones['items']),
+                                           'producer_cues': cue_count}
+                if tones['remaining']:
+                    add('voice', [{'code': 'final-tones-unchecked', 'message':
+                        f"制作端需复核 {cue_count} 段口播中的 {tones['remaining']} 处读音，按 final-tone-review.json 的 producer_queue 处理。"}], 'error')
+                from speech_context import review_course, probe_python
+                try:
+                    context = review_course(project, timeline, video, lesson)
+                    coverage['speech_context'] = dict(total=len(context['items']), remaining=context['remaining'])
+                    if context['remaining']:
+                        add('voice',[dict(code='speech-context-pending',message=
+                            f"还有 {context['remaining']} 句需对听字母、接缝或核对板书，见 final-speech-context.json。")],'error')
+                except (ValueError, OSError, subprocess.SubprocessError) as exc:
+                    write_json(project/'final-speech-context.json', dict(status='blocked',error=str(exc)))
+                    add('voice',[dict(code='speech-context-incomplete',message=str(exc))],'error')
+                else:
+                    try:
+                        audio_python = probe_python()
+                        if audio_python and (coverage.get('physics_terms',{}).get('total') or context['remaining']):
+                            subprocess.run([audio_python,str(Path(__file__).with_name('speech_probe.py')),
+                                            str(project),'--pending'],check=True)
+                            terms=json.loads((project/'final-physics-term-probes.json').read_text())
+                            coverage['physics_term_probes']={'positions':terms['total'],'statuses':terms['statuses'],
+                                'producer_review_sentences':len(terms.get('producer_review',[]))}
+                            probes=json.loads((project/'final-speech-probes.json').read_text())
+                            coverage['speech_probes']={'status':'measured','items':len(probes['items'])}
+                    except (ValueError, OSError, subprocess.SubprocessError) as exc:
+                        write_json(project/'final-speech-probes.json',dict(status='unavailable',error=str(exc)))
+                        coverage['speech_probes']={'status':'unavailable'}
+                        coverage['physics_term_probes']={'status':'unavailable'}
+                        if flow and flow.get('file'):
+                            previous=project/'final-physics-term-probes.json'
+                            prior=json.loads(previous.read_text()) if previous.is_file() else {}
+                            if prior.get('sha256')!=flow.get('sha256') or prior.get('total')!=len(flow['items']):
+                                write_json(previous,dict(status='unavailable',error=str(exc)))
+                        add('voice',[dict(code='speech-probe-unavailable',message=
+                            '本机识音未完成，按整句清单实听。'+str(exc))])
                 media = probe(video)
                 coverage['media'] = media
                 if floor and media['duration_seconds'] < floor:
@@ -190,6 +269,11 @@ def run(project,stage='plan',prepared=None,video_file=None):
         result={'status':'blocked','stage':stage,'coverage':coverage,
                 'findings':[*findings,{'area':'source','severity':'error','code':'check-incomplete','message':str(exc)}],
                 'manual_review':{'status':'pending','tasks':manual}}
+    if stage=='final' and coverage.get('media'):
+        from handout_bundle import digest as file_hash
+        result['media_sha256']=file_hash(project/coverage['media']['file'])
+        from final_review import attach
+        result=attach(project,lesson,result)
     write_json(project/'quality-report.json',result)
     lines=['# 本课制作检查','',f'阶段：{stage}；状态：{result["status"]}。','']
     if result['findings']:
@@ -208,7 +292,7 @@ def run(project,stage='plan',prepared=None,video_file=None):
         for sample in media.get('samples', []):
             image = Path(sample['image']).relative_to(project).as_posix()
             lines.append(f'- {sample["seconds"]:.2f} 秒，{sample["look_for"]}。[查看原尺寸画面]({image})')
-    lines.extend(['','## 观看与试听',''])
+    lines.extend(['','## 制作端观看与试听' if stage == 'final' else '## 观看与试听',''])
     lines.extend('- '+task for task in result['manual_review']['tasks'])
     lines.extend(['','自动检查的范围记录在 quality-report.json。观看和试听结果由实际审阅填写到制作记录。',''])
     (project/'制作检查.md').write_text('\n'.join(lines))

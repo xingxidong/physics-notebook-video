@@ -1,0 +1,15 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=22mm]{geometry}
+\usepackage{xeCJK,amsmath,amssymb,tikz}
+\IfFontExistsTF{Songti SC}{\setCJKmainfont{Songti SC}}{\setCJKmainfont{FandolSong-Regular.otf}}
+\usetikzlibrary{arrows.meta,calc,angles,quotes}
+\pagestyle{empty}
+\setlength{\parindent}{2em}
+\setlength{\parskip}{5pt}
+\begin{document}
+\begin{center}\Large 光滑斜面上的滑块\end{center}
+一个小物块从静止开始沿固定的光滑斜面下滑。斜面倾角为 $30^\circ$，物块沿斜面滑行 $2.0\,\mathrm m$，取 $g=10\,\mathrm{m\,s^{-2}}$。求此时物块的速度大小。
+\begin{center}\input{incline.tikz}\end{center}
+
+已知斜面固定、接触面光滑，物块可视为质点。请画出受力图，沿斜面列运动方程，再求末速度。
+\end{document}

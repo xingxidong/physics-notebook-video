@@ -24,6 +24,14 @@ SENTENCE = re.compile(r'[^。！？!?；;\n]+')
 CUE_OPENING = re.compile(r'首先|接下来|下面|然后|现在|因此|所以|于是|由此|最后|我们来|我们可以')
 EMPTY_JUDGMENT = re.compile(r'显然|容易看出|不难看出|非常重要|至关重要|我们知道')
 GENERIC_SUMMARY = re.compile(r'本节课到这里|这节课就讲到这里|希望大家|记住这个结论')
+EDITORIAL_LANGUAGE = re.compile(
+    r'本(?:题|节|课|段)(?:的)?主线|知识闭环|回顾整题|完成对应的应用判断|'
+    r'串起(?:本|全|整)(?:题|课)|完成(?:本|这)(?:节|段)的教学目标'
+)
+DEFENSIVE_LANGUAGE = re.compile(
+    r'并不是说|这(?:并)?不(?:意味着|代表|表示)|不能据此认为|'
+    r'(?<![并也])需要(?:特别)?指出的是|(?:这里|先)?说明一下[，,：:]'
+)
 MEASUREMENT = re.compile(
     r'[0-9零〇一二三四五六七八九十百千万点两]+\s*'
     r'(?:千克|克|牛顿|伏特|伏|安培|安|欧姆|欧|焦耳|焦|瓦特|瓦|厘米|毫米|米|秒)'
@@ -32,6 +40,16 @@ MEASUREMENT = re.compile(
 
 def _audible_length(text):
     return sum(char.isalnum() for char in text)
+
+
+def prose_findings(text):
+    """Locate phrasing shared by spoken and written teaching materials."""
+    for pattern, code, message in (
+        (EDITORIAL_LANGUAGE, 'editorial-language', '写明学生在图上看什么、用哪个物理关系，或这一步算出了什么。'),
+        (DEFENSIVE_LANGUAGE, 'defensive-language', '把适用条件和它所决定的物理关系列在一起，保留原有推导条件。'),
+    ):
+        for match in pattern.finditer(text):
+            yield code, match.group(), message
 
 
 def review_narration(cues):
@@ -47,6 +65,8 @@ def review_narration(cues):
 
     for index, cue in enumerate(cues):
         text = cue.get('tts', '')
+        for code, excerpt, message in prose_findings(text):
+            record(cue, code, excerpt, message)
         match = ANNOUNCEMENTS.search(text)
         if match:
             record(cue, 'stock-phrase', match.group(), '直接说学生此刻要看的对象、要判断的关系或要做的运算。')

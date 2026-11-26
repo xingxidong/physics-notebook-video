@@ -1,4 +1,5 @@
 function drawDemonstration(m,t){
+ if(m.kind==='incline')return drawIncline(m,t);
  if(m.kind==='pursuit')return drawPursuit(m,t);
  const u=Math.max(0,Math.min(1,(t-m.start)/Math.max(.001,m.stop-m.start))),R=m.radius,d=R*(m.d0+(m.d1-m.d0)*u),h=Math.sqrt(R*R-d*d/4),cx=m.cx,cy=m.cy,P=[cx+d/2,cy-h];
  function path(points,color='#29333c',width=2.6){ctx.beginPath();ctx.moveTo(...points[0]);for(const q of points.slice(1))ctx.lineTo(...q);ctx.lineCap=ctx.lineJoin='round';ctx.lineWidth=width;ctx.strokeStyle=color;ctx.stroke()}
@@ -9,6 +10,16 @@ function drawDemonstration(m,t){
  line([cx,cy],[cx+d,cy],'#9caeaa',1.5);line([cx,cy],P,'#9caeaa',1.5);label('O1',cx-30,cy+9);label('O2',cx+d+5,cy+9,'#205b96');label('P',P[0]-8,P[1]-37,'#b54d40');line([P[0]-.4,P[1]],[P[0]+.4,P[1]],'#b54d40',6);
  const yy=cy+R+12;arrow([cx,yy],[cx+d,yy],'#9caeaa',1.6);label('d',cx+d/2-7,yy+9);arrow([cx+d+18,yy+41],[cx+d+98,yy+41],'#205b96',2.5);label('v0',cx+d+42,yy+5,'#205b96');
  if(m.show_vectors!==false&&t>=m.vector_start){const vx=65,vy=d/(2*h)*vx,A=[P[0]+vx,P[1]],B=[P[0],P[1]+vy],V=[P[0]+vx,P[1]+vy];arrow(P,A,'#205b96');arrow(P,B,'#205b96');arrow(P,V,'#b54d40',3.2);for(const [a,b] of [[A,V],[B,V]])for(let k=0;k<8;k+=2)line([0,1].map(j=>a[j]+(b[j]-a[j])*k/8),[0,1].map(j=>a[j]+(b[j]-a[j])*(k+1)/8),'#9caeaa',1.3);label('vx',P[0]+27,P[1]-80,'#205b96');label('vy',P[0]-49,B[1]+4,'#205b96');label('v',V[0]+10,V[1]-20,'#b54d40')}
+}
+
+function drawIncline(m,t){
+ const f=Math.max(0,Math.min(1,(t-m.start)/Math.max(.001,m.stop-m.start))),a=m.angle*Math.PI/180,u=[Math.cos(a),Math.sin(a)],n=[Math.sin(a),-Math.cos(a)],o=m.origin;
+ const base=o.map((v,j)=>v+u[j]*(m.length*m.start_fraction+m.length*.63*f*f)),center=base.map((v,j)=>v+n[j]*m.box_height/2),end=o.map((v,j)=>v+u[j]*m.length);
+ function line(ps,color='#29333c',width=2.5){ctx.beginPath();ctx.moveTo(...ps[0]);for(const p of ps.slice(1))ctx.lineTo(...p);ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke()}
+ function label(name,x,y){for(const e of m.labels[name])line(e.points.map(([a,b])=>[x+a,y+b]),e.color,e.width)}
+ const cs=[[-m.box_width/2,0],[m.box_width/2,0],[m.box_width/2,m.box_height],[-m.box_width/2,m.box_height]].map(([a,b])=>base.map((v,j)=>v+u[j]*a+n[j]*b));
+ line([o,end,[o[0],end[1]],o]);line([...cs,cs[0]],'#205b96',3);label('m',center[0]-5,center[1]-40);label('θ',end[0]-45,end[1]-24);label('s',(o[0]+end[0])/2-15,(o[1]+end[1])/2+25);
+ if(m.acceleration*m.physical_duration*f>.05){const v=20+45*f,b=center.map((x,j)=>x+u[j]*v);line([center,b],'#37684f');line([[b[0]-9*u[0]+4*u[1],b[1]-9*u[1]-4*u[0]],b,[b[0]-9*u[0]-4*u[1],b[1]-9*u[1]+4*u[0]]],'#37684f');label('v',b[0]+7,b[1]-25)}
 }
 
 function pursuitProgress(m,t){

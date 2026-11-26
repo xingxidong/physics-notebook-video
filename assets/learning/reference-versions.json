@@ -1,0 +1,356 @@
+{
+  "schema": 1,
+  "files": {
+    "references/article-lesson.md": [
+      "57d41471b0aba69f8eb200a0bc311e8e46010209e39b2876ab65aeac3e879944"
+    ],
+    "references/board-layout.md": [
+      "3d08e3d3375c182ade2c2970f6f3b1bc1b677e26f223373cdc82d44c00b574d9",
+      "0bbd453fa941330f5e219b6f4ef261cbc9c9a4d15ac48a51d70fc672c3925c13"
+    ],
+    "references/classroom-delivery.md": [
+      "1659b8780fa2d8bf5db7ea264d843c5ec49af1b1a7b53957b9fb15a4786287ea",
+      "b80e795c07b18d77a600bd1e958e010c442fd17f2241acb4f4e30283db99c525"
+    ],
+    "references/classroom-reference-index.md": [
+      "66137dc9dec6443e070d833b1b94e713a4b32254802faed4ca8c779e57a2e828"
+    ],
+    "references/components.md": [
+      "bbd0cb55e3c48f190e01fa0dd6154a70eafbabe405efda9d4ef5c3096fbb178d"
+    ],
+    "references/concept-lesson.md": [
+      "df7f6e040df68e69a1c1e63e0c24341946921681b2e2c3a633b24c15b06080bc"
+    ],
+    "references/course-planning.md": [
+      "841737cb63f78005817c518477d8bd0d526d50fce6c6931a669007e4ca8eebf4"
+    ],
+    "references/duration-planning.md": [
+      "985249aabcd28fddb18ca9429ac09b106318ca45220ff9aa2a734c042bb214c1"
+    ],
+    "references/handouts.md": [
+      "5c4706542c0a580523863e10116b68f77f0bdcfbf8722d0d55fe6875f8a77bb7",
+      "10c9bbab0095afaa9599b426971f0601c2d730928a4192eac1d126d07295c5c2"
+    ],
+    "references/knowledge-board.md": [
+      "b77025ef9cda82ed17a7237c46a8cccf36bdb4866616adab59fc8d386a4e711c"
+    ],
+    "references/layout.md": [
+      "414121cb1295c10ad98e76f7361c4a967e559655181b0aa72c42040c357f2e11"
+    ],
+    "references/lesson-format.md": [
+      "3507845528b6d4ce57bb3a32fc05aa7c70adce5b7b11a038ec90e9aa3d65a78b"
+    ],
+    "references/multi-agent.md": [
+      "2fb51cb5f9b9680c3f7d568291ecb2f2607904b801beb12d80b18eb92b2fca95"
+    ],
+    "references/platform-install.md": [
+      "300bab4eeff80ce5d0b73ed6dcfda1cd08c2e193da90adec6f49c2b122438d98",
+      "25c7ccd7d05aab5e778e2a65e6cf1340780d5c8bf0dbedd71e65abc4f3fb74cf"
+    ],
+    "references/problem-workflow.md": [
+      "743e788942d3282d5f101fc599606d9744396691c895976b5229c05c9816ef0a"
+    ],
+    "references/production-workflow.md": [
+      "a81301f997f4da182583685b8e32b738676651b2161dcfecc149e229c9f93e40",
+      "6d5313850b1c19c17fe6b6f4c8732b0e2965734042bd3e3b3e2b5d554bdf622c"
+    ],
+    "references/quality-workflow.md": [
+      "b9f60d9c81d939409939dd6ce943f7ca6573f40187431301e0ce7e3ecb9eec65"
+    ],
+    "references/reference-cases.md": [
+      "048b450c17167e0f45d183f4502ff73681f02f45bca03c388e9e056467f62499"
+    ],
+    "references/renderers.md": [
+      "a264297dd0bf7d4a9b009165ebd7e264d695b063792f4f792f75026fc23e0f67"
+    ],
+    "references/review-workflow.md": [
+      "f48b9c1725a471b73c3f1b7c6abf625e5a86519bb36270235eba3eceb5dccac0",
+      "d66f37cb27ad6365ab9384832ea90821a6a7ecf0ef6a371467a962d5e27c639b",
+      "42f46d2a17b57a63a98a758a51c5e117e5560e1c2be8fa8fe6cd02d34db11fcd"
+    ],
+    "references/scenario-animation.md": [
+      "a3e9da1476ce3b369c9cad5012841f068abb1583940a59c476f65abc2a0d818a"
+    ],
+    "references/semantic-scenes.md": [
+      "e1b96b08bdca01f0126c712d2b0db84ea56047c94c7a04c65679c73773dca2eb"
+    ],
+    "references/teaching.md": [
+      "907e18a8f5898895941e7cb15581576505ae74144093a57eaf2a45ce8a3ae17d"
+    ],
+    "references/term-flow.md": [
+      "76c57931ce4fffc9f4d3855ea1e3a06ff42164cf2f0074200af5412086b0c55c",
+      "9281207b7234f89a97be3b0a84b8aee0b802b3ac49acc7b8c587c8e023d6f6dd",
+      "52b8acec2400b7496a389de50e40b1b937904d9ec5d1dd574282d3adc54facbd"
+    ],
+    "references/term-glossaries/课堂易错词.md": [
+      "fc7c402c2ec288e2175b52b116be17ef865fc5da3a107310d866f158f4a0ae24",
+      "b901bf56b3a89c3db8d059659dc9ba925d47c8edf2e93b98f2f9b887eb852c3d"
+    ],
+    "references/upstream-study.md": [
+      "f7ec0f0c74e20b9173e00cb79a053ce3e5f7175d889ff3c1d23103a284249eff"
+    ],
+    "references/viewer-feedback.md": [
+      "9a8b7d21f8209c81a90da6132f043d79fe6f932ed8e291bbb9aa542bb8887b54",
+      "746750c71d4b853a6247d8a6176da31bf3094b270974c940b7aaa9dfbadc4971",
+      "5808002249bf904e512868e3ca71c279ea180042bb907e425c92b767112f17bf",
+      "916e7c18545ce45f7362b94e7d27fcbf46e4d24e9165a868cc1156fd58eb8c37"
+    ],
+    "references/voice.md": [
+      "3912a8190cf8e800dab0744fe338372ef9f82996a7b11e87cc94e0808f1faf29",
+      "d2067d8d84b519081b9281628037085906f8f93814e43d4994b1ea4ecce8fd11",
+      "c0603f7532a1f405dd671dd2fa7f9fb2e999043fd9b8df7316eca809864139be",
+      "b13881548a8671baf35e10ad5ec3d9330717f3f15b198e875fbd4934b327b3c9"
+    ],
+    "references/ying-xiaolv-01.md": [
+      "6a6a1b110cf07104d50ba2456ccd4de8553b35590045d1df6bc56e1fa5c61cc7"
+    ],
+    "references/ying-xiaolv-02.md": [
+      "27f2a6e9cba148c613eecf34b26419254f42cec892e0f01c30d73080ac2e4917"
+    ],
+    "references/ying-xiaolv-03.md": [
+      "3ae86844e4307bbef270c32aac110810e0d7e743f997016d1ac7d79c7707be00"
+    ],
+    "references/ying-xiaolv-04.md": [
+      "ce660ac5eb1fde078f53bd374a39f4816662405e79d17fb383fa015a1299418a"
+    ],
+    "references/ying-xiaolv-05.md": [
+      "f0c2f3ab9796b00433d6494fc5cee5561adcfcddb6c7636a7af88690dde241c2"
+    ],
+    "references/ying-xiaolv-06.md": [
+      "469a1df6aa5417492ec0e2468555db422fe136e9b67de4ded14d1f3f81ea0f51"
+    ],
+    "references/ying-xiaolv-07.md": [
+      "c34ff5a8c4c74ef615a8c3824b08f13a59723998ae971fd16314793437ef5b5d"
+    ],
+    "references/ying-xiaolv-08.md": [
+      "2db53e6c861a008ceee9938640c6e67d145b7dc97bc0534ab32ecde37605a1f7"
+    ],
+    "references/ying-xiaolv-09.md": [
+      "a06937ded560dd34df7d133a50f78a2d635605d1830fdff352a0dd2f9d44c319"
+    ],
+    "references/ying-xiaolv-10.md": [
+      "44f36c3c3de89a246e320d3bb36f1bd573358f9852a8303273ac52e8d79a170c"
+    ],
+    "references/ying-xiaolv-11.md": [
+      "7edf9f1e28d40a163dfa1f05e5f0dc1ad34ba5e32312c8845e23beddd200abd0"
+    ],
+    "references/ying-xiaolv-12.md": [
+      "b46b5dbe4fe88197be76bacd9d6d4cf554ddb8b4b80b92b46953f2f7d8456ade"
+    ],
+    "references/ying-xiaolv-13.md": [
+      "3aecf3fee1328125e247e0fd267d5425941e12a8a439d9a356bb969dc4759332"
+    ],
+    "references/ying-xiaolv-14.md": [
+      "f653dab8c03fc0f61d4c5b7fc0458570c4331bf5a95c97c5cbfc542b8897d090"
+    ],
+    "references/ying-xiaolv-15.md": [
+      "29d73c265ace70e805e721132aafcb2097b9283c673743cf3a0202a5c7936fbf"
+    ],
+    "references/ying-xiaolv-16.md": [
+      "1fcc374871bccef9aaa6ea556475c3166081fad2172a9556e4912c60695add19"
+    ],
+    "references/ying-xiaolv-17.md": [
+      "e56cf71caf11e5347b34a49921bf4c6aca28cffc461d3f78cec391e04dc9801f"
+    ],
+    "references/ying-xiaolv-18.md": [
+      "2a671f2431a3f5758da124319b7eec50ce09f941ec8e972e77a062d5c102a34b"
+    ],
+    "references/ying-xiaolv-19.md": [
+      "152c2ba8fbb9dcaa6903f044a4a7e86fc38196531b4d44a3026cd8a187f3b84b"
+    ],
+    "references/ying-xiaolv-20.md": [
+      "86642d74f1b32013cacb1b0859122cda5d57812f8e349b15c4ceb301afa87cd2"
+    ],
+    "references/ying-xiaolv-21.md": [
+      "dd76f2dcecc2ab29ab95c5c5780125642f83c80fb4733261f3b4a7bef1895495"
+    ],
+    "references/ying-xiaolv-22.md": [
+      "9f8f54afd99fb246ea970df1608c0b74da3c7d33bb7322d994b96908d4e6ec16"
+    ],
+    "references/ying-xiaolv-23.md": [
+      "5cf5921b8163906f282000bd083e7a8f88b81f3b6ccf9ddac98ecf1e982ba600",
+      "51d2ffddf9ca0b5e525712e4d6ebde4bfe609a2a78ffca3a19f8552c94d4dca6"
+    ],
+    "references/ying-xiaolv-24.md": [
+      "bfd7ee63df7d3bc8e2633d75667e83727c3f5025005afa249383a0294e1f1c35"
+    ],
+    "references/ying-xiaolv-25.md": [
+      "ce981a0c21a6c770fc44bf9cc647d631c75a80459a5aa73ca1f285ec0c143077"
+    ],
+    "references/ying-xiaolv-26.md": [
+      "6f323706c4ef07dcdc7c45ee3034cc41fcf721a06ae3af4752bc35d735bb6743"
+    ],
+    "references/ying-xiaolv-27.md": [
+      "828bea03d6ffc2f26df953467cdc55fee9bdc80f41c906e1a85250b242e07487"
+    ],
+    "references/ying-xiaolv-28.md": [
+      "4ae2541b6ceefa80e0718ad912ebe9a18d4df47aa55afb2217bce10994742833"
+    ],
+    "references/ying-xiaolv-29.md": [
+      "6bdcf811278860994288b185c9797d45f97c1c4d3f1b871dbe4911019ea6a99e"
+    ],
+    "references/ying-xiaolv-30.md": [
+      "908b5e6e94a12250469968ed48e7b4b7a0a5d0f86376e2ee58716106ed6d412c"
+    ],
+    "references/ying-xiaolv-31.md": [
+      "2b3313a90939b36173eeb2b60973c9d4e41d5b787ef054caa8b74aaf8a257caf"
+    ],
+    "references/ying-xiaolv-32.md": [
+      "a4217a020900b9425d9db822b208b9f22e8b0e01ee2cf1a283f50a12e0af9ad3"
+    ],
+    "references/ying-xiaolv-33.md": [
+      "ba979aa0910a617c9da30f61bc4c4cb6924df7da6f6aa6eba360fd09ff747f3b"
+    ],
+    "references/term-glossaries/自主补充-基础力学与电磁学.md": [
+      "5cfea48ebbdae2b7d363dcd568b2b23cec0cc2159b77d47e3ffcc813a796e2ae"
+    ],
+    "references/term-glossaries/全库完善/批次-08.md": [
+      "9d6400e8e705d32a0899d469fbe2c75555d0fe896eccfbc7ff132269e28dfc6e"
+    ],
+    "references/term-glossaries/全库完善/批次-18.md": [
+      "a7d3b82039bdeed2616cb99d65929a475df8b59ce03d8251e66b6c1bbb1f235c"
+    ],
+    "references/term-glossaries/全库完善/批次-09.md": [
+      "ebc7aabfc392ab214e3ce195ce6fab7814aee93b09c43bf646fafb15548c0dc7",
+      "a750149af6fe8ecf78999f9e6d7fa69fc314c73f79f1b82fbcf175461f0b30a4"
+    ],
+    "references/term-glossaries/全库完善/批次-19.md": [
+      "f697e50f262b64bb35d414689b6153205d6476d624c007e1057bfcc4430d110f"
+    ],
+    "references/term-glossaries/全库完善/批次-06.md": [
+      "8ed21ffb044e93e29560c5a3d947556840390dc18cacdb674374a4b51d2249d0"
+    ],
+    "references/term-glossaries/全库完善/批次-16.md": [
+      "752992b1406073dcd3d66a894e722229bb822150007871281a148e06c605b9a2",
+      "ccd1277a4723764b64af8e1ab4ec0fd80db9881f17b98f3d7ecc9da088c985d0"
+    ],
+    "references/term-glossaries/全库完善/批次-22.md": [
+      "08052abc3a759776ffc51b67266c814aca1130ac12fc675dc3446d179d1efbbb"
+    ],
+    "references/term-glossaries/全库完善/批次-02.md": [
+      "320a87159f663c9b63a2ced8fc39ca590d4af3cafabc5a02da0ee0204d24fc58",
+      "7de81d0b44bd6c66da1459dd9d2e682498b46058123d38a3318a1dd45b168123"
+    ],
+    "references/term-glossaries/全库完善/批次-12.md": [
+      "929aa958f897cce67c5e8396054c8871a3f3f9e6050fa9feb191ff0140419ab2"
+    ],
+    "references/term-glossaries/全库完善/批次-03.md": [
+      "482205df471e56bdef5b7316080856da7fdfbf5f1dd3155fce6ecd6f0e3e9d0f",
+      "29bb7aecf586368920e25a0a5500d6c7da2ac52eb2e20e28a3790b3ae8859d99"
+    ],
+    "references/term-glossaries/全库完善/批次-13.md": [
+      "51239b112cf36cc3518724ad27006399ab87b48055dea55d1666dc14bf0b38c6"
+    ],
+    "references/term-glossaries/全库完善/批次-07.md": [
+      "ffca0e69ccc06797fe399aecaee8618fdc56ff87877bc3a21bb91c14c37b940f"
+    ],
+    "references/term-glossaries/全库完善/批次-17.md": [
+      "2d06b4c2e83191691899a181a361e86ab15951f87141586fc574902eda22b5d8",
+      "3f9117953fd37ba16781e1fe9159e472f2c87f38dc271c870cd207aff16ed492"
+    ],
+    "references/term-glossaries/全库完善/批次-23.md": [
+      "63fdb3aafae7ef50b49b8fcb7fc043ccb9fc885ceec6faf5c38c365704848ef6"
+    ],
+    "references/term-glossaries/全库完善/README.md": [
+      "89a0ae72ed23b48dcff5d1461e86ac066f732b8d1bef3aa6e856a5917586245b"
+    ],
+    "references/term-glossaries/全库完善/批次-24.md": [
+      "4e5224e63b3eb499af9e94cda80d9700927ea14a6bd532308418bde8d93b3338"
+    ],
+    "references/term-glossaries/全库完善/批次-10.md": [
+      "360cc258363b83cd3687ea12db4200cd531c273e50054ea57caed28c8275df5a"
+    ],
+    "references/term-glossaries/全库完善/批次-04.md": [
+      "524f22e100352b709147816db97b70ee2ec0e3d67bca9763a164562f4d75f10f",
+      "0ee4d127140bc6caffba42bfb4379955ef480965f615ae4376f18203268f6dc1"
+    ],
+    "references/term-glossaries/全库完善/批次-14.md": [
+      "5401a8e6b2097de818178098ad8ac8976c201bf5ca1b11bfeb4bdcb862dd12ff"
+    ],
+    "references/term-glossaries/全库完善/批次-20.md": [
+      "45aa67edd058ecd86229d0bc5238ea60e1c50c8f6acfa0e1e4bb565dd8b06680"
+    ],
+    "references/term-glossaries/全库完善/批次-05.md": [
+      "14996c37cdf83aae50ac6de93762d8b07ba0ce4421cb327713e6c73175c81a32"
+    ],
+    "references/term-glossaries/全库完善/批次-15.md": [
+      "5ee9a81a99d6d8c5496d309b22ce8d0a8828d24d7492bead94b7beee711e9bcc",
+      "ba811ac330d09c72035aed854edbaa80a4a8c79ba27a4aa8abba24cb066bd009"
+    ],
+    "references/term-glossaries/全库完善/批次-21.md": [
+      "64cf4dc42b05e47b38d767f812bf642dcc5ed7758b454d501d3dc6a2ddd5b211"
+    ],
+    "references/term-glossaries/全库完善/批次-01.md": [
+      "e910c58c1efcac6a8f83caca07c71dc080a6637a6c1c541951456298eebccd11",
+      "0c68d57bae9eaccec8a69acb6fbb8fa04f8383bea255a9d7047e5ae4f502c5a3"
+    ],
+    "references/term-glossaries/全库完善/批次-11.md": [
+      "45c435fe4e733c378102c0141153618e983072e329c15b682b9dd63a2a20014a",
+      "44aea2ada9ba3194e85355257aae4b5faef2f8216ca67f9004e442cb2e2787dc"
+    ],
+    "references/term-glossaries/扩展-0.27.4/热学与近代物理.md": [
+      "380b1f7f6023e87bf69c25a9790ae3636b31fe8975d687d7b86f527021a08280"
+    ],
+    "references/term-glossaries/扩展-0.27.4/力学与数学方法.md": [
+      "63e09eaaf9b93b5d3470f8202b7805170c0868cfdeb660383b1e50d6617dbf4a"
+    ],
+    "references/term-glossaries/扩展-0.27.4/README.md": [
+      "4f7a66d376c36a33c370e125f022af651c30ca943bab69b24ad2c9624a48e9f9"
+    ],
+    "references/term-glossaries/扩展-0.27.4/电磁学与光学.md": [
+      "3804c7318e70d82f8d2fd508559a9ef971a9ee2ce1fa218fb01f606e8f111cc8"
+    ],
+    "references/term-glossaries/扩展-0.27.5/README.md": [
+      "f01dbfb27870d16ebf309f73bfb6bc1850b6453e26deced8838967bf2b97d119"
+    ],
+    "references/term-glossaries/扩展-0.27.5/实验测量与读数.md": [
+      "9d455f931963f3b4b2544f7fd93d29d242c2580b05288c1a9fcf9e54753f6149",
+      "df51996164594f29c7cafd60c62e0defeb3d00c4acf91d653d96090f4c26466d"
+    ],
+    "references/term-glossaries/扩展-0.27.5/流体与材料.md": [
+      "b840f2a94482251bcb0eabd4585ef8bf325aff5a7f1d391aa47966a8294d815d",
+      "f40820c6c3604357c880b3e65af858f99629d73f467f0c463d60b8c967e98f30"
+    ],
+    "references/term-glossaries/扩展-0.27.5/机械波与声学.md": [
+      "b5c47f0eeba352d460680666395e876e6dad91a5abcfa1b44d1d92a913075c0a"
+    ],
+    "references/term-glossaries/扩展-0.27.6/电磁学、电路与电子技术.md": [
+      "549ac789f4327f545b3c0ae1542edbfdc190512e521c65de6de233daa43aee04"
+    ],
+    "references/term-glossaries/扩展-0.27.6/README.md": [
+      "120fda73768bca24bb20a7c420bf6353e03ad4fb5c4ec6375b0ce2eed0721ecf"
+    ],
+    "references/term-glossaries/扩展-0.27.6/近代物理、测量与数学方法.md": [
+      "c6221c95bd55fe310d2b86fe396995d5ad70386eb5d5c929fcaf34c2969437ed"
+    ],
+    "references/term-glossaries/扩展-0.27.6/力学、流体与材料.md": [
+      "472f0eac394665a37dcad810f0fd5766e592165aec9237bf9d3f04696b30f433",
+      "a5470b27dc10fbd72f3024122e8be7308f15b145e46c9819f0d84b81512fba58"
+    ],
+    "references/term-glossaries/扩展-0.27.6/光学、波动与热学.md": [
+      "a4857d1efeca5434522df10feb75664d20994c2c23dec478f01499b3b992ce8e",
+      "6046e2c9be25b3d1e7a95d1b14af2b4a17c9c3ceeba7fe9053b143483813a5e9"
+    ],
+    "references/term-glossaries/扩展-0.27.7/热学.md": [
+      "dcbd0547d9af4e0a1742578ea35ac1015126a06e2113b37c4e1c2932a3329094"
+    ],
+    "references/term-glossaries/扩展-0.27.7/力学与数学方法.md": [
+      "f96bf7def8351fd435e96a9775ceee07686fd50170f92ba685c9d7b05def7e25"
+    ],
+    "references/term-glossaries/扩展-0.27.7/README.md": [
+      "04929bfe80eb79234e03c963baad9e01244cf2e9c1ddd1a77bbb698bc5e65557"
+    ],
+    "references/term-glossaries/扩展-0.27.7/电磁学与电路.md": [
+      "7edef63bf9226cc51e7380613f76a2895bfb972398a77837a8782e5c69ed7fd5"
+    ],
+    "references/term-glossaries/扩展-0.27.7/几何光学与波动光学.md": [
+      "4f4113a0953a55ffb1aae8231ca881578c2a8b1a893af3042ad445fe557f9f35"
+    ],
+    "references/classroom-transfer.md": [
+      "0f8772d2aeb2527952833e166bf624117ec9d3c1417c255c4149ab0b059b10d1"
+    ],
+    "references/classroom-language-editing.md": [
+      "3a7f1132d49b28814a29b343010a890607e75e3f43b68e2ccf9fd70d638292eb"
+    ]
+  }
+}

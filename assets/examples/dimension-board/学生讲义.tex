@@ -1,0 +1,25 @@
+\documentclass[UTF8,fontset=fandol]{ctexart}
+
+\usepackage{amsmath,tikz}
+
+\begin{document}
+
+\section*{位移式的量纲检查}
+
+图 1 中的小车从 A 向右匀加速运动。初速度为 $v_0$，加速度为 $a$，经过时间 $t$ 到达 B。有人把位移写成 $x=v_0t+at$。两项能相加吗？
+
+\begin{center}\input{model.tikz}\\ 图 1\end{center}
+
+图 1 中 $v_0$ 的量纲是长度除以时间，再乘时间便得到长度。
+
+\begin{equation}[v_0t]=\frac{L}{T}\cdot T=L\label{eq:length-from-speed}\end{equation}
+
+加速度每乘一份时间就约掉分母中的一份时间。两项量纲不同，原候选式不能给出位移。
+
+\begin{equation}[at]=\frac{L}{T^2}\cdot T=\frac{L}{T}\label{eq:speed-from-acceleration}\end{equation}
+
+把加速度乘时间平方，两份时间正好约掉。要写出匀加速位移，还需用运动规律确定系数 $1/2$。
+
+\begin{equation}[at^2]=\frac{L}{T^2}\cdot T^2=L\label{eq:length-from-acceleration}\end{equation}
+
+\end{document}

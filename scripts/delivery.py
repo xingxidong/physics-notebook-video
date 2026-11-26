@@ -2,35 +2,44 @@
 import argparse,json,re,statistics
 from pathlib import Path
 from classroom_language import review_narration
-from pronunciation import local_tts_text, reference_readings, LISTEN_TERMS, matched_pronunciations, spoken_symbols, symbol_reading
+from pronunciation import reference_readings, LISTEN_TERMS, spoken_symbols, symbol_reading, tone_targets
 
 SYMBOL_PHRASES=('带下标零的时间','带下标零的质量字母','普通的时间字母','质量字母')
 META_PHRASES=('整道推导都围绕','连成了一条线','接下来我们将','通过以上分析我们可以看出','两个物理量已经配上了')
 PAUSE_REASONS={'phrase','read_formula','observe_motion','think','transition'}
 
 def inspect_script(lesson, backend=None):
-    cues=[c for p in lesson.get('pages',[]) for c in p.get('cues',[])];warnings=[]
+    from card_speech import lesson_inputs
+    decisions=lesson_inputs(lesson)
+    indexed=[((str(p.get('id',pi)),str(c.get('id',ci))),c) for pi,p in enumerate(lesson.get('pages',[]),1)
+             for ci,c in enumerate(p.get('cues',[]),1)]
+    cues=[c for _,c in indexed];warnings=[]
     speech=lesson.get('speech',{})
     backend=backend or speech.get('backend','glm')
     pronunciation=[]
     inputs=[]
     reference=reference_readings()
-    for c in cues:
+    for key,c in indexed:
         text=c.get('tts','')
-        try:
-            terms=matched_pronunciations(c.get('spoken_tts', text),speech.get('minimax_pronunciation'),c.get('minimax_pronunciation'))
-        except ValueError as exc:
-            raise ValueError(f'{c["id"]}: {exc}') from exc
+        decision=decisions[key]
+        terms=decision['pinyin']
         for term, reading in terms.items():
             expected = reference.get(term)
             if expected and expected != reading:
                 warnings.append({'code':'term-tone-conflict','cue':c['id'],
                                  'message':f'“{term}”配置为 {reading}，物理词表读作 {expected}，配音前核对本句。'})
+        targets = tone_targets(c.get('spoken_tts', text), speech.get('minimax_pronunciation'), c.get('minimax_pronunciation'),decision['targets'])
+        for item in targets:
+            for bad in item['conflicts']:
+                if item['term'] not in reference:
+                    warnings.append({'code':'term-tone-conflict','cue':c['id'],
+                                     'message':f"“{bad['word']}”中的“{bad['char']}”应读 {bad['expected']}，实际配置为 {bad['configured']}。"})
         listen=[word for word in LISTEN_TERMS if word in text]
         symbols={match.group():symbol_reading(match.group()) for match in spoken_symbols(text)}
         spoken = c.get('spoken_tts', text)
-        inputs.append({'cue': c['id'], 'text': local_tts_text(spoken, terms, speech.get('plain_pronunciation'), c.get('plain_pronunciation')) if backend == 'user' else spoken,
-                       'script':text, 'pinyin': terms, 'letters': symbols})
+        inputs.append({'cue': c['id'], 'text': decision['local_text'] if backend == 'user' else decision['provider_text'] if backend == 'minimax' else spoken,
+                       'script':text, 'card_targets':decision['targets'], 'letter_sequence':decision['symbols'],
+                       'dictionary_conflicts':decision['conflicts'] + (decision['provider_exclusions'] if backend=='minimax' else []), 'pinyin': terms, 'letters': symbols, 'tone_targets': targets})
         if terms or listen or symbols:
             pronunciation.append({'cue':c['id'],'terms':terms,'listen_for':listen,'symbols':symbols})
         for phrase in SYMBOL_PHRASES+META_PHRASES:

@@ -1,0 +1,1602 @@
+{
+  "schema": 1,
+  "version": "0.27.4",
+  "base_card_count": 2420,
+  "new_card_count": 180,
+  "total_card_count": 2600,
+  "author": "assistant",
+  "example_provenance": "assistant_authored",
+  "audio_review": "not_performed",
+  "domains": {
+    "力学与数学方法": 60,
+    "电磁学与光学": 60,
+    "热学与近代物理": 60
+  },
+  "references": [
+    "references/term-glossaries/扩展-0.27.4/力学与数学方法.md",
+    "references/term-glossaries/扩展-0.27.4/电磁学与光学.md",
+    "references/term-glossaries/扩展-0.27.4/热学与近代物理.md"
+  ],
+  "cards": {
+    "恢复系数": {
+      "reading": "hui1 fu4 xi4 shu4",
+      "sha256": "722ddc1121128ae6864616d95fccd7c610e8fb71d332d76224ba171560279e06"
+    },
+    "约束方程": {
+      "reading": "yue1 shu4 fang1 cheng2",
+      "sha256": "7080e3bfb6989daebec6eb1f37dca5baf335d10bed1ba7765f2d057f958c1ddc"
+    },
+    "广义速度": {
+      "reading": "guang3 yi4 su4 du4",
+      "sha256": "fe6e033a4b70cdaf3d142a31a07edcf4399feb55ee3c12cf383f377ddee25819"
+    },
+    "广义力": {
+      "reading": "guang3 yi4 li4",
+      "sha256": "52d3628e19ecbfccd11d487af8fe391d610bf6c3250ba64309039b3cbb4e8d08"
+    },
+    "广义动量": {
+      "reading": "guang3 yi4 dong4 liang4",
+      "sha256": "f3d990d82917eb4b2745eb5ec07042df52f000546bfb7b3c5b71d38398fc15f2"
+    },
+    "循环坐标": {
+      "reading": "xun2 huan2 zuo4 biao1",
+      "sha256": "d72efe47fbb6331009ff0b7fd4763bce36c1ef650a8eb1bca24d7e95484095e7"
+    },
+    "拉格朗日函数": {
+      "reading": "la1 ge2 lang3 ri4 han2 shu4",
+      "sha256": "973e75f3101342e63ff911141412a6056df21feed8e2a85fab622997f7ce3d12"
+    },
+    "拉格朗日方程": {
+      "reading": "la1 ge2 lang3 ri4 fang1 cheng2",
+      "sha256": "682d9a85ced015800377b6ece067177fcf74f38f585cfc23de461bf217a280dd"
+    },
+    "哈密顿函数": {
+      "reading": "ha1 mi4 dun4 han2 shu4",
+      "sha256": "dede483109351e2208fdcc365944a7f1106ec70a37cb80ec0150086abc81bedc"
+    },
+    "哈密顿正则方程": {
+      "reading": "ha1 mi4 dun4 zheng4 ze2 fang1 cheng2",
+      "sha256": "9a369ae87184dd0560ed0e531173e7395e702446306ba16971693040e04e62a0"
+    },
+    "哈密顿原理": {
+      "reading": "ha1 mi4 dun4 yuan2 li3",
+      "sha256": "9f63dfde65f456396d49a50c880587c74d412c7e3b5468b141450e0130761c54"
+    },
+    "作用量": {
+      "reading": "zuo4 yong4 liang4",
+      "sha256": "9ce88ef17569c3fc24045ba05961910aedd23029af0b7129dc3ed84f122b8586"
+    },
+    "达朗贝尔原理": {
+      "reading": "da2 lang3 bei4 er3 yuan2 li3",
+      "sha256": "cff82d18f49b790515e4b452458b283c24428e95bc62f2135e33739ce1e3e4ac"
+    },
+    "完整约束": {
+      "reading": "wan2 zheng3 yue1 shu4",
+      "sha256": "3e0d7f8b7cef0b5ec69e66a31e9d5eb5c6b7a45ad3b0a7affe724cdd9c477067"
+    },
+    "非完整约束": {
+      "reading": "fei1 wan2 zheng3 yue1 shu4",
+      "sha256": "da32c6196cda038c3a6769e5c04d508e9ab10a7ccdec415e5fa27c0168bc7247"
+    },
+    "理想约束": {
+      "reading": "li3 xiang3 yue1 shu4",
+      "sha256": "b82a8776c348ccecc7839a4deebfa8a6b7adf89d7f0ec1ee0e11175c593c00df"
+    },
+    "拉格朗日乘子法": {
+      "reading": "la1 ge2 lang3 ri4 cheng2 zi3 fa3",
+      "sha256": "19d3c480c5f6d2e936aabb723016f4799fcde815a694bf1788be1ca9485b9173"
+    },
+    "有效势": {
+      "reading": "you3 xiao4 shi4",
+      "sha256": "a53269bcfcd6d96ce7ff321f743d4656f46a6ea916b5d6fe916399693f6a0b26"
+    },
+    "简正坐标": {
+      "reading": "jian3 zheng4 zuo4 biao1",
+      "sha256": "0c8b924b2561c730c95360598b2618ce62d2386b45575a5bf2f538df6c9bf2ec"
+    },
+    "耦合振动": {
+      "reading": "ou3 he2 zhen4 dong4",
+      "sha256": "003f56d93f55d99b40581bde5ca2acf422456675fed49025b3f44e6040a16c5d"
+    },
+    "阻尼比": {
+      "reading": "zu3 ni2 bi3",
+      "sha256": "5db833ebad963111bc9728574a2e6396b063215e6c44d4e7a091c5b683b03ed6"
+    },
+    "临界阻尼": {
+      "reading": "lin2 jie4 zu3 ni2",
+      "sha256": "9d755d9964710d3d8fc081da6d486368949eaa8d4abdb6a3fd788fe46efdc87c"
+    },
+    "欠阻尼": {
+      "reading": "qian4 zu3 ni2",
+      "sha256": "62c4a8163b6a33d0952159d2f08c576fd1fafe9d6390f2d1760210b4a85e74a5"
+    },
+    "过阻尼": {
+      "reading": "guo4 zu3 ni2",
+      "sha256": "7a05256421b35b140cda769f9e108311806ec6ecd13014e13ce05395817e3102"
+    },
+    "对数减量": {
+      "reading": "dui4 shu4 jian3 liang4",
+      "sha256": "95c5c5370a52697a57ad429ece09a9527ecdcd1519c50752138eb575bddad6ff"
+    },
+    "品质因数": {
+      "reading": "pin3 zhi4 yin1 shu4",
+      "sha256": "e599753e01e7d51c103868266748ff548215c3a4460118a966fe95a9efc2b8d4"
+    },
+    "进动": {
+      "reading": "jin4 dong4",
+      "sha256": "37e9066d30ede5d9f98763b4d8bda76e051322688ceb8f2d3a4cd1d7c917b777"
+    },
+    "章动": {
+      "reading": "zhang1 dong4",
+      "sha256": "a570a16b50a5518cd34d6f464871663e6e864cb3c90ec09e43094cc456072cb1"
+    },
+    "转动惯量张量": {
+      "reading": "zhuan4 dong4 guan4 liang4 zhang1 liang4",
+      "sha256": "43e4979bf5a2d7a7fb2bc19777d2315b2bb10f5b991065ec39835b942f2fd51f"
+    },
+    "惯量主轴": {
+      "reading": "guan4 liang4 zhu3 zhou2",
+      "sha256": "bc2678aacec7f1a49145085d711fe94ebc5977cca3bd8fc8690fbacfc49beac0"
+    },
+    "欧拉角": {
+      "reading": "ou1 la1 jiao3",
+      "sha256": "d0aef25c5b9e125c4510e92e6abcb824fb69452754416d4ae4ea836a19ca1bd5"
+    },
+    "欧拉动力学方程": {
+      "reading": "ou1 la1 dong4 li4 xue2 fang1 cheng2",
+      "sha256": "18e242b91116866af13e16fb31cda7da832512b7adb00b87dc9f18a21ef6b3f9"
+    },
+    "潮汐力": {
+      "reading": "chao2 xi1 li4",
+      "sha256": "7fab9dcf288f3e6702be85e4aabd465e53dc5da079e64050059d6f90b3cfa2da"
+    },
+    "全导数": {
+      "reading": "quan2 dao3 shu4",
+      "sha256": "9c97209767359ad88a4366cf9a4a814309847a868ce9935a7cc911b723497bc8"
+    },
+    "伯努利方程": {
+      "reading": "bo2 nu3 li4 fang1 cheng2",
+      "sha256": "9d0a8629940c7a73ff7a8bffc1cd3e567bd935f24a5c92f974c6c52593df829e"
+    },
+    "连续性方程": {
+      "reading": "lian2 xu4 xing4 fang1 cheng2",
+      "sha256": "7942653a426a2ba2f9ca009912206d78773777058e53a361dd745cc10c18bc4b"
+    },
+    "雷诺数": {
+      "reading": "lei2 nuo4 shu4",
+      "sha256": "6e48914ae07dce6cfd3cb80972067d41f072a6b1a4d99c4304b31712115b1cda"
+    },
+    "层流": {
+      "reading": "ceng2 liu2",
+      "sha256": "74d644cc128dd8b7b08affd099b547df0e9e749eef0a19d9102727a23fd6e94e"
+    },
+    "湍流": {
+      "reading": "tuan1 liu2",
+      "sha256": "ff9a2547c3a7edd289b4f7326862f931495750a4ba28db56ed833396e26d4723"
+    },
+    "斯托克斯阻力": {
+      "reading": "si1 tuo1 ke4 si1 zu3 li4",
+      "sha256": "643cab787dadc1a667bf2bf425817457432b9bc5096bbba642e7aaa099555d73"
+    },
+    "泊肃叶定律": {
+      "reading": "bo2 su4 ye4 ding4 lü4",
+      "sha256": "7633740f3f8365d82cfbb5cddd35664e4406e3650983d9b4aad10abfb2618d14"
+    },
+    "马赫数": {
+      "reading": "ma3 he4 shu4",
+      "sha256": "4cca55496692a1b23f5e99e9b586ecbc5041e2e3eb2c1bd6572a109d1caa48dc"
+    },
+    "柯西不等式": {
+      "reading": "ke1 xi1 bu4 deng3 shi4",
+      "sha256": "75090f058c10e979f0f35c34d0273314b64c1ce06789b107644450043fa2dce4"
+    },
+    "拉格朗日中值定理": {
+      "reading": "la1 ge2 lang3 ri4 zhong1 zhi2 ding4 li3",
+      "sha256": "a830ce708d76d66626815dfb6a640153b94b4a6fdb4abdd499613d98bdde39bb"
+    },
+    "罗尔定理": {
+      "reading": "luo2 er3 ding4 li3",
+      "sha256": "7e43f4c049feffcb4c1e720c951cf88572d1900cea24818ec2b4605244c77d49"
+    },
+    "隐函数求导": {
+      "reading": "yin3 han2 shu4 qiu2 dao3",
+      "sha256": "0f9ecec916a7a2d7c08d07ed6ede3d9645ba27113db1b729eb56feeb62c95d59"
+    },
+    "雅可比行列式": {
+      "reading": "ya3 ke3 bi3 hang2 lie4 shi4",
+      "sha256": "ff19b0d065376636ed94fe909ceb398b31a449ea26dbe64d8c9a1032c40bf587"
+    },
+    "正定二次型": {
+      "reading": "zheng4 ding4 er4 ci4 xing2",
+      "sha256": "d10a7bb0755db7c6c7fff7ea2357fb2f31b0e28b67fe837ecd7712dfb73e904e"
+    },
+    "特征向量": {
+      "reading": "te4 zheng1 xiang4 liang4",
+      "sha256": "0dd9b13594ec28729f16dae948c45a244c08c9bc6a3c8d1974be7b870bcc2d50"
+    },
+    "矩阵对角化": {
+      "reading": "ju3 zhen4 dui4 jiao3 hua4",
+      "sha256": "98bb0537afd4d257d62f46b4b5a85be4e459694408cc8d408d407cd634157d04"
+    },
+    "行列式": {
+      "reading": "hang2 lie4 shi4",
+      "sha256": "5622b6b649fbdf880f1be696646b8aae45c8db8a1ea68b7d8a5bcf9a4ddd2454"
+    },
+    "线性无关": {
+      "reading": "xian4 xing4 wu2 guan1",
+      "sha256": "9d1a5ab5681f13900f986dbdee95685bf756747eafcafe08443e7bbf20c3e67b"
+    },
+    "初值问题": {
+      "reading": "chu1 zhi2 wen4 ti2",
+      "sha256": "e7f90ad2e7e5ff7667fc6656be7e20c14bad9d9df97ca5f402b6b256c394ece2"
+    },
+    "边值问题": {
+      "reading": "bian1 zhi2 wen4 ti2",
+      "sha256": "27f468f55aad093b9a4e92274cb5554018b3b5d9f5bb80a0726c831ce2bfd937"
+    },
+    "傅里叶级数": {
+      "reading": "fu4 li3 ye4 ji2 shu4",
+      "sha256": "1f5fbd88b59cebee8e538e2f321ac68acc5a070afc8c673e906b3f8ab5884b2c"
+    },
+    "傅里叶变换": {
+      "reading": "fu4 li3 ye4 bian4 huan4",
+      "sha256": "554f3b0496be58f9b2e26c664b62a97ceaedffb1ad24d337fb1f80b53f3c4df0"
+    },
+    "拉普拉斯变换": {
+      "reading": "la1 pu3 la1 si1 bian4 huan4",
+      "sha256": "0f6b55a5648224ac03732b9837392c6e0aca890465e0025887e94112403adcbd"
+    },
+    "卷积": {
+      "reading": "juan3 ji1",
+      "sha256": "05270ecd5ca7c2456893de96d27a2996e35cb066c9404cbd6d26f1efced3b91f"
+    },
+    "积分因子": {
+      "reading": "ji1 fen1 yin1 zi3",
+      "sha256": "ca2406f004c0e75ba53bea108ff5644ded770522df3ebc75bf30d954d72e51b2"
+    },
+    "渐近展开": {
+      "reading": "jian4 jin4 zhan3 kai1",
+      "sha256": "a145f383b76dc8fc155bf0d4a39c9870462698680fac10ec5f4a56e9429bbfdd"
+    },
+    "静电感应": {
+      "reading": "jing4 dian4 gan3 ying4",
+      "sha256": "f7d7a60238e258594e805315cfd7f466defd60ac03c96a686b36f216c0f041e1"
+    },
+    "摩擦起电": {
+      "reading": "mo2 ca1 qi3 dian4",
+      "sha256": "7bd36ca5b54131fce41277ca56222edca7c764b8acc4f9395f6cc467685edab3"
+    },
+    "接触起电": {
+      "reading": "jie1 chu4 qi3 dian4",
+      "sha256": "3e5e5fa6d8159490d5fe6c1dce2970043a0bcb2b96d6de0841efe2db1df8c157"
+    },
+    "电荷量子化": {
+      "reading": "dian4 he4 liang4 zi3 hua4",
+      "sha256": "890954a6811c0c9802040d4a507f1727b4f3f356d5de04eefe09c16f6e4a0858"
+    },
+    "验电器": {
+      "reading": "yan4 dian4 qi4",
+      "sha256": "47a0aeeff913fe09bf482071cbdb84cab801c9959ac5368d0f94db799aba1e72"
+    },
+    "等势面": {
+      "reading": "deng3 shi4 mian4",
+      "sha256": "5039767269f443580d47d931050bc0a61adcd88c6cfa05a4f1a6bf337da47a24"
+    },
+    "电偶极子": {
+      "reading": "dian4 ou3 ji2 zi3",
+      "sha256": "b9149bad1cc2e8bdfeeee55a9f430e6a773fcaa9b69d2b12be34558a88be4e4b"
+    },
+    "电介质击穿": {
+      "reading": "dian4 jie4 zhi4 ji1 chuan1",
+      "sha256": "d5cb0bf7eb7e7948bda5ba32f8c7f4be77fedf7c7a49869430adf61ce99fc2c9"
+    },
+    "介电强度": {
+      "reading": "jie4 dian4 qiang2 du4",
+      "sha256": "75ffc1456b2b0ca8ddfb125db12fdb8f33e30c2f8275d831f6a0d18ca147e5ca"
+    },
+    "时间常数": {
+      "reading": "shi2 jian1 chang2 shu4",
+      "sha256": "23ea583e2d5d90ff91921b4f6fdb8824cb30bd1af6a454f7c52377860c7e5d0a"
+    },
+    "电源效率": {
+      "reading": "dian4 yuan2 xiao4 lü4",
+      "sha256": "62f46425ccf2383303f9d19e429bd8926c09a2343af01c757a27e0d15931259a"
+    },
+    "闭合电路欧姆定律": {
+      "reading": "bi4 he2 dian4 lu4 ou1 mu3 ding4 lü4",
+      "sha256": "6913b4361cb349ba99fce5b3c820ee3c52beac54a6c03f7640d981077175f762"
+    },
+    "基尔霍夫电流定律": {
+      "reading": "ji1 er3 huo4 fu1 dian4 liu2 ding4 lü4",
+      "sha256": "219db33e21f44d2288c32742edac0180eac96ea611f04fb3a31d54de6f5aba5d"
+    },
+    "基尔霍夫电压定律": {
+      "reading": "ji1 er3 huo4 fu1 dian4 ya1 ding4 lü4",
+      "sha256": "32aa70e2bd18fa14e72df7f2c2d4b7eae109cbd0ba6eae38e10ebce416ac8d78"
+    },
+    "惠斯通电桥": {
+      "reading": "hui4 si1 tong1 dian4 qiao2",
+      "sha256": "dafe0adb02a131398245e2625fe1274619a47caeb3d74112836e4b5cf3033592"
+    },
+    "电桥平衡": {
+      "reading": "dian4 qiao2 ping2 heng2",
+      "sha256": "652be9dab49527f731ca62b99dfe565a6c616109098ff05627259f0fbfd8839d"
+    },
+    "分压电路": {
+      "reading": "fen1 ya1 dian4 lu4",
+      "sha256": "36bc349f96fbcbebb841a0c3901ba12ad844c9ee88598a4213e501b6ecd89f79"
+    },
+    "限流电路": {
+      "reading": "xian4 liu2 dian4 lu4",
+      "sha256": "60c0c47796cef3ae7e9a1d695c500c5723ad2d0a541fd03fa4b00ac029dba0c6"
+    },
+    "电阻温度系数": {
+      "reading": "dian4 zu3 wen1 du4 xi4 shu4",
+      "sha256": "8a05c1aa140917d8afd220376b7321305e52f7e51f2bf8d95881e2ed2e5289c6"
+    },
+    "电容式传感器": {
+      "reading": "dian4 rong2 shi4 chuan2 gan3 qi4",
+      "sha256": "56c40e613b2af88505de68075c32fc52880ae0aeb959a46b24de7747dbdcd4ad"
+    },
+    "质谱仪": {
+      "reading": "zhi4 pu3 yi2",
+      "sha256": "7d42a1be4e096f29079d178833d791d5413befce35636092201190b6ed74bd50"
+    },
+    "回旋加速器": {
+      "reading": "hui2 xuan2 jia1 su4 qi4",
+      "sha256": "286bbea3f5ab24a92e8262f7f50a6889c7c52f1a5fb5d549058df7ba4830c233"
+    },
+    "位移电流": {
+      "reading": "wei4 yi2 dian4 liu2",
+      "sha256": "5a414f01817cb70447c18b484ce7f61a2bcc783503018675e1f49dd6172d2ad9"
+    },
+    "麦克斯韦方程组": {
+      "reading": "mai4 ke4 si1 wei2 fang1 cheng2 zu3",
+      "sha256": "386b670d4cafd9ce0af3c816dac52d31daba54e69cfa6a6be0b3d408a4dd74ac"
+    },
+    "磁滞": {
+      "reading": "ci2 zhi4",
+      "sha256": "f6ba2833db89efbde3304c114da942a0773c94ee5bcb1bd7bacff2264acf1e44"
+    },
+    "矫顽力": {
+      "reading": "jiao3 wan2 li4",
+      "sha256": "ed621ae91f1a7a5340eea2dc77071f715b842082a666f3bfad11923e6e7971e5"
+    },
+    "剩磁": {
+      "reading": "sheng4 ci2",
+      "sha256": "4a2dcecbc817774ea3ebc8075a952620bdb43bca3701565d88d395f5b289bd44"
+    },
+    "铁磁性": {
+      "reading": "tie3 ci2 xing4",
+      "sha256": "c281b6f47c628679cf7224b8c78d75431f69eb01d8b7458f30a916738fe60260"
+    },
+    "电磁制动": {
+      "reading": "dian4 ci2 zhi4 dong4",
+      "sha256": "61c95ca330829a440361eea66039e616c85721c5476ae228c59ec5fa308515b5"
+    },
+    "集肤效应": {
+      "reading": "ji2 fu1 xiao4 ying4",
+      "sha256": "759ca425cab5286bae7b02891e2ee449b24b557d4b34a2c5ea26ea8a06d443d5"
+    },
+    "线偏振光": {
+      "reading": "xian4 pian1 zhen4 guang1",
+      "sha256": "e3e775d21c4138def75d0de63ec7193edc812733304f5c8435f595189fbd6f99"
+    },
+    "圆偏振光": {
+      "reading": "yuan2 pian1 zhen4 guang1",
+      "sha256": "ee4a4ce6ed32e28eafa19c7f8ecf4ccbcf03fe8012dc51d4d028d02b318eb190"
+    },
+    "自然光": {
+      "reading": "zi4 ran2 guang1",
+      "sha256": "4b94502b8b1176033c8f42489cd36c83185b57eed2e1e058df8aed5f8b3dab45"
+    },
+    "起偏器": {
+      "reading": "qi3 pian1 qi4",
+      "sha256": "ca88406f0d941da695e319bcd6f5015aea45ff352bfe4fd3d81b34cbcffbc8e2"
+    },
+    "检偏器": {
+      "reading": "jian3 pian1 qi4",
+      "sha256": "f83d057c26403f3f6209125026db8ed9960e987ac829e1e5a5d01731683a2200"
+    },
+    "马吕斯定律": {
+      "reading": "ma3 lü3 si1 ding4 lü4",
+      "sha256": "bc371581c5434b7f0f73b644d13a38b1a637709f7daa93bfd85dbeef57620199"
+    },
+    "布儒斯特角": {
+      "reading": "bu4 ru2 si1 te4 jiao3",
+      "sha256": "ec5028ecf56b6a7bf007c0380268f560755bafa8bd0790642a31349512deba0d"
+    },
+    "双折射": {
+      "reading": "shuang1 zhe2 she4",
+      "sha256": "6efba9212e292a7d5ada7ed5f313ac8ea90f2c851dabae15b2510b13e64b0486"
+    },
+    "寻常光": {
+      "reading": "xun2 chang2 guang1",
+      "sha256": "3e334ba0e9c6556bcff24175ce5cde0e68770724f1c12097d19cdfb03848917b"
+    },
+    "非常光": {
+      "reading": "fei1 chang2 guang1",
+      "sha256": "a4bb723cc8af3205658a54839f5ca1642299f38ee650e8579ed03c08a2d85f6a"
+    },
+    "四分之一波片": {
+      "reading": "si4 fen1 zhi1 yi1 bo1 pian4",
+      "sha256": "970a4dfb2fc9f5a17caea4b81ab373489adad100ceef01efff1b9e33faf526f4"
+    },
+    "半波片": {
+      "reading": "ban4 bo1 pian4",
+      "sha256": "ce236925b5b268d41f48fe404bd337a9e8f5d8c571a0d31afa4a49b64b7788f4"
+    },
+    "光栅": {
+      "reading": "guang1 shan1",
+      "sha256": "31a829b9d2acbcca0c82848cd22723c2342c89b4cb80002f54c643c9298820b1"
+    },
+    "光栅常数": {
+      "reading": "guang1 shan1 chang2 shu4",
+      "sha256": "4293ab27423be3143a1b79285849f11d8cf11ce601ebcca213e84849e22b3562"
+    },
+    "光栅方程": {
+      "reading": "guang1 shan1 fang1 cheng2",
+      "sha256": "4d05e0b18576d75abf5fd960fc0c569f95e34a40377071997fe4cdcda1c4a5cb"
+    },
+    "单缝衍射": {
+      "reading": "dan1 feng4 yan3 she4",
+      "sha256": "ee21046697e62c20f77bf37e085c988283089a060365e489f4f17d99d742d27b"
+    },
+    "夫琅禾费衍射": {
+      "reading": "fu1 lang2 he2 fei4 yan3 she4",
+      "sha256": "17ccc9252abc19b2507d37b925b60d1c8123270057ffcd628de92a9c31a3e4e4"
+    },
+    "菲涅耳衍射": {
+      "reading": "fei1 nie4 er3 yan3 she4",
+      "sha256": "199032885ba060ebe081b6581a5634fe63af2501dfbf47351b762f439ef5c7c1"
+    },
+    "瑞利判据": {
+      "reading": "rui4 li4 pan4 ju4",
+      "sha256": "5baa62ffac1defb0908f9d90a6510af276f8f8baef1c62bae76f988dad765876"
+    },
+    "艾里斑": {
+      "reading": "ai4 li3 ban1",
+      "sha256": "2eeb27fd610307986f9c71b51db918ee312f6650cae52ef670adaaa3408eeafb"
+    },
+    "迈克耳孙干涉仪": {
+      "reading": "mai4 ke4 er3 sun1 gan1 she4 yi2",
+      "sha256": "d30d98fd86ee928d097be54ee6666d9f05a884e7129f52c2cfbed766660e94db"
+    },
+    "相干长度": {
+      "reading": "xiang1 gan1 chang2 du4",
+      "sha256": "d5fc0df78437ac8bd9a4d391908719bdfaf2745c5333c5a3c050c9ac46324a67"
+    },
+    "色差": {
+      "reading": "se4 cha1",
+      "sha256": "b5351d4dcea2cda5c6f1ac249578589bd119393470f6130aa7568cd5ea7f42de"
+    },
+    "球差": {
+      "reading": "qiu2 cha1",
+      "sha256": "2a6f3be4215b52b78583652ba63ea5a92414ce55ccb25a60f21f8923dec55d93"
+    },
+    "孔径光阑": {
+      "reading": "kong3 jing4 guang1 lan2",
+      "sha256": "151a023e62cda867c0eb136982904e7b7bf50250716d34d603bd843fdf61c6cb"
+    },
+    "视场光阑": {
+      "reading": "shi4 chang3 guang1 lan2",
+      "sha256": "9f01a781035bbe57029d9a83c2b56e12c8812ee6af2f1c5636c21e9af9754f5c"
+    },
+    "数值孔径": {
+      "reading": "shu4 zhi2 kong3 jing4",
+      "sha256": "84f72cf72bf5acd704cddbc9e95ce62147d3e2f9f9e422faddbafe7f21a9cc7d"
+    },
+    "角放大率": {
+      "reading": "jiao3 fang4 da4 lü4",
+      "sha256": "7002b60f3b4a28a1b2cbd6135830b61b12e173654ae20dc1eb46bdabf3741565"
+    },
+    "显微镜": {
+      "reading": "xian3 wei1 jing4",
+      "sha256": "524ae7b0f4656a6ca476b92a75ae1b53bb7a2d13b976dec64c5ad21dbafef2e5"
+    },
+    "望远镜": {
+      "reading": "wang4 yuan3 jing4",
+      "sha256": "4974804a77d32767e5a0527e5d0de534175ed5186f4bfd3d0cd1883dd7cee251"
+    },
+    "热力学第零定律": {
+      "reading": "re4 li4 xue2 di4 ling2 ding4 lü4",
+      "sha256": "9387a6801023578afda2f3640acd5dbfca9cf47d099a2005775319c7eba3cb01"
+    },
+    "绝对零度": {
+      "reading": "jue2 dui4 ling2 du4",
+      "sha256": "6c2802c04988efc346e887904b9e5bce2b472ee2dfc6c47171f2e2f5275db2ec"
+    },
+    "温度梯度": {
+      "reading": "wen1 du4 ti1 du4",
+      "sha256": "1db485917ddd49f268894b0b1826aa0c5fb0eb49263bb039b755c36cd85b1c9a"
+    },
+    "热导率": {
+      "reading": "re4 dao3 lü4",
+      "sha256": "27e7123805f78731d600acc63eac66d30ec590e67ef60b75c3ea537248340124"
+    },
+    "傅里叶定律": {
+      "reading": "fu4 li3 ye4 ding4 lü4",
+      "sha256": "e37a12561589123eb1d22abd7869e944e800ada504ab98e092c5a6dc7709aa20"
+    },
+    "热阻": {
+      "reading": "re4 zu3",
+      "sha256": "39f3223f273f529e807447c16315dde5dc5701a3beb84aa005548252d6698369"
+    },
+    "量热器": {
+      "reading": "liang2 re4 qi4",
+      "sha256": "6a371957a0161aed0bb385500f9e8b9a489923580d2c6e674991e8eadd37997f"
+    },
+    "热平衡方程": {
+      "reading": "re4 ping2 heng2 fang1 cheng2",
+      "sha256": "6ad65b5fe9faa24644583cc8419d87c93bb5d925564adffd5935de7e4b233c46"
+    },
+    "凝固": {
+      "reading": "ning2 gu4",
+      "sha256": "e5e22f452afd1e411f459ac331d184df0d723e3e1da2a813560fa6a79a60d073"
+    },
+    "凝华": {
+      "reading": "ning2 hua2",
+      "sha256": "b39ac7ff26f44a17b36bc8332a418e2650fe45a7d730cef8f4bc8aca5840da93"
+    },
+    "熔点": {
+      "reading": "rong2 dian3",
+      "sha256": "c5d3d56a842d92faf338a60858919519f8c8a170946b89873f5e3569174564a7"
+    },
+    "露点": {
+      "reading": "lu4 dian3",
+      "sha256": "10c3b7fc104a9acc375106ac5c29b6064e2facbe71a8106179404764052afb0c"
+    },
+    "相对湿度": {
+      "reading": "xiang1 dui4 shi1 du4",
+      "sha256": "73c6091116f356204cfd9848a98b67f9283c618d0ffc26a4c7331bfb7613f819"
+    },
+    "绝对湿度": {
+      "reading": "jue2 dui4 shi1 du4",
+      "sha256": "c2bd62c3cb245fc492c37da62652952b0940096614cb0314f029221b24b598bc"
+    },
+    "临界温度": {
+      "reading": "lin2 jie4 wen1 du4",
+      "sha256": "63aae47d8e9a90b8773b375bfa594fdbf453964310f52c5fad645ede2e01e860"
+    },
+    "自由膨胀": {
+      "reading": "zi4 you2 peng2 zhang4",
+      "sha256": "2e38d551aa82bdaed923d973cd9cc2f7b791f8afc1892d0d9ecf6cbf09b67c3b"
+    },
+    "节流过程": {
+      "reading": "jie2 liu2 guo4 cheng2",
+      "sha256": "e4264df0eece98fea571a6f28b2ac5877850a6aed5bbd2047b674f34ec3cde65"
+    },
+    "多方过程": {
+      "reading": "duo1 fang1 guo4 cheng2",
+      "sha256": "c5e2168bfe925aa3dc3d4a1e22f2345ce5b7e156f6083c03ac676daac86244a2"
+    },
+    "制冷系数": {
+      "reading": "zhi4 leng3 xi4 shu4",
+      "sha256": "6494b860285f22eb3f42cdb050b6305ce597b296499efff673d8671f3ed9bcff"
+    },
+    "熵增原理": {
+      "reading": "shang1 zeng1 yuan2 li3",
+      "sha256": "4a1d8491b09b5969ff685b8c81d8a7d18fe4cbc132c2d812c7d72d073f4f2211"
+    },
+    "混合熵": {
+      "reading": "hun4 he2 shang1",
+      "sha256": "cb130cf22c31dbcd518f4ecc0f93cd19b14a8d9ced509c92d2e75299d5b79b88"
+    },
+    "玻意耳定律": {
+      "reading": "bo1 yi4 er3 ding4 lü4",
+      "sha256": "71e3c87a742aa02edc9cbc9f6e0e466775570e78c01ce36b3ab1af48d686fdc3"
+    },
+    "查理定律": {
+      "reading": "cha2 li3 ding4 lü4",
+      "sha256": "03ae3933e91e154180c9b16a1a516bd007749bd0d1db2e666f7e51e7ddf3d09d"
+    },
+    "盖吕萨克定律": {
+      "reading": "gai4 lü3 sa4 ke4 ding4 lü4",
+      "sha256": "2b8dcce369533be3692f96785ef99056d60401d988d5e23ef488ad0f9666f61d"
+    },
+    "气体动理论": {
+      "reading": "qi4 ti3 dong4 li3 lun4",
+      "sha256": "c897ca47bfa47ea44d557f8757763423454e692a42a394c6891aa98da665d139"
+    },
+    "分子平均自由程": {
+      "reading": "fen1 zi3 ping2 jun1 zi4 you2 cheng2",
+      "sha256": "011c1520318eb64f6d2754ae0b3f571c0f5a5592a59b929209b25786e9f9007e"
+    },
+    "碰撞频率": {
+      "reading": "peng4 zhuang4 pin2 lü4",
+      "sha256": "f3e260a417b7d61efc635c6c6d60361794b1b10d2774731337d8ee9136dd013d"
+    },
+    "热扩散率": {
+      "reading": "re4 kuo4 san4 lü4",
+      "sha256": "c97dcee305bb927c164c1edef1e1bee137fda05a91cae935e8a54fb246b44e21"
+    },
+    "转动自由度": {
+      "reading": "zhuan4 dong4 zi4 you2 du4",
+      "sha256": "16e0a70cde23a70265ffa165100f2dda20b8cc32d592fecd778684165f390907"
+    },
+    "振动自由度": {
+      "reading": "zhen4 dong4 zi4 you2 du4",
+      "sha256": "34df725b492da3fb40870948e7c0b318a9e3ab777033a5fb3403d7ad567b27e0"
+    },
+    "布朗运动": {
+      "reading": "bu4 lang3 yun4 dong4",
+      "sha256": "5fd5d9869f802fac6f4b7cdf623f9d3622ef9711c27d845341808ea5d2be8527"
+    },
+    "分子力": {
+      "reading": "fen1 zi3 li4",
+      "sha256": "a0fe4ece9d00d8988abceec95585e26d94681a70fb14153f50e357661712d783"
+    },
+    "分子势能": {
+      "reading": "fen1 zi3 shi4 neng2",
+      "sha256": "8393c8857f33f75db0340333021c1598f3791bbe655053bd9b468abf4b659a3a"
+    },
+    "实际气体": {
+      "reading": "shi2 ji4 qi4 ti3",
+      "sha256": "1410100f3c27fd8602708b4dfd557ab32123b9166385a5c5d9f4828ec4e5929c"
+    },
+    "玻尔兹曼常数": {
+      "reading": "bo1 er3 zi1 man4 chang2 shu4",
+      "sha256": "d94e0d8c35162ba28eb786974ff3735ef686ecc6ac37f57f043a7bd314d107f1"
+    },
+    "热力学第三定律": {
+      "reading": "re4 li4 xue2 di4 san1 ding4 lü4",
+      "sha256": "bfcdaaba8fbaff39728d367849992a02e514550284cf6d21563752b8ff61b88c"
+    },
+    "光电效应": {
+      "reading": "guang1 dian4 xiao4 ying4",
+      "sha256": "3fa79fa1fa7a928ee5e7d243d7d4a33bb794327ea075ee6ddb5b894cd0e4f0fe"
+    },
+    "逸出功": {
+      "reading": "yi4 chu1 gong1",
+      "sha256": "2e58e32de33c114b0b51b9c9dc450430ed2ad7668a4f9109aaf2e734a25e8485"
+    },
+    "遏止电压": {
+      "reading": "e4 zhi3 dian4 ya1",
+      "sha256": "4bf29fbe312eeaa7f1e8a4e79ddb5eb69ef1cf91c1dae42990d0db291e3408c0"
+    },
+    "饱和光电流": {
+      "reading": "bao3 he2 guang1 dian4 liu2",
+      "sha256": "ae05647916e791c89ab7b8918a246415625c07c26ae14acdc62595bb98301dd7"
+    },
+    "极限频率": {
+      "reading": "ji2 xian4 pin2 lü4",
+      "sha256": "4dc1e2b519aa956b96bddeb49fc3ba4e4def03b10871d008c1030b3ee66206d7"
+    },
+    "爱因斯坦光电方程": {
+      "reading": "ai4 yin1 si1 tan3 guang1 dian4 fang1 cheng2",
+      "sha256": "f5286b026e91b400c4c4e6a22359ff49e1c55a5558e1281f47bdbe5cc1354b1d"
+    },
+    "物质波": {
+      "reading": "wu4 zhi4 bo1",
+      "sha256": "eb96ef31c7c787cb88f1d7a11d39c39f78c8311963dbb0a87f7bf4c93847e18a"
+    },
+    "德布罗意波长": {
+      "reading": "de2 bu4 luo2 yi4 bo1 chang2",
+      "sha256": "8c105e92e1cca2d21e005e9b22a9df4df2b67d85e5c320beebdbe53977d29ff0"
+    },
+    "电子衍射": {
+      "reading": "dian4 zi3 yan3 she4",
+      "sha256": "9ba790fd282cf03d16b90e67e1a1553329408613e70ee70732028f40424cba45"
+    },
+    "波粒二象性": {
+      "reading": "bo1 li4 er4 xiang4 xing4",
+      "sha256": "99bff667bd2360bbb106eeefb88c8fb380e51eed99f77ce1a104757736f3beda"
+    },
+    "测不准关系": {
+      "reading": "ce4 bu4 zhun3 guan1 xi4",
+      "sha256": "b5f814d1fa37486f56fbc2581d27d75ecc64941efe694dfac5eace4e334d9ec6"
+    },
+    "量子隧穿": {
+      "reading": "liang4 zi3 sui4 chuan1",
+      "sha256": "92c8e7d06e1040a87b2d57a461014e66431245935f3b29910ae0287bb2c01092"
+    },
+    "零点能": {
+      "reading": "ling2 dian3 neng2",
+      "sha256": "7a65b367138b36d65ba425c7acba387aeaf624b3dbb9c8f4272f6e9eaee189f7"
+    },
+    "同位素": {
+      "reading": "tong2 wei4 su4",
+      "sha256": "66533665152dd6c4d469382e11856291e91664e9195d4fd5740b003361b33092"
+    },
+    "核力": {
+      "reading": "he2 li4",
+      "sha256": "b911f5823817f694c2376965ee02a87542eac750d0d7ca083f601c74f941a2ee"
+    },
+    "比结合能": {
+      "reading": "bi3 jie2 he2 neng2",
+      "sha256": "edc78a519618455d4106c0d16f475fa0948f1195fa15b137ac869b7b1b5e4e15"
+    },
+    "核裂变": {
+      "reading": "he2 lie4 bian4",
+      "sha256": "724202588c4a5716fc2c96cb9a77bd6574d4ab690a8470307fb8e0d273f2c119"
+    },
+    "链式反应": {
+      "reading": "lian4 shi4 fan3 ying4",
+      "sha256": "9d0ceeb234707681609137b2647b3cb1b46b1c950e40c4c85015972a67894676"
+    },
+    "衰变链": {
+      "reading": "shuai1 bian4 lian4",
+      "sha256": "514f97822eb4fce2815159bca505c581584690d0c1847a2c8dc2139aabd1d458"
+    },
+    "阿尔法衰变": {
+      "reading": "a1 er3 fa3 shuai1 bian4",
+      "sha256": "29278d1889f9f19c1b53f06e17d2f8b14e99138c55c0bb3c562ea7e3d53316e0"
+    },
+    "贝塔衰变": {
+      "reading": "bei4 ta3 shuai1 bian4",
+      "sha256": "b0fa8d7f4dae7ff5cd09a554dc477bce1d26edbe198a57a7a3970bf0f833421f"
+    },
+    "伽马衰变": {
+      "reading": "ga1 ma3 shuai1 bian4",
+      "sha256": "f82a7c8421925c9ab6974a0739eff169c6cbbf72d539f913034eee5c1db87301"
+    },
+    "正电子湮灭": {
+      "reading": "zheng4 dian4 zi3 yan1 mie4",
+      "sha256": "08aa9203f277c85cba915d40e4afcfad2e202834639b4b516dc558116e1c4978"
+    },
+    "光速不变原理": {
+      "reading": "guang1 su4 bu4 bian4 yuan2 li3",
+      "sha256": "47e0fe5acf058100e53a21def01fa43bdd8ad9b9502ac3ba4767493358924c7c"
+    }
+  },
+  "review_notes": {
+    "mechanics-math-independent-review.json": {
+      "reviewer": "cards_batches_09_15 / electromagnetism-optics",
+      "reviewed_file": "drafts/mechanics-math.json",
+      "reviewed_count": 60,
+      "reviewed_sha256": "5e33da6ad2271828585bc9034d85083704ba9e571d426ebe6f9a919aa427b1ac",
+      "review_method": "只读逐条检查 60 张六字段，重点覆盖约束、简正坐标、阻尼、刚体动力学、流体条件、数学定义和读音；未修改该草稿。",
+      "findings": [
+        {
+          "term": "哈密顿函数",
+          "fields": [
+            "sense",
+            "example"
+          ],
+          "severity": "建议修正",
+          "confidence": "高",
+          "current": {
+            "sense": "把拉格朗日函数对广义速度作勒让德变换后得到的坐标与动量的函数。",
+            "example": "质量不变的自由质点，其哈密顿函数等于动量平方除以两倍质量。"
+          },
+          "reason": "哈密顿函数一般可显含时间；自由粒子 H=p²/(2m) 这一具体形式属于非相对论模型，“质量不变”本身没有给出该条件。",
+          "suggested": {
+            "sense": "把拉格朗日函数对广义速度作勒让德变换得到的函数，以广义坐标和动量为变量，也可显含时间。",
+            "example": "非相对论自由质点的哈密顿函数等于动量平方除以两倍质量。"
+          },
+          "sources": [
+            {
+              "url": "https://www.damtp.cam.ac.uk/user/tong/dynamics/dynhtml/S4.html",
+              "supports": "勒让德变换后 H(q,p,t) 的变量及可显含时间。"
+            },
+            {
+              "url": "https://dxwl.bnu.edu.cn/CN/article/downloadArticleFile.do?attachType=PDF&id=5851",
+              "supports": "自由粒子 p²/(2m) 能量形式属于非相对论近似，静能可选作参考零点。"
+            }
+          ]
+        },
+        {
+          "term": "卷积",
+          "fields": [
+            "sense"
+          ],
+          "severity": "定义步骤表述",
+          "confidence": "高",
+          "current": {
+            "sense": "把一个函数平移并反向后与另一函数相乘，再对中间变量积分的运算。"
+          },
+          "reason": "卷积图解法按中间变量先反向再平移，得到 g(t−τ)。现句将平移排在反向之前，按书写顺序执行会改变平移参数的符号；两词换序即可清楚表达。",
+          "suggested": {
+            "sense": "将一个函数反向并平移后，与另一个函数相乘并对中间变量积分的运算。"
+          },
+          "sources": [
+            {
+              "url": "https://moodle.scnu.edu.cn/pluginfile.php/773787/mod_resource/content/1/%E7%AC%AC%E4%B8%89%E7%AB%A0.pdf",
+              "supports": "华南师范大学课件给出反转 f₂(i)→f₂(−i)，再右移 k 得 f₂(k−i) 的卷积图解顺序。"
+            },
+            {
+              "url": "https://www.tup.tsinghua.edu.cn/upload/books/yz/064882-01.pdf",
+              "supports": "清华大学出版社教材将 x[n−k] 解释为 x[k] 的反转和平移。"
+            }
+          ]
+        }
+      ],
+      "checked_without_change": [
+        "理想约束虚功、完整及非完整约束、达朗贝尔原理、固定端点的作用量驻值、广义动量定义均可保留。",
+        "双振子和差简正坐标已具备等质量、对称耦合条件；阻尼比公式与欠阻尼、临界阻尼、过阻尼范围一致。",
+        "质心转动惯量张量、惯量主轴、欧拉方程的随体主轴系条件明确。",
+        "伯努利方程、斯托克斯阻力、泊肃叶定律已保留本例直接需要的流动条件；不为常规模型另添无教学作用的限制串。",
+        "柯西不等式、罗尔定理、中值定理、隐函数求导、雅可比绝对值、正定二次型、特征向量非零条件及卷积零状态条件均可保留。"
+      ],
+      "pronunciation_spot_checks": [
+        {
+          "term": "潮汐力",
+          "result": "汐保留 xi1；汉典大陆拼音栏为 cháo xī，与该卡一致。",
+          "url": "https://zdic.net/hans/%E6%BD%AE%E6%B1%90"
+        },
+        {
+          "term": "湍流",
+          "result": "湍读 tuan1，与该卡一致。",
+          "url": "https://zdic.net/hans/%E6%B9%8D"
+        },
+        {
+          "term": "耦合振动",
+          "result": "耦读 ou3，与该卡一致。",
+          "url": "https://zdic.net/hans/%E8%80%A6"
+        },
+        {
+          "term": "伯努利方程",
+          "result": "伯采用 bo2，与该卡一致。",
+          "url": "https://zdic.net/hans/%E4%BC%AF"
+        },
+        {
+          "term": "泊肃叶定律",
+          "result": "ERIC 收录物理词表拼作 Bosuye dinglv，泊字采用 bo 声母；汉典 bó 字音与该卡相符。",
+          "urls": [
+            "https://files.eric.ed.gov/fulltext/ED136602.pdf",
+            "https://zdic.net/hans/%E6%B3%8A"
+          ]
+        }
+      ],
+      "reading_changes_proposed": [],
+      "audio_note": "本轮为文字与资料复查，未生成音频，未作实听结论。"
+    },
+    "thermal-modern-notes.json": {
+      "status": "self_review_complete",
+      "owner": "thermal-modern",
+      "count": 60,
+      "scope": "热学与统计物理 36 张，近代物理 24 张。",
+      "selection_notes": [
+        "已对照现有 2420 词排除逐字重复，并检查常见同义形式。",
+        "原候选均方根速率与已有方均根速率重复，已改为热扩散率；旧库无热扩散率、热扩散系数、导温系数。",
+        "已有热力学温标、热核反应，故未用开尔文温标、核聚变凑新增词。",
+        "已有光速、真空中的光速；光速不变原理另写惯性系之间光速相同的相对论原理，教学内容独立。",
+        "本组负责光电效应与物质波。傅里叶定律写导热规律，与其他组的傅里叶变换区分。"
+      ],
+      "decisions": [
+        {
+          "terms": [
+            "查理定律",
+            "盖吕萨克定律"
+          ],
+          "decision": "采用大陆教材命名：查理定律为定容 p/T 不变；盖吕萨克定律为定压 V/T 不变。sense 与 example 均写明条件。",
+          "sources": [
+            {
+              "url": "https://www.zstp.edu.cn/__local/1/A5/F9/D6C4C2E47324B1B019F34306CA9_89B033A0_83A98A.pdf",
+              "evidence": "高校教学 PDF 的检索正文同时明确：盖·吕萨克定律定压 V 与绝对温度成正比，查理定律定容 p 与绝对温度成正比。"
+            },
+            {
+              "url": "https://r3-ndr.ykt.cbern.com.cn/edu_product/esp/assets_document/8260ffe3-5065-4f32-bdc3-dd048f75ff7e.pkg/pdf.pdf",
+              "evidence": "广东教育出版社高中物理选择性必修第三册，气体等压变化一节将定压体积与热力学温度正比称为盖—吕萨克定律。"
+            },
+            {
+              "url": "https://www.moe.gov.cn/srcsite/A06/s3732/202507/W020250701322477386053.pdf",
+              "evidence": "教育部高中物理装备表：查理定律演示器为定容气室配温度、压强计；盖—吕萨克演示器可调气体体积，压强维持大气压。网页直开超时，检索索引给出相应表格。"
+            }
+          ]
+        },
+        {
+          "terms": [
+            "量热器"
+          ],
+          "decision": "量取测量义，reading 为 liang2 re4 qi4；contrast 与热量的量 liàng 区分。",
+          "sources": [
+            {
+              "url": "https://dict.concised.moe.edu.tw/dictView.jsp?ID=14983&la=0&powerMode=0",
+              "evidence": "教育部辞典量 liáng 条，仪器测量义。"
+            },
+            {
+              "url": "https://www.keyence.com.cn/pdf/landing/190822/AS_63065_TG_201139_CN_1023-1.pdf",
+              "evidence": "制造商技术词典列 calorimeter／量热器，拼音 liángrèqì。"
+            }
+          ]
+        },
+        {
+          "terms": [
+            "正电子湮灭"
+          ],
+          "decision": "采用大陆通行读法 yān miè。教育部重编国语辞典的 yīn 主读与 yān 又音属于不同读音体系，未直接将台湾主读写入本库。",
+          "sources": [
+            {
+              "url": "https://zdic.net/hans/%E6%B9%AE%E6%BB%85",
+              "evidence": "汉典湮灭词条列 yān miè。"
+            },
+            {
+              "url": "https://dict.revised.moe.edu.tw/dictView.jsp?ID=10971&la=0&powerMode=0",
+              "evidence": "教育部重编国语辞典湮条同时列 yīn 及又音 yān；用于确认地区资料存在差异。"
+            },
+            {
+              "url": "https://kufs.repo.nii.ac.jp/record/65/files/ronso82143162.pdf",
+              "evidence": "《新华字典》中多音字来源研究的检索正文列现代汉语湮没为 yān、湮透为 yīn；PDF 直开遇 429，未声称完整阅读。"
+            }
+          ]
+        },
+        {
+          "terms": [
+            "振动自由度"
+          ],
+          "decision": "按独立振动坐标计数，一个简谐振动模式有动能和势能两个二次项，经典平均能量各 kT/2。sense 与 contrast 明确这一区别。",
+          "sources": [
+            {
+              "url": "https://my.nankai.edu.cn/_upload/article/files/b4/14/001067bf48d9960482da9f7de1dc/dad80236-ca0f-4843-97c7-2fe9ed218fa1.pdf",
+              "evidence": "南开大学教学 PDF《第4章 气体》采用平动、转动和振动坐标计数；每一振动自由度含两个能量二次项。"
+            },
+            {
+              "url": "https://gkwl.cbpt.cnki.net/portal/journal/portal/client/paper/eed7f0bfbc7dbcb5fb3e713288e563e2",
+              "evidence": "《双原子分子振动热容量辨析》讨论振动自由度经典能量 kT 与适用条件；卡片明确限于经典能量均分适用的简谐振动。"
+            }
+          ]
+        },
+        {
+          "terms": [
+            "热扩散率"
+          ],
+          "decision": "使用热导率除以密度和定压比热容乘积的定义，单位平方米每秒；与热导率的概念明确区分。",
+          "sources": [
+            {
+              "url": "https://dbba.sacinfo.org.cn/attachment/downloadStdFile?pk=1940050545eabb8c752849d64455b6e8bbc9a4272205b1a8e2c3b8a6749727e7",
+              "evidence": "DB34/T 2987—2017 的检索定义给出热扩散率为热导率与体积热容量之比，单位 m²/s。仅用作物理量定义来源，不作现行法规判断。"
+            }
+          ]
+        }
+      ],
+      "self_review": [
+        "逐张复读全部 60 张的词义、例句、语流和辨析。",
+        "自由膨胀温度结论限定为前后平衡态；节流保焓的稳态、绝热、无轴功及机械能条件写入例句。",
+        "量子统计与谐振子例句写清经典适用条件、标准差含义或基态条件。",
+        "正电子湮灭例句写明电子与正电子的初始总动量为零，并限定双光子通道。",
+        "逐字拼音与声调复读：量热器的量为二声，转动的转为四声，混合的混为四声，伽马的伽为一声。",
+        "第三声与不的语流变调放在 flow 或 contrast，reading 保留字典本调。"
+      ],
+      "validation": {
+        "exact_duplicate_with_old_library": 0,
+        "duplicate_within_file": 0,
+        "count": 60,
+        "required_fields": [
+          "term",
+          "reading",
+          "sense",
+          "example",
+          "flow",
+          "contrast"
+        ],
+        "all_fields_nonempty": true,
+        "all_examples_include_exact_term": true,
+        "all_examples_15_to_70_characters": true,
+        "all_reading_tokens_match_character_count": true,
+        "all_reading_tokens_have_numeric_tone": true,
+        "all_prose_fields_end_with_full_stop": true
+      },
+      "unresolved_issues": [],
+      "provenance": "例句由助手独立编写；仅作文本复读与资料查证，未生成音频、未调用收费 API、未声称实际听音通过。",
+      "post_review_corrections": [
+        {
+          "source": "root 复读反馈",
+          "term": "相对湿度",
+          "field": "flow",
+          "before": "湿读平舌音",
+          "after": "湿读翘舌音 shī",
+          "status": "fixed"
+        },
+        {
+          "source": "本组定向复读",
+          "scope": "所有平舌/翘舌、前后鼻音及显式声调提示",
+          "result": "已逐项对照 reading。除已修正的湿 shī 外未发现矛盾：斯 sī、素 sù 为平舌；临 lín 为前鼻音；膨 péng、胀 zhàng、冷 lěng、朗 lǎng 为后鼻音。"
+        }
+      ]
+    },
+    "thermal-modern-independent-review.json": {
+      "reviewed_file": "drafts/thermal-modern.json",
+      "reviewed_cards": 60,
+      "snapshot_sha256": "0e329c2a5fea8495bab2cf7afb2704e633e97316719c7e78f9a330756eccfdbe",
+      "mode": "只读一轮交叉复查；未改动被审草稿。",
+      "focus": [
+        "逐字本调与 flow 的发音描述是否一致",
+        "物理公式的必要条件",
+        "状态量与过程量的区别",
+        "例句是否独立可懂"
+      ],
+      "findings": [
+        {
+          "index": 13,
+          "term": "相对湿度",
+          "field": "flow",
+          "priority": "high",
+          "current": "“相对”接“湿度”，“湿”读平舌音；“分压保持不变时”读完再接降温结果。",
+          "problem": "湿读 shī，声母 sh 属舌尖后音（翘舌音）；当前“平舌音”提示与 reading 中的 shi1 相矛盾。",
+          "suggestion": "“相对”接“湿度”，“湿”读翘舌音 shī；“分压保持不变时”读完再接降温结果。",
+          "reading_change_needed": false,
+          "sources": [
+            {
+              "title": "教育部《國語小字典》：濕",
+              "url": "https://dict.mini.moe.edu.tw/SearchIndex/word_detail?breadcrumbs=Search_%E6%BF%95_one&dictSearchField=%E6%BF%95&wordID=D0003122",
+              "evidence": "汉语拼音列 shī。"
+            },
+            {
+              "title": "广州南方学院普通话发音教学资料",
+              "url": "https://wcy.nfu.edu.cn/info/3167/45801.htm",
+              "evidence": "区分平舌音 z、c、s 与翘舌音 zh、ch、sh。"
+            }
+          ]
+        }
+      ],
+      "sound_physics_review_notes": [
+        "自由膨胀限定理想气体、绝热刚性容器与真空区域，温度比较明确指膨胀前与平衡后的状态。",
+        "节流过程明确稳态、绝热、无轴功及动能和重力势能变化可忽略，再给出比焓不变。",
+        "热平衡方程明确热金属、水与量热器的能量归属；制冷系数区分低温端吸热量和输入功。",
+        "熵增原理写孤立系统总熵，混合熵明确两种不同理想气体。",
+        "振动自由度按独立振动坐标计数，并写明动能、势能两个二次项以及经典均分条件。",
+        "查理定律、盖吕萨克定律按大陆命名分别写定容与定压，已结合本组 notes 的命名说明阅读。",
+        "测不准关系用量子态标准差；零点能以量子简谐振子为具体对象。",
+        "正电子湮灭明确初始总动量为零的参考系，并以双光子通道推出等能与反向。"
+      ],
+      "checks": {
+        "count": 60,
+        "all_examples_contain_term": true,
+        "reading_token_counts_match": true,
+        "numeric_tone_format": true
+      },
+      "summary": "本轮记录 1 处高可信的具体修改；其余 59 张未发现需要改写的高可信问题。未对常规正确内容增加预防性说明。",
+      "audio_status": "未生成音频，未作实际听音判断。"
+    },
+    "electromagnetism-optics-notes.json": {
+      "scope": "新增电磁学与光学读音卡，电磁学 30 张、光学 30 张，共 60 张。",
+      "draft": "drafts/electromagnetism-optics.json",
+      "checks": {
+        "card_count": 60,
+        "required_fields": [
+          "term",
+          "reading",
+          "sense",
+          "example",
+          "flow",
+          "contrast"
+        ],
+        "exact_duplicates_against_existing_2420": [],
+        "duplicate_examples": [],
+        "duplicate_flows": [],
+        "example_term_coverage": 60,
+        "pinyin_character_alignment": 60,
+        "example_character_length_range": [
+          27,
+          51
+        ],
+        "individual_text_review": "逐条检查 60 张词义、独立课堂例句、公式适用条件、读音和词组连接。只进行文字自审；没有合成音频或实际试听。",
+        "audio_generated": false,
+        "paid_api_used": false,
+        "draft_sha256": "e5ebb99b7b06f5482692b90aefc8edf30a3ec282fbab1881300e21b47d1fca66"
+      },
+      "selection_notes": [
+        "已排除电场叠加原理：已有叠加原理卡使用电场语境，新增将重复。改选电偶极子。",
+        "基尔霍夫电流定律与基尔霍夫电压定律分别给出节点及回路定义；与已有基尔霍夫方程区分明确，经 root 确认保留。",
+        "等势面表示几何曲面，与已有等势点及等势体区分；经 root 确认保留。",
+        "趋肤效应、布鲁斯特角、艾里斑等常见同义译名已检索现有词目，无同义词条重复。",
+        "遵守跨组分工，未收录品质因数、傅里叶级数、傅里叶变换、拉普拉斯变换、耦合振动、简正坐标、光电效应、物质波、德布罗意波长。"
+      ],
+      "pronunciation_checks": [
+        {
+          "term": "布儒斯特角",
+          "reading": "bu4 ru2 si1 te4 jiao3",
+          "result": "儒读 rú；专名按常见光学译名逐字读。",
+          "dictionary_urls": [
+            "https://zdic.net/hans/%E5%B8%83",
+            "https://zdic.net/hans/%E5%84%92",
+            "https://zdic.net/hans/%E6%96%AF",
+            "https://zdic.net/hans/%E7%89%B9"
+          ]
+        },
+        {
+          "term": "夫琅禾费衍射",
+          "reading": "fu1 lang2 he2 fei4 yan3 she4",
+          "result": "夫读 fū，琅读 láng，禾读 hé，费读 fèi，衍读 yǎn。",
+          "dictionary_urls": [
+            "https://zdic.net/hans/%E5%A4%AB",
+            "https://zdic.net/hans/%E7%90%85",
+            "https://zdic.net/hans/%E7%A6%BE",
+            "https://zdic.net/hans/%E8%B4%B9",
+            "https://zdic.net/hans/%E8%A1%8D"
+          ]
+        },
+        {
+          "term": "菲涅耳衍射",
+          "reading": "fei1 nie4 er3 yan3 she4",
+          "result": "菲读 fēi，涅读 niè，耳读 ěr；保留本库已有菲涅耳译名。",
+          "dictionary_urls": [
+            "https://zdic.net/hans/%E8%8F%B2",
+            "https://zdic.net/hans/%E6%B6%85",
+            "https://zdic.net/hans/%E8%80%B3",
+            "https://zdic.net/hans/%E8%A1%8D"
+          ]
+        },
+        {
+          "term": "艾里斑",
+          "reading": "ai4 li3 ban1",
+          "result": "艾读 ài，里读 lǐ，斑读 bān。",
+          "dictionary_urls": [
+            "https://zdic.net/hans/%E8%89%BE",
+            "https://zdic.net/hans/%E9%87%8C",
+            "https://zdic.net/hans/%E6%96%91"
+          ]
+        },
+        {
+          "term": "迈克耳孙干涉仪",
+          "reading": "mai4 ke4 er3 sun1 gan1 she4 yi2",
+          "result": "迈读 mài，克读 kè，耳读 ěr，孙读 sūn。",
+          "dictionary_urls": [
+            "https://zdic.net/hans/%E8%BF%88",
+            "https://zdic.net/hans/%E5%85%8B",
+            "https://zdic.net/hans/%E8%80%B3",
+            "https://zdic.net/hans/%E5%AD%99"
+          ]
+        },
+        {
+          "term": "矫顽力",
+          "reading": "jiao3 wan2 li4",
+          "result": "矫读 jiǎo，顽读 wán。",
+          "dictionary_urls": [
+            "https://zdic.net/hans/%E7%9F%AB",
+            "https://zdic.net/hans/%E9%A1%BD"
+          ]
+        },
+        {
+          "term": "光栅",
+          "reading": "guang1 shan1",
+          "result": "词条直接标 guāng shān；光栅常数、光栅方程沿用 shan1。",
+          "dictionary_urls": [
+            "https://zdic.net/hans/%E5%85%89%E6%A0%85"
+          ]
+        }
+      ],
+      "term_spelling_sources": [
+        {
+          "title": "科学出版社《光学（第二版）》目录",
+          "url": "https://www.ecsponline.com/goods.php?id=178754",
+          "supports": [
+            "菲涅耳",
+            "夫琅禾费",
+            "迈克耳孙",
+            "布儒斯特"
+          ]
+        },
+        {
+          "title": "《物理实验》瑞利判据与艾里斑相关教学研究",
+          "url": "https://wlsy.nenu.edu.cn/2508zsj.pdf",
+          "supports": [
+            "艾里斑",
+            "瑞利判据",
+            "夫琅禾费衍射"
+          ]
+        },
+        {
+          "title": "北京大学《迈克耳孙干涉仪与光学自相关测量》",
+          "url": "https://wlsy.nenu.edu.cn/2301zzh.pdf",
+          "supports": [
+            "迈克耳孙干涉仪"
+          ]
+        }
+      ],
+      "physics_sources": [
+        {
+          "terms": [
+            "磁滞",
+            "剩磁",
+            "铁磁性"
+          ],
+          "url": "https://openstax.org/books/university-physics-volume-2/pages/12-7-magnetism-in-matter",
+          "checked": "磁化历史依赖、外加场降为零时保留磁性、铁磁畴的磁化。"
+        },
+        {
+          "terms": [
+            "矫顽力",
+            "剩磁"
+          ],
+          "url": "https://clsfzx.ysu.edu.cn/wlzy1/syzds/clwlzy/gncljwlxn/chqxhczhx/syyl.htm",
+          "checked": "明确使用 B-H 回线中的 B=0 矫顽力及 H=0 剩磁；与磁化强度归零的内禀矫顽力分开。"
+        },
+        {
+          "terms": [
+            "位移电流",
+            "麦克斯韦方程组"
+          ],
+          "url": "https://openstax.org/books/university-physics-volume-2/pages/16-1-maxwells-equations-and-electromagnetic-waves",
+          "checked": "变化电场与位移电流项及四个电磁场基本方程。"
+        },
+        {
+          "terms": [
+            "马吕斯定律",
+            "布儒斯特角",
+            "圆偏振光"
+          ],
+          "url": "https://assets.openstax.org/oscms-prodcms/media/documents/UniversityPhysicsVolume3-WEB.pdf",
+          "checked": "理想检偏器的余弦平方关系、透明介质的布儒斯特角、正交分量合成偏振。"
+        },
+        {
+          "terms": [
+            "双折射",
+            "寻常光",
+            "非常光"
+          ],
+          "url": "https://dxwl.gdut.edu.cn/di10zhangguangdepianzhen.pdf",
+          "checked": "单轴晶体中 o 光折射率与方向无关，e 光有效折射率随波法线相对光轴方向变化。"
+        },
+        {
+          "terms": [
+            "四分之一波片",
+            "半波片"
+          ],
+          "url": "https://people.fjfi.cvut.cz/schmijos/en/waves/experiments/waveplates.php",
+          "checked": "设计波长与入射偏振条件；四分之一波片 45 度入射偏振产生圆偏振，半波片转动线偏振方向。"
+        },
+        {
+          "terms": [
+            "四分之一波片"
+          ],
+          "url": "https://www.thorlabs.com/catalogpages/obsolete/2019/WPMH05M-355.pdf",
+          "checked": "快慢轴成 45 度的线偏振通过设计波长四分之一波片可得圆偏振。"
+        },
+        {
+          "terms": [
+            "孔径光阑",
+            "视场光阑"
+          ],
+          "url": "https://hyperphysics.phy-astr.gsu.edu/hbase/geoopt/stop.html",
+          "checked": "分别限制轴上光束锥角及可见物方视场。"
+        },
+        {
+          "terms": [
+            "数值孔径"
+          ],
+          "url": "https://ansyshelp.ansys.com/public/views/secured/zemax/v26103/en/opticstudio_user_guide/OpticStudio_Help/topics/Aperture_Type.html",
+          "checked": "物方介质折射率乘最大收光锥半角的正弦；无量纲。"
+        },
+        {
+          "terms": [
+            "集肤效应"
+          ],
+          "url": "https://qnp.sjtu.edu.cn/ArticleFile.ashx?file=~%2Fuserfiles%2Ffiles%2FCh+6.pdf&id=87&lang=zh",
+          "checked": "良导体表层电流分布；材料参数固定时频率升高使趋肤深度变小。"
+        }
+      ],
+      "self_review_changes": [
+        "电偶极子 flow 改正音节数量为四个。",
+        "四分之一波片 flow 保留完整分数意群，去掉仅按波字强行指定一的第四声变调。",
+        "检偏器例句明确透振方向与入射偏振方向垂直。",
+        "两种波片词义改为引入相对相位延迟；例句明确设计波长、正入射与快轴夹角。",
+        "布儒斯特角词义明确电场平行入射面的反射分量。",
+        "铁磁性词义和例句明确自发磁化存在于磁畴内。",
+        "电桥平衡例句给出两支路电阻位置，再给比值关系。"
+      ],
+      "unresolved": []
+    },
+    "electromagnetism-optics-independent-review.json": {
+      "status": "complete",
+      "reviewer": "thermal-modern author / independent reviewer",
+      "source": "drafts/electromagnetism-optics.json",
+      "source_sha256": "e5ebb99b7b06f5482692b90aefc8edf30a3ec282fbab1881300e21b47d1fca66",
+      "reviewed_count": 60,
+      "review_rounds": 1,
+      "scope": "只读内容交叉复查；逐张阅读六字段，重点专名声调、物理结论条件、偏振与干涉衍射条件，以及显微镜和望远镜成像。",
+      "findings": [],
+      "summary": "未发现需要修订的高可信读音错误或物理错误。",
+      "checked_groups": [
+        {
+          "terms": [
+            "基尔霍夫电流定律",
+            "基尔霍夫电压定律",
+            "惠斯通电桥",
+            "麦克斯韦方程组",
+            "矫顽力",
+            "马吕斯定律",
+            "布儒斯特角",
+            "光栅",
+            "夫琅禾费衍射",
+            "菲涅耳衍射",
+            "瑞利判据",
+            "艾里斑",
+            "迈克耳孙干涉仪"
+          ],
+          "result": "专名逐字拼音、显式声调提示与本调相符；马吕斯的上声连读提示正确。"
+        },
+        {
+          "terms": [
+            "电桥平衡",
+            "时间常数",
+            "电源效率",
+            "闭合电路欧姆定律",
+            "电阻温度系数",
+            "回旋加速器"
+          ],
+          "result": "例句说明串联顺序、放电模型、纯电阻负载、小温差或非相对论条件，公式含义一致。"
+        },
+        {
+          "terms": [
+            "圆偏振光",
+            "自然光",
+            "检偏器",
+            "马吕斯定律",
+            "布儒斯特角",
+            "四分之一波片",
+            "半波片"
+          ],
+          "result": "偏振例句给出相应的等幅、相位差、理想器件、设计波长或正入射条件；角度及强度关系正确。"
+        },
+        {
+          "terms": [
+            "双折射",
+            "寻常光",
+            "非常光"
+          ],
+          "result": "使用单轴晶体和波法线方向区分两种偏振本征模式，能流方向与波法线的区分有效。"
+        },
+        {
+          "terms": [
+            "光栅方程",
+            "单缝衍射",
+            "夫琅禾费衍射",
+            "菲涅耳衍射",
+            "瑞利判据",
+            "艾里斑",
+            "迈克耳孙干涉仪",
+            "相干长度"
+          ],
+          "result": "正入射、远场、非相干等亮点源及往返光程等关键条件与结论相符。"
+        },
+        {
+          "terms": [
+            "角放大率",
+            "显微镜",
+            "望远镜"
+          ],
+          "result": "开普勒望远镜正常调焦及焦距比正确；复合显微镜的物镜中间实像与目镜角放大关系正确。"
+        }
+      ],
+      "file_changes": "未修改被审草稿；只生成本 review 文件。",
+      "audio": "仅作文字阅读，未生成音频或声称实听。"
+    },
+    "最终处理决定.json": {
+      "status": "resolved",
+      "reviewed_cards": 180,
+      "independent_reviews": [
+        "mechanics-math-independent-review.json",
+        "thermal-modern-independent-review.json",
+        "electromagnetism-optics-independent-review.json"
+      ],
+      "accepted_changes": [
+        {
+          "term": "哈密顿函数",
+          "field": "sense",
+          "before": "把拉格朗日函数对广义速度作勒让德变换后得到的坐标与动量的函数。",
+          "after": "把拉格朗日函数对广义速度作勒让德变换得到的函数，以广义坐标和动量为变量，也可显含时间。",
+          "reason": "哈密顿函数一般可显含时间；自由粒子 H=p²/(2m) 这一具体形式属于非相对论模型，“质量不变”本身没有给出该条件。"
+        },
+        {
+          "term": "哈密顿函数",
+          "field": "example",
+          "before": "质量不变的自由质点，其哈密顿函数等于动量平方除以两倍质量。",
+          "after": "非相对论自由质点的哈密顿函数等于动量平方除以两倍质量。",
+          "reason": "哈密顿函数一般可显含时间；自由粒子 H=p²/(2m) 这一具体形式属于非相对论模型，“质量不变”本身没有给出该条件。"
+        },
+        {
+          "term": "卷积",
+          "field": "sense",
+          "before": "把一个函数平移并反向后与另一函数相乘，再对中间变量积分的运算。",
+          "after": "将一个函数反向并平移后，与另一个函数相乘并对中间变量积分的运算。",
+          "reason": "卷积图解法按中间变量先反向再平移，得到 g(t−τ)。现句将平移排在反向之前，按书写顺序执行会改变平移参数的符号；两词换序即可清楚表达。"
+        }
+      ],
+      "already_resolved": [
+        {
+          "term": "相对湿度",
+          "field": "flow",
+          "change": "湿 shī 的声母提示改为翘舌音，作者和独立复查均已确认。"
+        },
+        {
+          "term": "达朗贝尔原理",
+          "field": "flow",
+          "change": "-m a 明确读为负 m 乘 a，保留字母名，不将符号一律换成量的名称。"
+        },
+        {
+          "term": "电偶极子",
+          "field": "flow",
+          "change": "更正为四个音节。"
+        },
+        {
+          "term": "四分之一波片",
+          "field": "flow",
+          "change": "按完整分数意群连续说出，去掉仅按后字机械指定一声调的提示。"
+        }
+      ],
+      "reading_and_scope_decisions": [
+        "查理定律和盖吕萨克定律按大陆教材分别写定容和定压，条件进入例句。",
+        "词目逐字记字典本调，连读变调写在 flow；新增例句保留公式中的字母及符号。",
+        "霍曼转移、均方根速率等已有同义项不计为新增；改用全导数、热扩散率。",
+        "所有新增卡采用独立完整课堂句，物理模型条件写入对应释义或例句。"
+      ],
+      "final_draft_sha256": {
+        "electromagnetism-optics.json": "e5ebb99b7b06f5482692b90aefc8edf30a3ec282fbab1881300e21b47d1fca66",
+        "thermal-modern.json": "c808c6fd0c4c59807c00d563fe840a9cbb15d3ad17a216b58ace955bc345531a",
+        "mechanics-math.json": "045e9d70eab647a1f467b0c11837cbfc43466960d0d65bc3bb170e4bf7d9ba91"
+      },
+      "unresolved_findings": [],
+      "audio_review": "not_performed",
+      "example_provenance": "assistant_authored",
+      "preservation": "合入前后逐字段比较原有 2420 张卡；保留既有来源、反馈与选音记录。"
+    },
+    "mechanics-math-notes.json": {
+      "scope": "新增力学与数学方法术语 60 张，按六字段标准编写。",
+      "draft": "drafts/mechanics-math.json",
+      "example_authorship": "例句均为本轮助手独立编写，用于自然课堂表达；未冒充原教师语句。",
+      "audio_status": "仅作文本与拼音审读，未生成音频，未作实听判断。",
+      "selection": {
+        "existing_terms_count": 2420,
+        "duplicate_exact": [],
+        "excluded_existing_or_synonym": [
+          "自由度",
+          "虚位移",
+          "虚功原理",
+          "相空间",
+          "相轨迹",
+          "质量流率",
+          "链式法则",
+          "特征方程",
+          "霍曼转移"
+        ],
+        "replacement": {
+          "removed": "霍曼转移",
+          "reason": "现有霍曼转移轨道，属同义变体。",
+          "added": "全导数"
+        },
+        "distinctions": [
+          "简正坐标强调坐标变换后方程解耦，与既有简正模式、简正振动区分。",
+          "广义速度、广义力、广义动量分别对应坐标导数、虚功系数、拉格朗日函数对广义速度的偏导。",
+          "傅里叶级数、傅里叶变换分别强调离散谐波展开与频率/波数表示。"
+        ]
+      },
+      "sources": [
+        {
+          "title": "David Tong, Classical Dynamics — Lagrangian Formalism",
+          "url": "https://www.damtp.cam.ac.uk/user/tong/dynamics/dynhtml/S2.html",
+          "used_for": [
+            "完整约束与非完整约束",
+            "循环坐标及守恒动量",
+            "拉格朗日方程",
+            "小振动简正坐标"
+          ]
+        },
+        {
+          "title": "David Tong, Classical Dynamics — Rigid Bodies",
+          "url": "https://www.damtp.cam.ac.uk/user/tong/dynamics/dynhtml/S3.html",
+          "used_for": [
+            "转动惯量张量",
+            "惯量主轴",
+            "欧拉角",
+            "欧拉动力学方程",
+            "进动与章动"
+          ]
+        },
+        {
+          "title": "David Tong, Classical Dynamics — Hamiltonian Formalism",
+          "url": "https://www.damtp.cam.ac.uk/user/tong/dynamics/dynhtml/S4.html",
+          "used_for": [
+            "哈密顿函数的勒让德变换定义",
+            "哈密顿正则方程符号"
+          ]
+        },
+        {
+          "title": "MIT OCW 18.03 Supplementary Notes",
+          "url": "https://ocw.mit.edu/courses/18-03-differential-equations-spring-2010/5bd84a2e02dece25f25b5e0606b30392_MIT18_03S10_sup.pdf",
+          "used_for": [
+            "对数减量取相邻同向峰值，间隔为一个阻尼周期",
+            "线性黏性阻尼的分类"
+          ]
+        },
+        {
+          "title": "MIT OCW 2.002 Creep and Viscoelasticity",
+          "url": "https://ocw.mit.edu/courses/2-002-mechanics-and-materials-ii-spring-2004/0278c01018c4f2281214a661d9c95c32_creep_viscoelast.pdf",
+          "used_for": [
+            "弱阻尼品质因数与每周期能量损失的关系"
+          ]
+        },
+        {
+          "title": "MIT OCW 3.185 Fluid Flow Notes",
+          "url": "https://ocw.mit.edu/courses/3-185-transport-phenomena-in-materials-engineering-fall-2003/a55c74dc21def01fc0054de35574d1e5_3_21.pdf",
+          "used_for": [
+            "斯托克斯阻力的小雷诺数条件",
+            "圆管层流速度分布"
+          ]
+        },
+        {
+          "title": "OpenStax, Viscosity and Laminar Flow; Poiseuille’s Law",
+          "url": "https://openstax.org/books/college-physics-2e/pages/12-4-viscosity-and-laminar-flow-poiseuilles-law",
+          "used_for": [
+            "泊肃叶定律",
+            "管半径四次方关系"
+          ]
+        },
+        {
+          "title": "北京师范大学《大学物理》：泊肃叶公式在非水平管中的形式",
+          "url": "https://dxwl.bnu.edu.cn/CN/article/downloadArticleFile.do?attachType=PDF&id=946",
+          "used_for": [
+            "压强差形式采用水平管；非水平管计入重力修正"
+          ]
+        },
+        {
+          "title": "教育部《重編國語辭典修訂本》：行列式",
+          "url": "https://dict.revised.moe.edu.tw/dictView.jsp?ID=82219&la=0&powerMode=0",
+          "used_for": [
+            "行列式的行读 háng；雅可比行列式同用该读音"
+          ]
+        },
+        {
+          "title": "教育部《國語辭典簡編本》：湍流",
+          "url": "https://dict.concised.moe.edu.tw/dictView.jsp?ID=11814&q=1",
+          "used_for": [
+            "湍读 tuān；词义另按流体力学语境编写"
+          ]
+        },
+        {
+          "title": "教育百科／国家教育研究院力学词典：乱流，紊流",
+          "url": "https://pedia.cloud.edu.tw/Entry/Detail?title=%E4%BA%82%E6%B5%81%EF%BC%8C%E7%B4%8A%E6%B5%81",
+          "used_for": [
+            "湍流的不规则速度脉动含义"
+          ]
+        },
+        {
+          "title": "教育部《重編國語辭典修訂本》：卷（juǎn）",
+          "url": "https://dict.revised.moe.edu.tw/dictView.jsp?ID=6151&la=0&powerMode=0",
+          "used_for": [
+            "卷的 juǎn 本调及与卷宗、试卷中 juàn 的区别；此页为单字依据"
+          ]
+        },
+        {
+          "title": "南京大学数字信号处理课程：信号的傅里叶级数",
+          "url": "https://www.lamda.nju.edu.cn/dsp2025/slides/04.pdf",
+          "used_for": [
+            "线性时不变系统中卷积、冲激响应与傅里叶表示的关系"
+          ]
+        },
+        {
+          "title": "教育部《國語辭典簡編本》：泊",
+          "url": "https://dict.concised.moe.edu.tw/dictView.jsp?ID=166&la=0&powerMode=0",
+          "used_for": [
+            "泊的 bó 音；湖泊对照采用大陆普通话 pō"
+          ]
+        },
+        {
+          "title": "教育部《重編國語辭典修訂本》：伯",
+          "url": "https://dict.revised.moe.edu.tw/dictView.jsp?ID=62",
+          "used_for": [
+            "伯的 bó 本调"
+          ]
+        }
+      ],
+      "self_review": {
+        "cards": 60,
+        "unique_terms": 60,
+        "exact_existing_duplicates": 0,
+        "all_six_fields_present": true,
+        "reading_syllables_match_term_characters": true,
+        "reading_tone_digits": "1—5；按字典本调记录，语流变调写在 flow。",
+        "examples_contain_exact_term": true,
+        "example_length_range": [
+          24,
+          47
+        ],
+        "punctuation_and_empty_fields_passed": true,
+        "physics_review": [
+          "区分广义变量的物理量纲。",
+          "哈密顿原理写驻值的一阶变分，未直接写全局最小值。",
+          "有效势明确固定角动量。",
+          "阻尼分类限定线性黏性阻尼，对数减量明确前后同向峰值。",
+          "惯量张量与欧拉方程采用质心或随体主轴语境。",
+          "伯努利方程包含不可压缩、理想流体、定常流及同一流线。",
+          "斯托克斯公式写小雷诺数与远离器壁，泊肃叶关系写水平圆管与充分发展层流。",
+          "中值定理给出闭区间连续、开区间可导，隐函数求导给出相关偏导非零。",
+          "单边拉普拉斯变换保留初值，卷积输出关系给出零初始状态。"
+        ],
+        "unresolved": [],
+        "symbol_reading_adjustment": "达朗贝尔原理的 flow 明确将 -m a 读作“负 m 乘 a”，m、a 按字母名自然接入中文，保留符号。"
+      }
+    }
+  }
+}

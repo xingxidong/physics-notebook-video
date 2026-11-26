@@ -9,6 +9,7 @@ from pathlib import Path
 import sqlite3
 import tempfile
 
+from learning_bundle import DB_REL, ROOT, REPORTS, clean_note
 from feedback_review import SCOPES, STATES, compare_audio, decide, decisions, replay
 
 KINDS = ('issues', 'polyphones', 'letters')
@@ -19,8 +20,7 @@ def database():
     override = os.environ.get('PHYSICS_NOTEBOOK_FEEDBACK_DB')
     if override:
         return Path(override).expanduser().resolve()
-    base = Path(os.environ.get('XDG_DATA_HOME') or Path.home() / '.local/share')
-    return base / 'physics-notebook-video/feedback.sqlite3'
+    return ROOT / DB_REL
 
 
 @lru_cache(maxsize=2)
@@ -31,13 +31,24 @@ def _snapshot(path, stamp):
         with closing(sqlite3.connect(path.as_uri() + '?mode=ro', uri=True, timeout=15)) as db:
             if not db.execute("SELECT 1 FROM sqlite_master WHERE name='reports'").fetchone():
                 return rules
-            for kind, key, payload in db.execute('SELECT kind, key, payload FROM reports ORDER BY id'):
+            for kind, key, payload in db.execute('SELECT kind, key, payload FROM reports ORDER BY received,id'):
                 values = json.loads(payload)
+                previous = rules[kind].get(key, {})
+                takeaway = values.get('takeaway')
+                if takeaway:
+                    reminders = list(dict.fromkeys([*previous.get('takeaways', []), takeaway]))
+                    previous = {**previous, 'key':key, 'takeaways':reminders}
+                    previous.setdefault('observed',takeaway)
+                    if kind=='letters':
+                        previous.setdefault('expected',values['expected'])
+                    rules[kind][key] = previous
                 if values.get('only_this_lesson'):
                     continue
-                previous = rules[kind].get(key, {})
                 if kind == 'polyphones' and 'expected' in values and values['expected'] != previous.get('expected'):
                     previous = {k:v for k,v in previous.items() if k != 'hint'}
+                if kind == 'polyphones' and values.get('focus'):
+                    known_focus = previous.get('focus_chars', previous.get('focus', ''))
+                    values['focus_chars'] = ''.join(dict.fromkeys(known_focus + values['focus']))
                 rules[kind][key] = {**previous, **values, 'key': key}
     return rules
 
@@ -51,7 +62,7 @@ def catalog():
     return _snapshot(path, (stat.st_ino, stat.st_size, stat.st_mtime_ns))
 
 
-def record(kind, key, observed, expected=None, lesson='', at='', scope=None, match=None, hint=None, source_type=None, minimum_minutes=None, only_this_lesson=False):
+def record(kind, key, observed, expected=None, lesson='', at='', scope=None, match=None, hint=None, source_type=None, minimum_minutes=None, only_this_lesson=False, focus=None, example=None, card_flow=None, card_reading=None, takeaway=None, failed_stage=None):
     from pronunciation import FREE_SYMBOL, HAN_TERM, SYLLABLE, symbol_reading
     key, observed = key.strip(), observed.strip()
     if kind not in KINDS or not key or not observed:
@@ -86,22 +97,41 @@ def record(kind, key, observed, expected=None, lesson='', at='', scope=None, mat
             if len(key) != len(syllables) or not all(SYLLABLE.fullmatch(s) for s in syllables):
                 raise ValueError('每个汉字对应一个带 1–5 声调号的拼音音节。')
             expected = ' '.join(syllables)
+    if focus and (kind != 'polyphones' or len(focus) != 1 or focus not in key or not HAN_TERM.fullmatch(focus)):
+        raise ValueError('focus 填这个词中实际读错的一个汉字。')
     if hint and (kind != 'polyphones' or not expected or not HAN_TERM.fullmatch(hint) or len(key) != len(hint)):
         raise ValueError('本地同音提示需要已确认拼音和等长汉字。')
-    values = {'observed':observed}
+    if kind == 'issues' and key.startswith('term-flow-') and match and (
+            len(match) < 2 or not HAN_TERM.fullmatch(match)):
+        raise ValueError('读音卡需要完整的中文词语。')
+    if card_reading or card_flow:
+        if kind != 'issues' or not key.startswith('term-flow-') or not match or not HAN_TERM.fullmatch(match):
+            raise ValueError('词卡连读反馈使用 term-flow-词语 和完整的 match。')
+        if card_reading:
+            parts = card_reading.lower().replace('v', 'ü').split()
+            if len(parts) != len(match) or not all(SYLLABLE.fullmatch(v) for v in parts):
+                raise ValueError('反馈词卡需要逐字带调拼音。')
+            card_reading = ' '.join(parts)
+    if example and (match or key) not in example and kind != 'letters':
+        raise ValueError('例句需要包含所反馈的原词。')
+    values = {'observed':clean_note(observed)}
+    if failed_stage:
+        from lesson_transfer import STAGES
+        if failed_stage not in STAGES:
+            raise ValueError('请选择实际查明的环节，尚未定位时选 unknown。')
+        values['failed_stage'] = failed_stage
+    if takeaway and takeaway.strip():
+        values['takeaway'] = clean_note(takeaway.strip())
     if only_this_lesson:
         values['only_this_lesson'] = True
-    for name, value in [('expected',expected), ('scope',scope), ('match',match), ('hint',hint), ('source_type',source_type), ('minimum_minutes',minimum_minutes)]:
+    for name, value in [('card_reading', card_reading), ('card_flow', card_flow), ('example', example), ('expected',expected), ('scope',scope), ('match',match), ('hint',hint), ('focus',focus), ('source_type',source_type), ('minimum_minutes',minimum_minutes)]:
         if value:
             values[name] = value
     payload = json.dumps(values, ensure_ascii=False, sort_keys=True)
     path = database()
     path.parent.mkdir(parents=True, exist_ok=True)
     with closing(sqlite3.connect(path, timeout=15)) as db, db:
-        db.execute('''CREATE TABLE IF NOT EXISTS reports (
-            id INTEGER PRIMARY KEY, kind TEXT NOT NULL, key TEXT NOT NULL, payload TEXT NOT NULL,
-            lesson TEXT NOT NULL, location TEXT NOT NULL, received TEXT DEFAULT CURRENT_TIMESTAMP,
-            UNIQUE(kind, key, payload, lesson, location))''')
+        db.execute(REPORTS)
         cursor = db.execute('INSERT OR IGNORE INTO reports(kind,key,payload,lesson,location) VALUES(?,?,?,?,?)',
                             (kind,key,payload,lesson,at))
         added = bool(cursor.rowcount)
@@ -117,7 +147,7 @@ def history(lesson=None):
         if not db.execute("SELECT 1 FROM sqlite_master WHERE name='reports'").fetchone():
             return []
         sql = 'SELECT kind,key,lesson,location,received,payload FROM reports'
-        rows = db.execute(sql + ' WHERE lesson=? ORDER BY id', (lesson,)) if lesson is not None else db.execute(sql + ' ORDER BY id')
+        rows = db.execute(sql + ' WHERE lesson=? ORDER BY received,id', (lesson,)) if lesson is not None else db.execute(sql + ' ORDER BY received,id')
         return [dict(bank=k,key=t,lesson=l,at=a,received=d,**json.loads(p)) for k,t,l,a,d,p in rows]
 
 
@@ -155,17 +185,45 @@ def applicable_issues(lesson, rules=None):
             and (not r.get('source_type') or r['source_type'] == lesson.get('source_type'))]
 
 
+def preparation(project,lesson):
+    """A teacher can open this before a manuscript or any audio exists."""
+    project=Path(project)
+    rules=lesson_catalog(lesson)
+    issues=applicable_issues(lesson,rules)
+    lines=['# 备课前先看','', '本课按这些已发生过的问题安排讲稿、板书和动画。','']
+    for issue in issues:
+        for note in dict.fromkeys([issue.get('expected') or issue['observed'], *issue.get('takeaways',[])]):
+            lines.append('- '+note)
+    lines.extend(['','## 配音前','',
+                  '写完讲稿后运行 feedback-check。按每个词和字母在本课的位置安排读法；正式音轨合成后听对应整句。',''])
+    (project/'备课提醒.md').write_text('\n'.join(lines),encoding='utf-8')
+    return {'issues':len(issues),'file':'备课提醒.md'}
+
+
 def check(project, lesson=None, enforce=False):
-    from pronunciation import local_tts_text, matched_pronunciations, spoken_symbols, term_pattern, PHYSICS_PINYIN
+    from pronunciation import local_tts_text, matched_pronunciations, spoken_symbols, term_pattern, PHYSICS_TERMS, PHYSICS_PINYIN, tone_targets, pronunciation_trial
     from speech_plan import apply
     project = Path(project).resolve()
     if lesson is None:
         lesson, _ = apply(project, json.loads((project/'lesson.json').read_text(encoding='utf-8')))
+    from term_inventory import apply as apply_inventory
+    lesson = apply_inventory(project,lesson)
     rules = lesson_catalog(lesson)
+    from term_flow import candidate_terms, identify, script_inventory, term_counts
+    from card_speech import lesson_inputs
+    occurrences = identify(lesson, rules=rules)
+    plans = lesson_inputs(lesson,occurrences)
+    prep=preparation(project,lesson)
     mode = lesson.get('kind', 'all')
     applicable = applicable_issues(lesson, rules)
     manual = [r for r in applicable if not r.get('match')]
-    hits, findings = [], []
+    hits, findings, tones = [], [], []
+    conflict_file=Path(__file__).resolve().parents[1]/'assets/learning/reference-conflicts.json'
+    if conflict_file.is_file():
+        pending=[r for r in json.loads(conflict_file.read_text()) if r.get('status')=='pending']
+        if pending:
+            findings.append(dict(key='learning-conflict',severity='error',page=None,cue=None,
+                message='随行学习资料有两份独立修改待合并，请查看 assets/learning/reference-conflicts.json，核实并合并词义、读法与教学记录后再配音。'))
     speech = lesson.get('speech', {})
     pattern = term_pattern(rules['polyphones'])
     for i, page in enumerate(lesson.get('pages', []), 1):
@@ -179,9 +237,25 @@ def check(project, lesson=None, enforce=False):
         for cue in page.get('cues', []):
             cid = cue['id']
             text = cue.get('tts', cue.get('text',''))
+            plan = plans[str(page.get('id',i)),str(cid)]
+            for term in plan['conflicts'] + (plan['provider_exclusions'] if speech.get('backend')=='minimax' else []):
+                flag(term, f'同一句中的“{term}”需要在 speech.term_uses 指定可区分的配音词形 spoken_as。',cid,'error')
+            cue_tones = tone_targets(text, speech.get('minimax_pronunciation'), cue.get('minimax_pronunciation'),plan['targets'])
+            tones.extend(dict(page=pid, cue=cid, context=text, **item) for item in cue_tones)
+            for item in cue_tones:
+                for c in item['conflicts']:
+                    flag(c['word'], f"“{c['word']}”中的“{c['char']}”应读 {c['expected']}，"
+                         f"本句的“{item['term']}”配置为 {c['configured']}。", cid, 'error')
+            if speech.get('minimax_pronunciation') or cue.get('minimax_pronunciation'):
+                configured = matched_pronunciations(text, speech.get('minimax_pronunciation'), cue.get('minimax_pronunciation'))
+                already = {c['word'] for row in cue_tones for c in row['conflicts']}
+                for term, actual in configured.items():
+                    expected = PHYSICS_TERMS.get(term)
+                    if term not in already and term not in rules['polyphones'] and expected and actual.replace('v','ü') != expected.replace('v','ü'):
+                        flag(term, f'“{term}”在本句配置为 {actual}，学科词表读 {expected}。', cid, 'error')
             for rule in applicable:
                 phrases = [rule['match']] if rule.get('match') else rule.get('review_phrases', ())
-                if any(phrase in text for phrase in phrases):
+                if any(term_pattern([phrase]).search(text) for phrase in phrases):
                     flag(rule['key'], rule.get('expected') or rule['observed'], cid)
             matches = list(pattern.finditer(text))
             if matches:
@@ -189,6 +263,7 @@ def check(project, lesson=None, enforce=False):
                 segments = list(term_pattern(resolved).finditer(text)) if resolved else []
                 default_input = local_tts_text(text, resolved)
                 selected_input = local_tts_text(text, resolved, speech.get('plain_pronunciation'), cue.get('plain_pronunciation'))
+            located = {c['offset'] for row in cue_tones for c in row['conflicts']}
             reported = set()
             for m in matches:
                 key = m.group()
@@ -196,14 +271,19 @@ def check(project, lesson=None, enforce=False):
                 word = next((w for w in segments if w.start() <= m.start() and w.end() >= m.end()), None)
                 ambiguous = rules['polyphones'][key].get('context_required') and (
                     word is None or word.group() == key or word.group() not in PHYSICS_PINYIN)
+                choice = next((r for r in plan['targets'] if r['term']==key and r['offset']==m.start()
+                               and r.get('reading_source')),None)
+                if choice:
+                    expected, ambiguous = choice['expected'], False
                 hits.append(dict(bank='polyphones',key=key,expected=None if ambiguous else expected,
                                  page=pid,cue=cid,context=text,
                                  **({'context_note':'结合原句确认物理义项，矢量分量读 '+expected} if ambiguous and expected else {})))
-                if expected and word and not ambiguous:
+                if expected and word and not ambiguous and not choice:
                     pos = m.start() - word.start()
                     actual = ' '.join(resolved[word.group()].split()[pos:pos+len(key)])
                     marker = (key, word.group(), actual)
-                    if actual.replace('v','ü') != expected.replace('v','ü') and marker not in reported:
+                    if (not any(index in located for index in range(m.start(), m.end()))
+                            and actual.replace('v','ü') != expected.replace('v','ü') and marker not in reported):
                         flag(key,f'“{word.group()}”配置的 {actual} 与反馈库 {expected} 有冲突。',cid,'error')
                         reported.add(marker)
                 selection = slice(m.start(),m.end())
@@ -227,12 +307,56 @@ def check(project, lesson=None, enforce=False):
                         else:
                             if 0 < tempo < .999:
                                 flag('pacing','已选用经过降速的录音，请换回对应的原速录音。',cid,'error')
-    result = {'kind':mode, 'catalog_counts':{k:len(v) for k,v in rules.items()},
-              'manual_checks':manual, 'listen':hits, 'findings':findings,
+    from classroom_terms import learning_cards
+    for row in occurrences:
+        if row['split_in_script']:
+            findings.append(dict(key='term-flow-split', severity='error', page=row['page'], cue=row['cue'],
+                                 message=f"“{row['term']}”被切开。请将完整术语放在同一条口播中：{row['text']}"))
+    missing_readings = {}
+    for row in occurrences:
+        if not row['expected']:
+            missing_readings.setdefault(row['term'], []).append(row['id'])
+    for term, locations in missing_readings.items():
+        findings.append(dict(key='term-reading-needed', severity='error',
+                             message=f'“{term}”出现 {len(locations)} 次，需要按本课语境在 speech.physics_terms 补全拼音。'))
+    script_rows = script_inventory(lesson,occurrences)
+    if lesson.get('term_inventory_version',1)>=2:
+        for row in script_rows:
+            if not row['reviewed']:
+                findings.append(dict(key='semantic-inventory-pending',severity='error',page=row['page'],cue=row['cue'],
+                    message='制作端须对照这句完整口播和板书盘点物理术语，记录词义与读法；空的补词列表不作为完成记录。'))
+    candidates = candidate_terms(lesson,occurrences,script_rows)
+    for term,locations in candidates.items():
+        findings.append(dict(key='term-candidate',severity='review',page=locations[0]['page'],cue=locations[0]['cue'],
+            message=f'“{term}”可能是新术语，按原句补入 speech.physics_terms；本课中的普通短语可记入 speech.non_terms。'))
+    from speech_context import inventory
+    priority = {r['term'] for r in occurrences if r['priority']}
+    classroom_sentences = [r for r in inventory(lesson, priority=priority) if r['targets']]
+    for hit in hits:
+        reminders=rules[hit['bank']][hit['key']].get('takeaways',[])
+        if reminders:
+            hit['listen_for']=reminders
+    from lesson_transfer import classroom_checks, attach_retests
+    result = {'preparation':prep,'speech_context':classroom_sentences, 'kind':mode, 'catalog_counts':{k:len(v) for k,v in rules.items()},
+              'learning_checks':classroom_checks(lesson,occurrences,plans,applicable,history()),
+              'physics_terms':term_counts(occurrences), 'term_occurrences':occurrences,
+              'terms_needing_readings':missing_readings, 'term_candidates':candidates,
+              'synthesis_targets':[dict(page=p,cue=c,**plan) for (p,c),plan in plans.items()],
+              'term_script_inventory':script_rows,'classroom_cards':learning_cards(occurrences),
+              'manual_checks':manual, 'listen':hits, 'tone_targets':tones, 'pronunciation_trial':pronunciation_trial(tones), 'findings':findings,
               'replay':replay(lesson, applicable, hits, findings),
               'status':'blocked' if any(x['severity']=='error' for x in findings) else 'review'}
+    from trial_materials import build_plan, lesson_stamp
+    attach_retests(result['learning_checks'],database().resolve())
+    trials = build_plan(lesson=lesson, max_extra=12)
+    trials.update(project=str(project.resolve()), lesson_files=lesson_stamp(project))
+    save_report(project/'voice-trial-plan.json', trials)
+    result['voice_trials'] = {'plan':'voice-trial-plan.json','sentences':len(trials['items']),
+        'deferred':len(trials['coverage']['deferred']),
+        'needs_material':len(trials['coverage']['needs_material']),
+        'final_occurrence_review_required':True}
     save_report(project/'feedback-check.json', result)
-    if enforce and result['status']=='blocked':
+    if enforce and (result['status']=='blocked' or candidates):
         raise ValueError('历史反馈检查发现可定位的错误，请查看 feedback-check.json。')
     return result
 
@@ -242,8 +366,20 @@ def main():
     cmds = p.add_subparsers(dest='cmd', required=True)
     r = cmds.add_parser('record')
     r.add_argument('kind',choices=KINDS)
-    for arg in ['key','observed','expected','lesson','at','scope','match','hint']:
+    for arg in ['key','observed','expected','lesson','at','scope','match','hint','focus']:
         r.add_argument('--'+arg, required=arg in ('key','observed'))
+    r.add_argument('--takeaway',help='下次遇到同类内容时，具体检查什么')
+    from lesson_transfer import STAGES
+    r.add_argument('--failed-stage',choices=STAGES,help='复查定位到问题第一次出现的环节')
+    r.add_argument('--example')
+    r.add_argument('--card-flow')
+    r.add_argument('--card-reading')
+    learn = cmds.add_parser('record-term', help='记录整词反馈，供新课的读音卡直接使用')
+    learn.add_argument('term')
+    learn.add_argument('--observed', required=True)
+    for option in ('example','reading','flow','lesson','at','takeaway'):
+        learn.add_argument('--'+option)
+    learn.add_argument('--failed-stage',choices=STAGES)
     r.add_argument('--source-type', choices=['article'])
     r.add_argument('--minimum-minutes', type=float)
     r.add_argument('--only-this-lesson', action='store_true')
@@ -258,16 +394,38 @@ def main():
     for name in ('key', 'action', 'evidence', 'before', 'example', 'lesson', 'model', 'reference-sha256', 'sample'):
         review.add_argument('--'+name, required=name in ('key', 'action', 'evidence'))
     cmds.add_parser('reviews', help='按时间显示本地修订历史和样本')
+    cmds.add_parser('trial-audit',help='列出各项最新状态，以及该版本改法的跨课复试')
+    retest=cmds.add_parser('retest',help='用另一课的真实材料记录复试结果')
+    retest.add_argument('--decision-id',type=int,required=True)
+    for name in ('lesson','text','method','outcome','evidence','sample','model','voice-sha256','actual-input'):
+        retest.add_argument('--'+name,required=name in ('lesson','text','method','outcome','evidence'))
     cmds.add_parser('list')
+    bridge=cmds.add_parser('import-learning',help='合并已有的制课学习记录及试听片段')
+    bridge.add_argument('source',type=Path)
     cmds.add_parser('history')
     args = vars(p.parse_args())
     cmd = args.pop('cmd')
-    if cmd == 'record':
+    if cmd == 'record-term':
+        term = args.pop('term')
+        result = record('issues','term-flow-'+term, args['observed'], match=term, example=args['example'],
+                        card_reading=args['reading'],card_flow=args['flow'],takeaway=args.get('takeaway'),lesson=args['lesson'] or '',at=args['at'] or '',failed_stage=args.get('failed_stage'))
+    elif cmd == 'record':
         result = record(**{k:v for k,v in args.items() if v is not None})
+    elif cmd == 'import-learning':
+        from learning_bundle import merge
+        if not args['source'].is_file():
+            raise FileNotFoundError(args['source'])
+        result=merge(args['source'],database())
     elif cmd == 'compare-audio':
         result = compare_audio(**args)
     elif cmd == 'decide':
         result = decide(**{k:v for k,v in args.items() if v is not None})
+    elif cmd == 'trial-audit':
+        from lesson_transfer import trial_audit
+        result=trial_audit(database().resolve())
+    elif cmd == 'retest':
+        from lesson_transfer import record_retest
+        result=record_retest(database().resolve(),**{k:v for k,v in args.items() if v is not None})
     elif cmd == 'reviews':
         result = decisions(database().resolve())
     else:

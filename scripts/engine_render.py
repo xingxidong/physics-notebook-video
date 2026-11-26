@@ -53,6 +53,7 @@ def render(project,data,font,width,engine,runtime=None,preview=False,audio_file=
     project=Path(project).resolve();runtime=runtime_path(runtime);info=versions(engine,runtime)
     root=project/'cache'/'video'/engine;root.mkdir(parents=True,exist_ok=True)
     sources=[ROOT/'scripts/engine_render.py',ROOT/'scripts/models.py',ROOT/'scripts/pursuit.py',ROOT/'scripts/cards.py',ROOT/'scripts/course.py',ROOT/'scripts/layout.py',ROOT/'scripts/board_flow.py',ROOT/'scripts/lesson_review.py',ROOT/'scripts/components.py',ROOT/'scripts/scene_events.py']
+    sources.append(ROOT/'scripts/incline_motion.py')
     sources += list((ROOT/'scripts/motion_canvas').glob('*')) if engine=='motion-canvas' else [ROOT/'scripts/manim_renderer.py']
     fingerprint=digest(b''.join(p.read_bytes() for p in sorted(sources) if p.is_file())+font.read_bytes())
     keys=[];new=reused=0

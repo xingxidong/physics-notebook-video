@@ -1,0 +1,9 @@
+\begin{tikzpicture}[>=stealth]
+\coordinate (D) at (0,0); \coordinate (F) at (3.5,2);
+\draw[dashed] (D)--(3.5,0)--(F);
+\draw[blue,thick] (D)--node[above]{$r$}(F);
+\draw[->] (F)--++(1.2,0) node[right]{$v_F$};
+\draw[->,thick] (D)--(1.1,.63) node[above left]{$v_D$};
+\fill (D)circle(1.5pt) node[left]{$D$};\fill (F)circle(1.5pt) node[above]{$F$};
+\draw (.8,0) arc (0:30:.8) node[right]{$\theta$};\node at (1.75,-.28){$x$};
+\end{tikzpicture}

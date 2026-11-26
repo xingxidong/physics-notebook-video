@@ -1,0 +1,11 @@
+{
+  "file": "public-reference.wav",
+  "text": "沿着斜面向下取正方向，重力的切向分量让物块加速。",
+  "model": "mlx-community/Kokoro-82M-bf16",
+  "revision": "a71e4d38b236d968966a2002c4c895dbd12b1c3c",
+  "voice": "zm_yunxi",
+  "speed": 1,
+  "personal_voice_reference": false,
+  "sha256": "95c41f0efde19a6158747e92506ebf044b1e036be3c3ac75539ec85154155c20",
+  "quality_status": "synthetic_comparison_not_teacher_gold"
+}

@@ -1,8 +1,10 @@
 import json
+import os
 from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 import wave
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -21,7 +23,9 @@ class TerminologyReviewTests(unittest.TestCase):
         cue = {'id': 'phase', 'tts': '相位差等于两个相位相减。', 'start': 1, 'end': 4,
                'words': words, 'minimax_tone_entries': ['相位/(xiang1)(wei4)']}
         data = {'pages': [{'id': 'p2', 'start': 20, 'cues': [cue]}]}
-        review, warnings = inspect_terminology(data)
+        # This fixture asserts the bundled vocabulary independently of the teacher’s local feedback.
+        with tempfile.TemporaryDirectory() as tmp, patch.dict(os.environ, PHYSICS_NOTEBOOK_FEEDBACK_DB=str(Path(tmp)/'feedback.db')):
+            review, warnings = inspect_terminology(data)
         self.assertEqual([w['code'] for w in warnings], ['term-tone-conflict'] * 2)
         self.assertEqual(review['status'], 'pending_listening')
         first, second = review['items']
@@ -45,7 +49,9 @@ class TerminologyReviewTests(unittest.TestCase):
                 wav.setparams((1, 2, 24000, 0, 'NONE', 'not compressed'))
                 wav.writeframes(b'\x08\x10' * 48000)
             report = audit(root)
-            term, = report['terminology']['items']
+            terms = {item['term']: item for item in report['terminology']['items']}
+            self.assertIn('感应', terms)
+            term = terms['相干']
             self.assertEqual((term['term'], term['timing'], term['start'], term['end']),
                              ('相干', 'cue', .5, 1.5))
             self.assertTrue(any(w['code'] == 'physics-term-spelling' for w in report['warnings']))

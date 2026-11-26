@@ -16,6 +16,14 @@ python3 scripts/platform_install.py verify physics-notebook-video.zip --target u
 
 `install` 在目标目录已存在时停止；显式传入 `--update` 才合并更新。更新保留本机的 `.env` 和 `runtime-local.json`。需要自定义位置时使用 `--dest /absolute/path/physics-notebook-video`。
 
+## 随技能安装本地配音
+
+在 Apple Silicon Mac 上，用 macOS 26 或更新版本和原生 arm64 Python 3.11+ 运行 `install`。安装器复制技能后会建立独立的 MLX 环境，下载并验证 **Qwen3-TTS 0.6B Base 8-bit**，模型约 2 GB。已经下载同一版本会复用缓存。Codex 和 Claude Code 共用本机的模型与配音环境。首次下载需要联网，实际合成在本机运行。
+
+- 从宿主界面导入 ZIP，或直接把技能目录放进宿主时，进入技能目录运行一次 `python3 scripts/platform_install.py local-voice`。下载中断也用这条命令继续。
+- `install --skip-local-voice` 仅安装技能。其他系统仍可安装和使用技能，按宿主可用能力选择已有录音或自行配置其他配音后端。
+- 已装好本地模型后，新建课程默认选 `qwen`。随包提供一条合成试音参考，老师可换成自己的录音及逐字文字。已有课程可用 `--backend qwen` 选择本地配音，保留原来设置的个人音色。[本地音色配置](voice.md#本地-qwen-配音)
+
 ## Codex
 
 用户级默认安装到 `$CODEX_HOME/skills/physics-notebook-video`；未设置 `CODEX_HOME` 时使用 `~/.codex/skills/physics-notebook-video`。项目级安装使用：
@@ -63,6 +71,7 @@ python3 scripts/platform_install.py install --target agents --dest /absolute/cap
 
 - `.env` 和 API Key；
 - `runtime-local.json` 和机器绝对路径；
+- 本地配音权重及其 Python 环境由安装器下载和创建；
 - `cache/`、`node_modules/`、`__pycache__/` 和已生成视频。
 
 各使用者在自己的课程目录或宿主凭据管理中配置 TTS 与模型密钥。

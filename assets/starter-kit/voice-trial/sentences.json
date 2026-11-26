@@ -1,0 +1,333 @@
+{
+  "version": 1,
+  "purpose": "换模型和音色时复用同一组完整课堂句；合成参考音不充当教师标准答案。",
+  "items": [
+    {
+      "id": "measure",
+      "text": "先沿着斜面测量长度，再写出这个物理量的单位。",
+      "targets": [
+        {
+          "term": "测量",
+          "offset": 5,
+          "pinyin": "ce4 liang2",
+          "sense": "测量动作"
+        },
+        {
+          "term": "长度",
+          "offset": 7,
+          "pinyin": "chang2 du4",
+          "sense": "长短"
+        },
+        {
+          "term": "物理量",
+          "offset": 15,
+          "pinyin": "wu4 li3 liang4",
+          "sense": "量名"
+        }
+      ],
+      "flow": "测量、长度、物理量各自连读；逗号处换气。",
+      "reference_audio": "audio/measure.mp3",
+      "reference_status": "synthetic_comparison_only",
+      "judgment": "pending"
+    },
+    {
+      "id": "components",
+      "text": "把速度分成切向分量和法向分量，再用点乘求出切向分量。",
+      "targets": [
+        {
+          "term": "切向分量",
+          "offset": 5,
+          "pinyin": "qie1 xiang4 fen1 liang4",
+          "sense": "切线方向的分量"
+        },
+        {
+          "term": "切向分量",
+          "offset": 21,
+          "pinyin": "qie1 xiang4 fen1 liang4",
+          "sense": "切线方向的分量"
+        },
+        {
+          "term": "法向分量",
+          "offset": 10,
+          "pinyin": "fa3 xiang4 fen1 liang4",
+          "sense": "法线方向的分量"
+        },
+        {
+          "term": "点乘",
+          "offset": 17,
+          "pinyin": "dian3 cheng2",
+          "sense": "矢量运算"
+        }
+      ],
+      "flow": "每个术语内部连续；同一句的三处分量分别检查。",
+      "reference_audio": "audio/components.mp3",
+      "reference_status": "synthetic_comparison_only",
+      "judgment": "pending"
+    },
+    {
+      "id": "vector",
+      "text": "写出位置矢量，再把力与位矢叉乘，得到力矩。",
+      "targets": [
+        {
+          "term": "位置矢量",
+          "offset": 2,
+          "pinyin": "wei4 zhi4 shi3 liang4",
+          "sense": "位置向量"
+        },
+        {
+          "term": "位矢",
+          "offset": 11,
+          "pinyin": "wei4 shi3",
+          "sense": "位置向量"
+        },
+        {
+          "term": "叉乘",
+          "offset": 13,
+          "pinyin": "cha1 cheng2",
+          "sense": "向量积"
+        },
+        {
+          "term": "力矩",
+          "offset": 18,
+          "pinyin": "li4 ju3",
+          "sense": "力的矩"
+        }
+      ],
+      "flow": "位置矢量与位矢整词读，叉乘后自然接运算结果。",
+      "reference_audio": "audio/vector.mp3",
+      "reference_status": "synthetic_comparison_only",
+      "judgment": "pending"
+    },
+    {
+      "id": "charge",
+      "text": "数密度乘元电荷，得到电荷密度；再看电偶极矩的方向。",
+      "targets": [
+        {
+          "term": "数密度",
+          "offset": 0,
+          "pinyin": "shu4 mi4 du4",
+          "sense": "单位体积粒子数"
+        },
+        {
+          "term": "电荷",
+          "offset": 5,
+          "pinyin": "dian4 he4",
+          "sense": "电荷"
+        },
+        {
+          "term": "电荷",
+          "offset": 10,
+          "pinyin": "dian4 he4",
+          "sense": "电荷"
+        },
+        {
+          "term": "偶极矩",
+          "offset": 18,
+          "pinyin": "ou3 ji2 ju3",
+          "sense": "偶极强度"
+        }
+      ],
+      "flow": "数密度、电荷密度整体读，分号处稍停。",
+      "reference_audio": "audio/charge.mp3",
+      "reference_status": "synthetic_comparison_only",
+      "judgment": "pending"
+    },
+    {
+      "id": "phase",
+      "text": "两个振动的相位差固定，角频率差等于零。",
+      "targets": [
+        {
+          "term": "相位差",
+          "offset": 5,
+          "pinyin": "xiang4 wei4 cha1",
+          "sense": "两相位相减"
+        },
+        {
+          "term": "角频率差",
+          "offset": 11,
+          "pinyin": "jiao3 pin2 lü4 cha1",
+          "sense": "两角频率相减"
+        }
+      ],
+      "flow": "差接在整个量名之后，词内不重新起音。",
+      "reference_audio": "audio/phase.mp3",
+      "reference_status": "synthetic_comparison_only",
+      "judgment": "pending"
+    },
+    {
+      "id": "count",
+      "text": "从左边数三个波峰，再比较波数的大小。",
+      "targets": [
+        {
+          "term": "数",
+          "offset": 3,
+          "pinyin": "shu3",
+          "sense": "数波峰"
+        },
+        {
+          "term": "数",
+          "offset": 13,
+          "pinyin": "shu3",
+          "sense": "数波峰"
+        },
+        {
+          "term": "波数",
+          "offset": 12,
+          "pinyin": "bo1 shu4",
+          "sense": "每单位长度相位变化"
+        }
+      ],
+      "flow": "动词数与量名波数分开判读。",
+      "reference_audio": "audio/count.mp3",
+      "reference_status": "synthetic_comparison_only",
+      "judgment": "pending"
+    },
+    {
+      "id": "case-r",
+      "text": "用大写 R 表示轨道半径，小写 r 表示此刻的位置矢量。",
+      "targets": [],
+      "flow": "R、r 都读 /ɑːr/；大小写由汉语说明，不靠造出两种字母音。",
+      "reference_audio": "audio/case-r.mp3",
+      "reference_status": "synthetic_comparison_only",
+      "judgment": "pending"
+    },
+    {
+      "id": "mixed-q",
+      "text": "水平分量是 u 乘 q，竖直分量是负 v 乘 q。",
+      "targets": [
+        {
+          "term": "分量",
+          "offset": 2,
+          "pinyin": "fen1 liang4",
+          "sense": "矢量投影"
+        },
+        {
+          "term": "分量",
+          "offset": 14,
+          "pinyin": "fen1 liang4",
+          "sense": "矢量投影"
+        }
+      ],
+      "flow": "按 u /juː/、q /kjuː/、v /viː/、q /kjuː/ 的顺序；每个字母整体融入中文。",
+      "reference_audio": "audio/mixed-q.mp3",
+      "reference_status": "synthetic_comparison_only",
+      "judgment": "pending"
+    },
+    {
+      "id": "subscript",
+      "text": "初速度记作 v 下标零，位置记作 x，下一个位置记作 x 下标一。",
+      "targets": [],
+      "flow": "v /viː/、x /ɛks/ 完整收尾；下标两字连读，符号和数字之间无额外元音。",
+      "reference_audio": "audio/subscript.mp3",
+      "reference_status": "synthetic_comparison_only",
+      "judgment": "pending"
+    },
+    {
+      "id": "letters",
+      "text": "把 m 乘 a 写在左边，把 F 写在右边，再代入 k 和 s。",
+      "targets": [],
+      "flow": "m /ɛm/，a /eɪ/，F /ɛf/，k /keɪ/，s /ɛs/；不使用汉字谐音拆成独立字。",
+      "reference_audio": "audio/letters.mp3",
+      "reference_status": "synthetic_comparison_only",
+      "judgment": "pending"
+    },
+    {
+      "id": "w-z",
+      "text": "沿 z 轴看转动，功记作 W，时间记作 t。",
+      "targets": [],
+      "flow": "z /ziː/，W /ˈdʌbəljuː/，t /tiː/；W 整体连读。",
+      "reference_audio": "audio/w-z.mp3",
+      "reference_status": "synthetic_comparison_only",
+      "judgment": "pending"
+    },
+    {
+      "id": "e-p",
+      "text": "元电荷 e 乘电场振幅 E 下标零，频率的下标记作 p。",
+      "targets": [],
+      "flow": "e、E 都读 /iː/，由量名区分；p /piː/ 不加入额外音节。",
+      "reference_audio": "audio/e-p.mp3",
+      "reference_status": "synthetic_comparison_only",
+      "judgment": "pending"
+    },
+    {
+      "id": "greek",
+      "text": "角频率记作欧米伽，倾角记作西塔，初位移记作克西下标零。",
+      "targets": [
+        {
+          "term": "欧米伽",
+          "offset": 5,
+          "pinyin": "ou1 mi3 ga1",
+          "sense": "omega"
+        },
+        {
+          "term": "西塔",
+          "offset": 13,
+          "pinyin": "xi1 ta3",
+          "sense": "theta"
+        },
+        {
+          "term": "初位移",
+          "offset": 16,
+          "pinyin": "chu1 wei4 yi2",
+          "sense": "初始位移"
+        }
+      ],
+      "flow": "欧米伽、西塔、初位移整体连读；字母名结束后再接下标。",
+      "reference_audio": "audio/greek.mp3",
+      "reference_status": "synthetic_comparison_only",
+      "judgment": "pending"
+    },
+    {
+      "id": "reading-row",
+      "text": "先把上一行等式相减，再把分子展开，累加各段的位移。",
+      "targets": [
+        {
+          "term": "上一行",
+          "offset": 2,
+          "pinyin": "shang4 yi1 hang2",
+          "sense": "一行算式"
+        },
+        {
+          "term": "相减",
+          "offset": 7,
+          "pinyin": "xiang1 jian3",
+          "sense": "减法"
+        },
+        {
+          "term": "分子",
+          "offset": 12,
+          "pinyin": "fen1 zi3",
+          "sense": "分式分子"
+        },
+        {
+          "term": "累加",
+          "offset": 17,
+          "pinyin": "lei3 jia1",
+          "sense": "逐项相加"
+        }
+      ],
+      "flow": "分子、累加整体说；句内一的实际变调按汉语语流判断。",
+      "reference_audio": "audio/reading-row.mp3",
+      "reference_status": "synthetic_comparison_only",
+      "judgment": "pending"
+    },
+    {
+      "id": "join-a",
+      "text": "把两个受力方向标在图上。沿斜面列式，得到加速度。",
+      "targets": [],
+      "flow": "两句之间有自然句界；没有碰声、重复起音或空白拖长。",
+      "reference_audio": "audio/join-a.mp3",
+      "reference_status": "synthetic_comparison_only",
+      "judgment": "pending"
+    },
+    {
+      "id": "join-b",
+      "text": "加速度已经求出。接下来把它代入速度和位移的关系，算出末速度。",
+      "targets": [],
+      "flow": "与上一条串听；句间保留自然过渡，不在速度和位移中途停顿。",
+      "reference_audio": "audio/join-b.mp3",
+      "reference_status": "synthetic_comparison_only",
+      "judgment": "pending"
+    }
+  ]
+}

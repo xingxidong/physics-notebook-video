@@ -1,0 +1,68 @@
+{
+  "s1": {
+    "question": "间距怎样变化？",
+    "spoken_anchor": "两者相减，就是距离的变化率。",
+    "requires_visible": [],
+    "handout_label": "eq:s1"
+  },
+  "s2": {
+    "question": "水平领先量怎样变化？",
+    "spoken_anchor": "减去绿点的水平分量",
+    "requires_visible": [
+      "r-projection"
+    ],
+    "handout_label": "eq:s2"
+  },
+  "s3": {
+    "question": "第一式乘什么系数？",
+    "spoken_anchor": "第一式乘追逐点速率",
+    "requires_visible": [
+      "r-projection",
+      "x-projection"
+    ],
+    "handout_label": "eq:s3"
+  },
+  "s4": {
+    "question": "第二式乘什么系数？",
+    "spoken_anchor": "第二式乘目标点速率",
+    "requires_visible": [
+      "r-projection",
+      "x-projection"
+    ],
+    "handout_label": "eq:s4"
+  },
+  "s5": {
+    "question": "加权相加后留下哪两项？",
+    "spoken_anchor": "把这两行相加",
+    "requires_visible": [
+      "multiply-r",
+      "multiply-x"
+    ],
+    "handout_label": "eq:s5"
+  },
+  "s6": {
+    "question": "速率为什么能移进时间导数？",
+    "spoken_anchor": "距离的导数",
+    "requires_visible": [
+      "cancel-angle"
+    ],
+    "handout_label": "eq:s6"
+  },
+  "s7": {
+    "question": "水平差这一项怎样写？",
+    "spoken_anchor": "水平差那一项也一样",
+    "requires_visible": [
+      "cancel-angle"
+    ],
+    "handout_label": "eq:s7"
+  },
+  "s8": {
+    "question": "两个导数怎样合并？",
+    "spoken_anchor": "合成和的导数",
+    "requires_visible": [
+      "constant-r",
+      "constant-x"
+    ],
+    "handout_label": "eq:s8"
+  }
+}

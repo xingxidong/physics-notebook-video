@@ -1,0 +1,482 @@
+{
+  "planning_version": 1,
+  "title": "角动量定理、中心力与径向运动",
+  "audience": "已学牛顿定律、矢量叉乘、求导、积分、机械能",
+  "main_question": "同样大小的力，为什么在门把手处推更容易？",
+  "target_minutes": 180,
+  "prior_knowledge": [
+    {
+      "id": "prior",
+      "description": "已学牛顿定律、矢量叉乘、求导、积分、机械能"
+    }
+  ],
+  "objectives": [
+    {
+      "id": "o1",
+      "outcome": "画出力臂和动量臂，计算平面角动量并判断正负。"
+    },
+    {
+      "id": "o2",
+      "outcome": "逐项求导推出角动量定理，并由给定力矩算角动量的改变量。"
+    },
+    {
+      "id": "o3",
+      "outcome": "由零力矩推出面积速度恒定，分别比较两处的角速度和切向速度。"
+    },
+    {
+      "id": "o4",
+      "outcome": "从能量图读出径向可达范围、转折点与径向稳定的圆轨道。"
+    },
+    {
+      "id": "o5",
+      "outcome": "由发射条件求近远地点和速度比，并在图上指出初始点。"
+    },
+    {
+      "id": "o6",
+      "outcome": "以小孔为取矩点说明角动量守恒，再用功解释初末动能差。"
+    }
+  ],
+  "units": [
+    {
+      "id": "u01",
+      "focus": "推门时，力臂从哪里量",
+      "opening": "同样大小的力，为什么在门把手处推更容易？",
+      "intro_question": "同样大小的力，为什么在门把手处推更容易？",
+      "reasoning": "画出推力的作用线，从门轴 O 向作用线作垂线。改变施力点，看垂距怎样变。把直线运动质点的动量画成另一支箭头，用相同的几何关系写出 Lz=xpy-ypx。",
+      "board_statement": "τO=r×F；LO=r×p；平面分量 Lz=xpy-ypx。",
+      "handoff": "角动量的正负已经能从图上判断。质点受力后，位置和动量都在变，角动量变化得有多快？",
+      "needs": [
+        "prior"
+      ],
+      "objective_ids": [
+        "o1"
+      ],
+      "minutes": 30.0,
+      "diagram": {
+        "scene": "画门的俯视图和质点的直线运动图。分别标清从 O 作出的垂线与垂距。",
+        "labels": [
+          "O",
+          "r",
+          "F",
+          "d",
+          "p",
+          "b"
+        ]
+      },
+      "application": {
+        "question": "质量 m 的质点沿 y=b 的直线以速度 v 向右运动，对原点的角动量是多少？",
+        "expected_answer": "Lz=-mbv。大小为 mvb，方向按右手定则。"
+      },
+      "key_point": "τO=r×F；LO=r×p；平面分量 Lz=xpy-ypx。",
+      "difficulty": {
+        "obstacle": "把 r 当成力臂",
+        "treatment": "在同一图上并排保留位置矢量与力臂。施力点沿作用线移动时，垂距保持原长度。"
+      },
+      "board_pages": [
+        {
+          "id": "p01",
+          "goal": "推门时，力臂从哪里量",
+          "retain": [
+            "O",
+            "r",
+            "F",
+            "d",
+            "p",
+            "b"
+          ],
+          "derivations": [
+            "τ=Fd",
+            "Lz=xpy-ypx"
+          ],
+          "from_page": ""
+        }
+      ],
+      "source_locator": {
+        "teacher_notes": "competition-180.md#u01",
+        "handout_pages_to_fill": "替换为本课使用的教材页码"
+      },
+      "teaching_minutes": {
+        "读图与提出问题": 6.0,
+        "推导与概念展开": 15.0,
+        "例题和应用判断": 6.0,
+        "结论落笔与承接": 3.0
+      },
+      "sample_narration": "把力的箭头延长。门轴到这条线的垂直距离就是力臂。右边的图也从 O 作垂线，量到的是动量箭头所在的直线。"
+    },
+    {
+      "id": "u02",
+      "focus": "角动量变化得有多快",
+      "opening": "怎样从质点受到的力求角动量的变化率？",
+      "intro_question": "怎样从质点受到的力求角动量的变化率？",
+      "reasoning": "在惯性系中取固定点 O。对 r×p 求导时，把 r 和 p 各求导一次，完整写出两项。质量恒定时，速度和动量同向，第一项为零。将第二项的 dp/dt 写为合力，再对等式两边作时间积分。",
+      "board_statement": "固定惯性系参考点：dLO/dt=τO；ΔLO=∫τO dt。",
+      "handoff": "合力的作用线如果穿过 O，力矩就为零。把这一点代入刚写出的角动量定理。",
+      "needs": [
+        "u01"
+      ],
+      "objective_ids": [
+        "o2"
+      ],
+      "minutes": 30.0,
+      "diagram": {
+        "scene": "图上标固定点 O、位置矢量、同向的 v 和 p，以及合力的作用线。",
+        "labels": [
+          "r",
+          "p",
+          "v",
+          "F",
+          "O"
+        ]
+      },
+      "application": {
+        "question": "质点受恒定 z 向力矩 τ，经过 Δt 后 Lz 怎样改变？",
+        "expected_answer": "ΔLz=τΔt。初始角动量加上这项得到末值。"
+      },
+      "key_point": "固定惯性系参考点：dLO/dt=τO；ΔLO=∫τO dt。",
+      "difficulty": {
+        "obstacle": "乘积求导中遗漏第一项或不知为何为零",
+        "treatment": "第一行留住乘积求导的两项。对着图算完速度与动量的叉乘，再由第二定律处理另一项。"
+      },
+      "board_pages": [
+        {
+          "id": "p02",
+          "goal": "角动量变化得有多快",
+          "retain": [
+            "r",
+            "p",
+            "v",
+            "F",
+            "O"
+          ],
+          "derivations": [
+            "d(r×p)/dt=v×p+r×dp/dt",
+            "v×mv=0",
+            "dL/dt=τ"
+          ],
+          "from_page": "p01"
+        }
+      ],
+      "source_locator": {
+        "teacher_notes": "competition-180.md#u02",
+        "handout_pages_to_fill": "替换为本课使用的教材页码"
+      },
+      "teaching_minutes": {
+        "读图与提出问题": 6.0,
+        "推导与概念展开": 15.0,
+        "例题和应用判断": 6.0,
+        "结论落笔与承接": 3.0
+      },
+      "sample_narration": "第一项先留着。位置矢量求导得到速度，动量和速度指向同一边，这个叉乘等于零。第二项里的动量导数，就是刚画出的合力。"
+    },
+    {
+      "id": "u03",
+      "focus": "为什么等时间扫出等面积",
+      "opening": "行星靠近太阳时，同样长的一段时间内会扫过多大面积？",
+      "intro_question": "行星靠近太阳时，同样长的一段时间内会扫过多大面积？",
+      "reasoning": "以太阳所在的焦点为 O。引力作用线经过 O，角动量守恒。取转动方向为正，有 mr²ω 恒定。矢径转过小角 dθ 时，扫过面积为 r²dθ/2，两边除以 dt。",
+      "board_statement": "中心力运动：mr²ω=常量；dS/dt=L/(2m)。",
+      "handoff": "角动量给出了每个半径上的切向速度。再给出总能量，就能算这个位置的径向动能。",
+      "needs": [
+        "u02"
+      ],
+      "objective_ids": [
+        "o3"
+      ],
+      "minutes": 30.0,
+      "diagram": {
+        "scene": "在椭圆上画两块等时间扫过的面积，标半径和转过的角，再画垂直于矢径的速度分量。",
+        "labels": [
+          "r1",
+          "r2",
+          "ω1",
+          "ω2",
+          "ΔS"
+        ]
+      },
+      "application": {
+        "question": "两处距离中心分别为 r 和 2r，角速度与切向速度大小之比分别是多少？",
+        "expected_answer": "由 r1²ω1=r2²ω2 得角速度之比为四比一。再由 v切=rω 得切向速度大小之比为二比一。"
+      },
+      "key_point": "中心力运动：mr²ω=常量；dS/dt=L/(2m)。",
+      "difficulty": {
+        "obstacle": "线速度与角速度变化关系混在一起",
+        "treatment": "在扇形中心标扫过的角，在行星旁标垂直于矢径的速度分量。用 v切=rω 连起角速度与切向速度。"
+      },
+      "board_pages": [
+        {
+          "id": "p03",
+          "goal": "为什么等时间扫出等面积",
+          "retain": [
+            "r1",
+            "r2",
+            "ω1",
+            "ω2",
+            "ΔS"
+          ],
+          "derivations": [
+            "r1²ω1=r2²ω2",
+            "dS/dt=L/(2m)"
+          ],
+          "from_page": "p02"
+        }
+      ],
+      "source_locator": {
+        "teacher_notes": "competition-180.md#u03",
+        "handout_pages_to_fill": "替换为本课使用的教材页码"
+      },
+      "teaching_minutes": {
+        "读图与提出问题": 6.0,
+        "推导与概念展开": 15.0,
+        "例题和应用判断": 6.0,
+        "结论落笔与承接": 3.0
+      },
+      "sample_narration": "靠近太阳的这段，矢径短，转过的角大。远处的矢径长，转过的角小。同样长的时间里，两块扫过的面积相等。"
+    },
+    {
+      "id": "u04",
+      "focus": "有效势曲线上的两个转折点",
+      "opening": "给定角动量和能量后，质点离中心最近能到哪里？",
+      "intro_question": "给定角动量和能量后，质点离中心最近能到哪里？",
+      "reasoning": "把 v² 写成径向速度平方与切向速度平方的和。将 ω=L/(mr²) 代入切向动能，和势能一起写成 Ueff。在 E 水平线与有效势的交点处，径向动能为零。",
+      "board_statement": "E=m ṙ²/2+Ueff(r)，Ueff=U(r)+L²/(2mr²)。",
+      "handoff": "已经能从图上找出两个转折半径。把发射时的速度给定，下一步就能用交点方程算出它们。",
+      "needs": [
+        "u03"
+      ],
+      "objective_ids": [
+        "o4"
+      ],
+      "minutes": 30.0,
+      "diagram": {
+        "scene": "画引力有效势曲线与能量水平线。标出两个交点，在近转折点旁画轨道局部及切向速度。",
+        "labels": [
+          "r",
+          "E",
+          "Ueff",
+          "rmin",
+          "rmax"
+        ]
+      },
+      "application": {
+        "question": "在引力势 U=-GMm/r 中，圆轨道半径怎样由 L 表示？",
+        "expected_answer": "令 Ueff 的导数为零，得到 rc=L²/(GMm²)，再说明该极小点对应稳定圆轨道。"
+      },
+      "key_point": "E=m ṙ²/2+Ueff(r)，Ueff=U(r)+L²/(2mr²)。",
+      "difficulty": {
+        "obstacle": "把径向速度为零当成总速度为零",
+        "treatment": "在同一位置并排标 ṙ=0 和 v切=L/(mr)，从两张图分别读出径向运动和切向运动。"
+      },
+      "board_pages": [
+        {
+          "id": "p04",
+          "goal": "有效势曲线上的两个转折点",
+          "retain": [
+            "r",
+            "E",
+            "Ueff",
+            "rmin",
+            "rmax"
+          ],
+          "derivations": [
+            "v²=ṙ²+r²ω²",
+            "Ueff=-GMm/r+L²/(2mr²)",
+            "dUeff/dr=0"
+          ],
+          "from_page": "p03"
+        }
+      ],
+      "source_locator": {
+        "teacher_notes": "competition-180.md#u04",
+        "handout_pages_to_fill": "替换为本课使用的教材页码"
+      },
+      "teaching_minutes": {
+        "读图与提出问题": 6.0,
+        "推导与概念展开": 15.0,
+        "例题和应用判断": 6.0,
+        "结论落笔与承接": 3.0
+      },
+      "sample_narration": "看 E 这条水平线和曲线左边的交点。两边一相等，径向动能就为零。质点仍沿切向运动，把这支速度箭头保留下来。"
+    },
+    {
+      "id": "u05",
+      "focus": "切向发射后，哪一处是远地点",
+      "opening": "在离中心 r0 处，沿切向以当地圆轨道速度的四分之三发射，最近能到离中心多远？",
+      "intro_question": "在离中心 r0 处，沿切向以当地圆轨道速度的四分之三发射，最近能到离中心多远？",
+      "reasoning": "先由初速求 E=-23GMm/(32r0) 和 L²=9GMm²r0/16。令径向速度为零，代入能量方程并整理为 23r²-32r0r+9r0²=0。r0 是一个根，另一个是 9r0/23，较小根对应近地点。",
+      "board_statement": "r远=r0；r近=9r0/23；v近/v远=23/9。",
+      "handoff": "刚才两个端点的速度都用到 r v切 恒定。若用一根绳控制半径，再看这个关系在桌面上怎样用。",
+      "needs": [
+        "u04"
+      ],
+      "objective_ids": [
+        "o5"
+      ],
+      "minutes": 30.0,
+      "diagram": {
+        "scene": "把能量图的两个交点对应到椭圆近、远地点，并画两处的切向速度箭头。",
+        "labels": [
+          "r0",
+          "v0",
+          "rp",
+          "L",
+          "E"
+        ]
+      },
+      "application": {
+        "question": "把发射速度改为圆轨道速度时，两个转折点怎样变化？",
+        "expected_answer": "两根重合于 r0，径向速度保持零，成为圆轨道。"
+      },
+      "key_point": "r远=r0；r近=9r0/23；v近/v远=23/9。",
+      "difficulty": {
+        "obstacle": "二次方程两根与轨道位置对应",
+        "treatment": "把 r0 和 9r0/23 标在同一径向轴，再分别连到远、近地点。两处都用 r v切 恒定求速度比。"
+      },
+      "board_pages": [
+        {
+          "id": "p05",
+          "goal": "切向发射后，哪一处是远地点",
+          "retain": [
+            "r0",
+            "v0",
+            "rp",
+            "L",
+            "E"
+          ],
+          "derivations": [
+            "E=mv0²/2-GMm/r0",
+            "L=mr0v0",
+            "E=L²/(2mr²)-GMm/r",
+            "23r²-32r0r+9r0²=0"
+          ],
+          "from_page": "p04"
+        }
+      ],
+      "source_locator": {
+        "teacher_notes": "competition-180.md#u05",
+        "handout_pages_to_fill": "替换为本课使用的教材页码"
+      },
+      "teaching_minutes": {
+        "读图与提出问题": 6.0,
+        "推导与概念展开": 15.0,
+        "例题和应用判断": 6.0,
+        "结论落笔与承接": 3.0
+      },
+      "sample_narration": "发射时速度沿切向，径向速度已经是零。所以 r0 本来就是一个根。另一个根更小，对应近地点。"
+    },
+    {
+      "id": "u06",
+      "focus": "收绳时，角动量和动能怎样变",
+      "opening": "把桌面小孔里的绳收短，小球转得更快以后，角动量和动能各怎样变？",
+      "intro_question": "把桌面小孔里的绳收短，小球转得更快以后，角动量和动能各怎样变？",
+      "reasoning": "小球在光滑水平桌面上运动。拉力沿半径穿过小孔 O，对 O 的力矩为零。缓慢把半径从 r0 拉到 r0/2，比较两次径向速度为零的状态。末切向速度加倍，动能变为四倍，拉力做的功等于初动能的三倍。",
+      "board_statement": "L=mr v切；W外=ΔK；中心力保证角动量守恒，能量变化由功决定。",
+      "handoff": "回到轨道和桌面两幅图。力臂决定力矩，力和位移决定功。观察这两处几何关系，就知道该列角动量方程、能量方程，还是两条都要列。",
+      "needs": [
+        "u05"
+      ],
+      "objective_ids": [
+        "o6"
+      ],
+      "minutes": 30.0,
+      "diagram": {
+        "scene": "画桌面小孔、向内的拉力和收绳时的径向位移，再画初末两处的切向速度箭头。",
+        "labels": [
+          "O",
+          "r0",
+          "r0/2",
+          "T",
+          "v切"
+        ]
+      },
+      "application": {
+        "question": "绳长缓慢减半时，角速度、切向速度和切向动能分别变为多少？",
+        "expected_answer": "角速度四倍，切向速度两倍，切向动能四倍。"
+      },
+      "key_point": "L=mr v切；W外=ΔK；中心力保证角动量守恒，能量变化由功决定。",
+      "difficulty": {
+        "obstacle": "把中心力运动都看成机械能守恒",
+        "treatment": "取矩时从 O 向力的作用线看垂距。算功时再看拉力在径向位移上的分量。"
+      },
+      "board_pages": [
+        {
+          "id": "p06",
+          "goal": "收绳时，角动量和动能怎样变",
+          "retain": [
+            "O",
+            "r0",
+            "r0/2",
+            "T",
+            "v切"
+          ],
+          "derivations": [
+            "r v切=常量",
+            "ω∝1/r²",
+            "W=K末-K初"
+          ],
+          "from_page": "p05"
+        }
+      ],
+      "source_locator": {
+        "teacher_notes": "competition-180.md#u06",
+        "handout_pages_to_fill": "替换为本课使用的教材页码"
+      },
+      "teaching_minutes": {
+        "读图与提出问题": 6.0,
+        "推导与概念展开": 15.0,
+        "例题和应用判断": 6.0,
+        "结论落笔与承接": 3.0
+      },
+      "sample_narration": "绳指向小孔，从小孔到拉力作用线的垂距是零。球向里移动时，拉力和径向位移同向。角动量保持原来的值，拉力做的正功使动能增加。"
+    }
+  ],
+  "exit_checks": [
+    {
+      "question": "质量 m 的质点沿 y=b 的直线以速度 v 向右运动，对原点的角动量是多少？",
+      "expected_answer": "Lz=-mbv。大小为 mvb，方向按右手定则。",
+      "objective_ids": [
+        "o1"
+      ]
+    },
+    {
+      "question": "质点受恒定 z 向力矩 τ，经过 Δt 后 Lz 怎样改变？",
+      "expected_answer": "ΔLz=τΔt。初始角动量加上这项得到末值。",
+      "objective_ids": [
+        "o2"
+      ]
+    },
+    {
+      "question": "两处距离中心分别为 r 和 2r，角速度与切向速度大小之比分别是多少？",
+      "expected_answer": "由 r1²ω1=r2²ω2 得角速度之比为四比一。再由 v切=rω 得切向速度大小之比为二比一。",
+      "objective_ids": [
+        "o3"
+      ]
+    },
+    {
+      "question": "在引力势 U=-GMm/r 中，圆轨道半径怎样由 L 表示？",
+      "expected_answer": "令 Ueff 的导数为零，得到 rc=L²/(GMm²)，再说明该极小点对应稳定圆轨道。",
+      "objective_ids": [
+        "o4"
+      ]
+    },
+    {
+      "question": "把发射速度改为圆轨道速度时，两个转折点怎样变化？",
+      "expected_answer": "两根重合于 r0，径向速度保持零，成为圆轨道。",
+      "objective_ids": [
+        "o5"
+      ]
+    },
+    {
+      "question": "绳长缓慢减半时，角速度、切向速度和切向动能分别变为多少？",
+      "expected_answer": "角速度四倍，切向速度两倍，切向动能四倍。",
+      "objective_ids": [
+        "o6"
+      ]
+    }
+  ],
+  "deferred": [],
+  "pacing_policy": {
+    "speed_multiplier": 1,
+    "silent_note_time": 0,
+    "extension": "用正常速度试讲。需要加长就展开图上的几何、推导或变式，将新增内容带回教案审阅。"
+  }
+}

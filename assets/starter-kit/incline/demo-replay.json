@@ -1,0 +1,14 @@
+{
+  "status": "example_replay",
+  "duration": 95.93333333333334,
+  "backend": "bundled_recordings",
+  "renderer": "notebook",
+  "speech_api_calls": 0,
+  "video_sha256": "368954db515433005dfb07fc3702d1d8fee26abc085ebf7b6fa14178da77abdd",
+  "source_manifest": "362bab6cefe932c24814cfd6267a8d6b33b6a83f27fd7ad4f8691c9225188fda",
+  "note": "Fixed distributed example replay. New lessons use review-plan, final QA and finalize.",
+  "speech_new": 9,
+  "speech_reused": 0,
+  "video_new": 2,
+  "video_reused": 0
+}

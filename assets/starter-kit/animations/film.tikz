@@ -1,0 +1,15 @@
+\begin{tikzpicture}[>=Stealth]
+\fill[blue!8] (-2,-1.3) rectangle (3,0);
+\draw (-2,0)--(3,0);\draw (-2,-1.3)--(3,-1.3);
+\draw[dashed] (0,-1.6)--(0,1.5);
+\draw[gray] (0,.8) arc[start angle=90,delta angle=30,radius=.8];
+\node at (-.2,1.05) {$\theta_0$};
+\draw[gray] (0,-.65) arc[start angle=-90,delta angle=19.47122,radius=.65];
+\node at (.26,-.9) {$\theta_t$};
+\draw[->,red,thick] (-0.75056,1.3)--(0,0);
+\draw[->,blue,thick] (0,0)--(0.75056,1.3);
+\draw[->,green!50!black,thick] (0,0)--(0.45962,-1.3)--(0.91924,0)--(1.66979,1.3);
+\draw[<->] (2.7,0)--(2.7,-1.3) node[midway,right] {$d=300\,\mathrm{nm}$};
+\node at (-1.3,.6) {$n_0=1$};\node at (-1.3,-.6) {$n=1.5$};\node at (-1.3,-1.7) {$n_2=1$};
+\node at (1,-2.4) {$\delta=2nd\cos\theta_t=848.53\,\mathrm{nm}$};
+\end{tikzpicture}
