@@ -1,6 +1,6 @@
 # 跨平台安装与模型接入
 
-本项目以 `SKILL.md + scripts/ + references/ + assets/` 为唯一源码，遵循 Agent Skills 开放格式。平台名称和模型供应商是两个维度：Codex、Claude Code 是能读文件并运行脚本的 Agent 宿主；OpenAI、Anthropic、豆包、DeepSeek 是模型供应商。使用豆包或 DeepSeek 模型时，宿主仍需提供文件系统、Shell 和程序执行能力。
+技能按 Agent Skills 开放格式组织，源文件在 `SKILL.md + scripts/ + references/ + assets/`。Codex、Claude Code 这类宿主负责读取文件和运行脚本。模型可来自 OpenAI、Anthropic、豆包或 DeepSeek。用豆包或 DeepSeek 模型时，仍要选能访问文件、运行 Shell 和脚本的宿主。
 
 ## 统一工具
 
@@ -55,7 +55,7 @@ claude.ai 的自定义 Skill 界面直接上传 `package --target claude` 产生
 
 DeepSeek 模型 API 支持工具调用，并提供 OpenAI Responses / Anthropic 兼容接口。DeepSeek 官方聊天端当前没有公开的本地 Skill 安装目录或 Skill 商店。实际接入时，在 Codex、Claude Code、OpenCode 或其他 Agent Skills 宿主中配置 DeepSeek 作为模型，再按宿主方式安装本技能。
 
-只有 DeepSeek API 时，应用程序还需负责：把 Skill 的 `name` 和 `description` 加入可发现上下文；命中后读取 `SKILL.md`；提供文件、Shell 和权限受控的工具循环。模型 API 只返回工具调用意图，实际程序仍由宿主执行。
+如果自己接入 DeepSeek API，请让应用先向模型提供 Skill 的 `name` 和 `description`，选中技能后再读取 `SKILL.md`。模型返回工具调用，应用负责在权限范围内访问文件和运行命令。
 
 ## 通用 Agent Skills 宿主
 
