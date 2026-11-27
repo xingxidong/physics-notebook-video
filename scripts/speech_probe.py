@@ -3,6 +3,7 @@ import argparse
 from functools import lru_cache
 import itertools
 import json
+import math
 from pathlib import Path
 import re
 import os
@@ -88,22 +89,38 @@ def model(root,language):
     return factory(root/subdir)
 
 
-def measure(media, start, end, *, language, root, expected=None, accepted_surface=None):
+def letter_name_count(phones, pattern):
+    untoned = [re.sub(r'[1-5]$', '', phone) for phone in phones]
+    bounded = r'(?<!\S)(?:' + pattern.pattern + r')(?!\S)'
+    return len(list(re.finditer(bounded, ' '.join(untoned))))
+
+
+def measure(media, start, end, *, language, root, expected=None, accepted_surface=None, repeat_window=None):
     """Report agreement of independent context windows. An uncertain result stays in review."""
     import numpy as np
     if not 0 <= start < end:
         raise ValueError('目标音节或字母的起止秒数无效。')
     net=model(root,language)
     findings=[]
+    repetitions=[]
+    letter=(expected or '').split(' ',1)[0].upper()
+    pattern=LETTER_PATTERNS.get(letter) if language=='en' else None
+    extra_start, extra_end = repeat_window or (start, end)
     for padding in (.16,.42):
-        left=max(0,start-padding)
+        left=max(0, min(start, extra_start)-padding)
         raw=subprocess.check_output(['ffmpeg','-nostdin','-v','error','-ss',str(left),'-i',str(media),
-            '-t',str(end+padding-left),'-map','0:a:0','-ac','1','-ar',str(RATE),'-f','s16le','pipe:1'])
+            '-t',str(max(end, extra_end)+padding-left),'-map','0:a:0','-ac','1','-ar',str(RATE),'-f','s16le','pipe:1'])
         if len(raw)/2 < round((end-left)*RATE):
             raise ValueError('所选位置超出音轨。')
         decoded=net.decode(np.frombuffer(raw,dtype='<i2').astype('float32')/32768)
         phones=[token for token,t in decoded if start-.035 <= left+t <= end+.035]
         findings.append(phones)
+        if pattern:
+            if repeat_window:
+                candidates=[token for token,t in decoded if extra_start <= left+t < extra_end]
+            else:
+                candidates=phones
+            repetitions.append(letter_name_count(candidates, pattern))
     status='inspect_phones'
     if language=='zh' and expected:
         forms=[phonetic_form(p) for p in expected.split()]
@@ -138,8 +155,11 @@ def measure(media, start, end, *, language, root, expected=None, accepted_surfac
                 mixed = (untoned != group and LETTER_PATTERNS[letter].fullmatch(' '.join(untoned)))
                 if (not contains and not mixed) or extra_vowel:
                     status='possible_mismatch'
+    if repetitions and max(repetitions)>1:
+        status='possible_repeat' if min(repetitions)>1 else 'uncertain'
     gap=acoustic_gap(raw[2*round((start-left)*RATE):2*round((end-left)*RATE)])
-    return dict(windows=findings,expected=expected,interior_quiet_ms=gap,status=status)
+    return dict(windows=findings,expected=expected,interior_quiet_ms=gap,status=status,
+                letter_name_counts=repetitions)
 
 
 def phonetic_form(token):
@@ -173,7 +193,12 @@ def probe_targets(project,report,model_root, *, select=None):
                 continue
             item=dict(cue=row['id'],target=target['id'],text=target['text'],token=row['token'])
             results.append(item)
-            if not target.get('window'):
+            if target['kind'] in ('formula','complete'):
+                item['status']=('needs_formula_listening' if target['kind']=='formula'
+                                else 'needs_full_sentence_listening')
+                continue
+            window=target.get('window')
+            if not window or not all(math.isfinite(t) for t in window) or not 0 <= window[0] < window[1]:
                 item['status']='needs_timing'
                 continue
             language='en' if target['kind']=='symbol' else 'zh'
@@ -185,13 +210,14 @@ def probe_targets(project,report,model_root, *, select=None):
             result=json.loads(path.read_text()) if path.is_file() else {}
             if result.get('model_sha256')!=signature:
                 expected=target.get('reading') if target['kind']=='flow' else target['expected']
-                result=measure(media,*target['window'],language=language,expected=expected,root=model_root,accepted_surface=target.get('accepted_surface'))
+                result=measure(media,*window,language=language,expected=expected,root=model_root,
+                               accepted_surface=target.get('accepted_surface'),repeat_window=target.get('repeat_window'))
                 result.update(token=row['token'],target=target['id'],window=target['window'],model_sha256=signature)
                 save_report(path,result)
             item.update(status=result['status'],evidence=str(path))
     if select and not results:
         raise ValueError('请从本版清单选择一个实际出现的位置。')
-    results.sort(key=lambda r:r['status']!='possible_mismatch')
+    results.sort(key=lambda r:r['status'] not in ('possible_repeat','possible_mismatch'))
     return results
 
 

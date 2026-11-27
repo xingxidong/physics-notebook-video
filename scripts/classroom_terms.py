@@ -11,9 +11,10 @@ import re
 import sqlite3
 
 from pronunciation import HAN_TERM, SYLLABLE
+from speech_packages import CARDS, ROOT, practice_data
 
 NOTES = Path(__file__).resolve().parents[1] / 'references'
-ARCHIVE = NOTES.parent / 'assets' / 'classroom-cards.json'
+ARCHIVE = ROOT / CARDS
 CARD_COLUMNS = {'词义与语境': 'sense', '例句': 'example', '连读': 'flow', '易混': 'contrast'}
 TERM_HEADERS = {'词语', '词或短语', '词或词组', '术语', '物理术语'}
 READING_HEADERS = {'拼音', '读音', '讲课读音', '建议拼音', '带调拼音'}
@@ -45,15 +46,18 @@ def _table_rows(path, mtime_ns, size):
         reading = next(record[k] for k in columns if k in READING_HEADERS)
         syllables = reading.lower().replace('v','ü').split()
         valid = len(syllables)==len(term) and all(SYLLABLE.fullmatch(s) for s in syllables)
+        course_position = record.get('原片位置', '') if path.name.startswith('first-round-') else ''
         rows.append((term, dict(reading=' '.join(syllables) if valid else None, topic=topic,
                                 usage=record.get('题目或用法') or record.get('用法',''),
+                                course_position=course_position,
                                 **{key:record[col] for col,key in CARD_COLUMNS.items() if record.get(col)})))
     return rows
 
 
 def note_sources(directory=None):
     root = directory or NOTES
-    notes = [*root.glob('ying-xiaolv-*.md'), *(root/'term-glossaries').rglob('*.md')]
+    notes = [*root.glob('ying-xiaolv-*.md'), *root.glob('first-round-*.md'),
+             *(root/'term-glossaries').rglob('*.md')]
     stamps = []
     for path in sorted(notes):
         info = path.stat()
@@ -130,9 +134,17 @@ def collect(directory, archive, requested=None):
     for term, refs in note_sources(directory).items():
         if requested is not None and term not in requested:
             continue
-        card = assemble(refs)
+        course = [row for row in refs if row['course_position']]
+        primary = [row for row in refs if not row['course_position']] or refs
+        card = assemble(primary)
+        if course:
+            card['course_examples'] = [
+                dict(note=row['note'], at=row['course_position'],
+                     **{key: row[key] for key in CARD_COLUMNS.values() if reusable(row.get(key))})
+                for row in course
+            ]
         if 'example' not in card:
-            for note in dict.fromkeys(row['note'] for row in refs):
+            for note in dict.fromkeys(row['note'] for row in primary):
                 path = directory / note
                 info = path.stat()
                 phrases = _examples(path, info.st_mtime_ns, info.st_size)
@@ -153,8 +165,14 @@ def note_readings(directory=None):
 
 @lru_cache(maxsize=1)
 def practice():
-    path = Path(__file__).resolve().parents[1] / 'assets' / 'reading-practice.json'
-    return json.loads(path.read_text(encoding='utf-8'))
+    return practice_data()
+
+
+@lru_cache(maxsize=1)
+def reference_examples():
+    return tuple(dict(example, kind=kind)
+                 for kind, examples in practice().get('reference_examples', {}).items()
+                 for example in examples)
 
 
 def context_sense(term, text, offset):
@@ -170,12 +188,21 @@ def letter_card(symbol):
     from feedback_bank import catalog
     from pronunciation import symbol_reading
     key = symbol.upper()
+    expected = symbol_reading(symbol)
+    examples = [row for row in reference_examples()
+                if row['kind'] in ('latin', 'greek')
+                and expected in {symbol_reading(mark) for mark in row['symbols']}]
     sentence = practice()['letters'].get(key)
-    if not sentence:
+    if not sentence and not examples:
         return None
     note = catalog()['letters'].get(key, {})
-    guidance = practice()['letter_listening'].get(key,'按英文字母名连读，随后接回中文原句。')
-    card = dict(symbol=key,expected=symbol_reading(key),example=sentence,listen_for=guidance)
+    default = ('按英文字母名连读，随后接回中文原句。' if sentence
+               else '按这个希腊字母的目标音连读，随后接回中文原句。')
+    guidance = practice()['letter_listening'].get(key, default)
+    card = dict(symbol=key, expected=expected, example=sentence or examples[0]['text'],
+                listen_for=guidance)
+    if examples:
+        card['reference_examples'] = examples
     if note.get('observed'):
         card['listen_for'] += ' 已有反馈：' + note['observed']
     return card

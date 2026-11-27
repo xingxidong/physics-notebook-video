@@ -12,7 +12,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 from pronunciation import classroom_syllables
 from speech_blind import prepare, score, screen
 from speech_context import inspect, inventory
-from speech_probe import LETTER_PATTERNS
+from speech_probe import LETTER_PATTERNS, letter_name_count
 from term_flow import RATE, flow_evidence
 from tone_review import _digest
 
@@ -38,6 +38,9 @@ class SpeechContextTests(unittest.TestCase):
         self.assertEqual(flow_evidence(raw),(0,True))
         self.assertTrue(LETTER_PATTERNS['Q'].fullmatch('k j uː'))
         self.assertFalse(LETTER_PATTERNS['Q'].fullmatch('k j uː u'))
+        self.assertEqual(letter_name_count(['eɪ', 'eɪ'], LETTER_PATTERNS['A']), 2)
+        self.assertEqual(letter_name_count(['b', 'iː', 'd', 'iː'], LETTER_PATTERNS['B']), 1)
+        self.assertEqual(letter_name_count(['ɛ', 'k', 's', 'ɛ', 'k', 's'], LETTER_PATTERNS['X']), 2)
 
     def wav(self,path,freq):
         import math

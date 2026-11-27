@@ -86,6 +86,8 @@ def synth(project,cfg,cue):
         text=provider['provider_text']
     model=cfg.get('model') or env.get('MINIMAX_MODEL','speech-2.8-hd') if backend=='minimax' else cfg.get('model','')
     signature={'backend':backend,'voice':voice,'model':model,'speed':speed,'pitch':pitch,'volume':volume,'tts':text,'adapter':2}
+    if cfg.get('_classroom_take'):
+        signature['classroom_take']=cfg['_classroom_take']
     signature.update(resource_id=cfg.get('resource_id',env.get('DOUBAO_RESOURCE_ID','seed-tts-2.0')),host=env.get('MINIMAX_API_HOST','https://api.minimaxi.com'),emotion=cue.get('emotion'))
     matches = provider['pinyin'] if provider else (matched_pronunciations(text, cfg.get('minimax_pronunciation'), cue.get('minimax_pronunciation'))
                if backend == 'minimax' else {})

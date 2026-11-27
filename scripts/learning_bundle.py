@@ -10,6 +10,7 @@ import sqlite3
 import tempfile
 
 DB_REL = Path('assets/learning/feedback.sqlite3')
+RETIRED_REFERENCE = Path('references/classroom-reference-index.md')
 ROOT = Path(__file__).resolve().parents[1]
 REPORTS = '''CREATE TABLE IF NOT EXISTS reports (
     id INTEGER PRIMARY KEY, kind TEXT NOT NULL, key TEXT NOT NULL, payload TEXT NOT NULL,
@@ -173,12 +174,15 @@ def sync_cards(source, dest, *, prefer_incoming=True):
 
 
 def reference_files(root):
-    return {p.relative_to(root).as_posix():p for p in (root/'references').rglob('*.md') if p.is_file()}
+    return {p.relative_to(root).as_posix():p for p in (root/'references').rglob('*.md')
+            if p.is_file() and p.relative_to(root)!=RETIRED_REFERENCE}
 
 
 def reference_history(root):
     path=root/'assets/learning/reference-versions.json'
-    return json.loads(path.read_text()).get('files',{}) if path.is_file() else {}
+    history=json.loads(path.read_text()).get('files',{}) if path.is_file() else {}
+    history.pop(RETIRED_REFERENCE.as_posix(),None)
+    return history
 
 
 def write_reference_history(root, known=None):
@@ -238,9 +242,19 @@ def sync_references(source, dest, *, prefer_incoming=True):
 
 def verify_contents(archive, prefix):
     """Verify the actual portable index and the clips referenced from it, within the ZIP."""
-    cards=json.loads(archive.read(prefix+'/assets/classroom-cards.json'))
+    from speech_packages import CARDS, CONTEXT, OLD_CARDS, TARGET
+    names=set(archive.namelist())
+    cards_path=prefix+'/'+CARDS.as_posix()
+    modern=cards_path in names
+    cards=json.loads(archive.read(cards_path if modern else prefix+'/'+OLD_CARDS.as_posix()))
     if cards.get('schema')!=1 or not isinstance(cards.get('cards'),dict):
         raise ValueError('读音卡文件格式有误。')
+    if modern:
+        context=json.loads(archive.read(prefix+'/'+CONTEXT.as_posix()))
+        practice=json.loads(archive.read(prefix+'/'+TARGET.as_posix()))
+        categories={'latin','greek','math_formula','math_function','physics_formula'}
+        if not isinstance(context.get('senses'),dict) or not all(practice.get('reference_examples',{}).get(k) for k in categories):
+            raise ValueError('随行包缺少术语语境或字母、函数与公式练读。')
     checked=set()
     with tempfile.TemporaryDirectory() as folder:
         path=Path(folder)/DB_REL.name
@@ -269,6 +283,8 @@ def verify_contents(archive, prefix):
                     raise ValueError('随行包的试听片段与登记时不同。')
                 checked.add(identity)
     result = dict(cards=len(cards['cards']),reports=count,decisions=len(records),samples=len(checked))
+    if modern:
+        result['target_voice_examples']=sum(map(len,practice['reference_examples'].values()))
     if retests:
         result['classroom_retests'] = len(retests)
     if trials:

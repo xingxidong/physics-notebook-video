@@ -49,7 +49,10 @@ def classroom_checks(lesson, occurrences, plans, applicable, reports):
         for item in plan['symbols']:
             letter=item['symbol']
             key=letter.upper() if letter.isascii() else letter
-            refs=link([('letters',key)])
+            keys=[('letters',key)]
+            if 'letter-repeated-in-context' in active:
+                keys.append(('issues','letter-repeated-in-context'))
+            refs=link(keys)
             if refs:
                 locations.append(dict(kind='letter',page=page,cue=cue,offset=item['offset'],
                                       text=item['expression'],expected=item['expected'],refs=refs))

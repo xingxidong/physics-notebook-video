@@ -22,7 +22,7 @@ python3 SKILL/scripts/course.py feedback-check PROJECT
 
 一般问题可加 `--scope concept` 或 `--scope problem` 指定课型，默认两类通用。匹配口播里的具体措辞可加 `--match '实际原句'`。多音词的 `--expected` 每字用一个带调号的拼音；新词只确定有问题时可以先留空。反馈具体指出词中哪个字时，在 record 命令加 `--focus 字`。以后该字出现在未收录词中也会进入课堂复听清单。单个汉字可记为待听；自动读音绑定完整词，如“相位”和“相干”各自有对应读法。课程对本地同音提示有改写时，检查会列出差异供复听。字母的标准读法从现有字母表取，x 和 X 共用记录。课程、位置和内容完全相同的重复提交只计一次，另一节课再次发生会保留为新记录。
 
-学习记录在技能目录的 `assets/learning/feedback.sqlite3`，用于比较和确认的短样放在同目录的 `samples/`，按内容去重。读音卡在 `assets/classroom-cards.json`，课堂笔记在 `references/`。安装包一起带走这些内容。使用原有安装器的 --update 会合并学习记录。要从 0.25 或更早版本迁入，可运行 `python3 scripts/feedback_bank.py import-learning "$HOME/.local/share/physics-notebook-video/feedback.sqlite3"`。设置过 PHYSICS_NOTEBOOK_FEEDBACK_DB 的用户传入自己使用的旧库路径。这个环境变量也可用于隔离测试。
+学习记录在技能目录的 `assets/learning/feedback.sqlite3`，用于比较和确认的短样放在同目录的 `samples/`，按内容去重。读音卡在 `assets/pronunciation-cards/classroom-cards.json`，课堂笔记在 `references/`。安装包一起带走这些内容。使用原有安装器的 --update 会合并学习记录。要从 0.25 或更早版本迁入，可运行 `python3 scripts/feedback_bank.py import-learning "$HOME/.local/share/physics-notebook-video/feedback.sqlite3"`。设置过 PHYSICS_NOTEBOOK_FEEDBACK_DB 的用户传入自己使用的旧库路径。这个环境变量也可用于隔离测试。
 
 ## 每节课怎样查
 
@@ -66,11 +66,11 @@ python3 SKILL/scripts/feedback_bank.py decide letters --key W --state adopted --
 制课时根据本次实际配音配置，在 `lesson.json` 或 `speech-plan.json` 的 `speech.feedback_voice` 写入 `model` 和 `reference_sha256`。更换模型、参考音色，或制作时尚未选音，命中这个字母的课程会提示 `audition_voice`。如果已选样本丢失或内容改变，报告标记 `restore_or_audition`。这两种情况都需短句重听。录音文件可移到新的本地位置，重新登记已确认的文件即可。
 
 设计参考了三个开源实现。合并相近纠正、保留修订历史和用真实样例比较前后输出分别借鉴了 [AutoSkill](https://github.com/ECNU-ICALK/AutoSkill)、[self-improving-agent](https://github.com/pskoett/self-improving-agent) 和 [Anthropic skill-creator](https://github.com/anthropics/skills/tree/main/skills/skill-creator)。
-# 学习包的更新与迁移（0.27）
+# 自我成长包的更新与迁移
 
 0.27.2 将试音结果也放进同一随行包：`voice_trial_reviews` 保存每句的逐处读音和连读判断、模型配置指纹、词卡与录音指纹，`samples/` 保存所听的实际短音段。`voice_trials.py review` 只接收有审听者和依据的人工听音记录，错处同步进入原有反馈库。下一轮试音读取这些完整课堂错例。安装合并按记录指纹去重，包检查同时核对短音段，原课程删除后仍能使用。
 
-学习包包含 `assets/classroom-cards.json`、`references/` 中的课堂笔记和词表、`assets/learning/` 中的反馈数据库及已登记片段。安装时合并，打包时收回已安装技能中新增的内容。音色选择带着具体模型和参考音色的依据，换音色后重新试音。
+自我成长包保存反馈、确认的改法、跨课复试和已登记的短样，位于 `assets/learning/`。每课第 1 步读取这些记录，整理成《备课提醒》。打包带走新增反馈，更新安装时合并。课堂经验提炼出的词语和符号读法可补入[读音卡包](../assets/pronunciation-cards/README.md)和[目标音色包](../assets/target-voice/README.md)。
 
 课堂笔记按版本指纹合并：只有一处改动就保留改动；两边独立修改时保留两份，并写入 `assets/learning/reference-conflicts.json`。制作者对照原条目与 incoming_file，合并正确内容后填写该记录的 status 为 resolved、reviewer 和 resolution，再编译读音卡。待合并记录会阻止正式配音。打包时旧安装版本不会覆盖较新的已发布笔记。
 

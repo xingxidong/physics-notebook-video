@@ -65,6 +65,12 @@ def checkpoint(project, lesson, timeline, media):
 def status(project):
     from lesson_review import current_review,require
     lesson=effective(project)
+    from classroom_workflow import enabled, require_active
+    if enabled(lesson):
+        try:
+            require_active(project,lesson)
+        except ValueError as exc:
+            return {'stage':'start-workflow','next':'start-workflow','kind':lesson.get('kind'),'reason':str(exc)}
     source=fingerprint(project,lesson)
     out={'kind':lesson.get('kind'),'source':source,'next':'review-plan','stage':'prepare'}
     if lesson.get('review_required'):
@@ -75,13 +81,26 @@ def status(project):
         try:
             require(project,lesson)
         except ValueError as exc:
-            return {**out,'stage':'awaiting-review','next':'approve-plan','reason':str(exc)}
+            next_step='approve-plan'
+            if enabled(lesson):
+                from classroom_workflow import require_packet
+                try:
+                    require_packet(project,lesson,current_review(project,lesson))
+                except (ValueError, OSError, KeyError) as packet_error:
+                    return {**out,'stage':'prepare-review-packet','next':'review-packet','reason':str(packet_error)}
+            return {**out,'stage':'awaiting-review','next':next_step,'reason':str(exc)}
     base=read(project/'production-baseline.json')
     timeline=project/'timeline.json'
     timed=read(timeline)
     measured=(not timed.get('draft') and timed.get('lesson_sha256')==digest(lesson)
               and (not lesson.get('review_required') or timed.get('review_sha256')==source))
     if not measured:
+        if lesson.get('speech_review_version')==1:
+            from trial_review import require_target_voice
+            try:
+                require_target_voice(project,lesson.get('speech',{}))
+            except (ValueError, OSError, KeyError) as exc:
+                return {**out,'stage':'voice-trial-needed','next':'voice_trials.py run / review','reason':str(exc)}
         return {**out,'stage':'approved' if lesson.get('review_required') else 'legacy-source','next':'build --video'}
     video=project/base.get('file','video.mp4')
     if not (video.is_file() and base.get('source')==source and base.get('timeline')==file_hash(timeline)
@@ -164,6 +183,10 @@ def scope(lesson, baseline, cues=(), conventions=(),project=None):
         selected.update(order)
         affected.update(links)
     selected.update(p+'/'+s['cue_id'] for k,(p,s) in links.items() if k in affected)
+    if lesson.get('classroom_workflow_version')==1:
+        paragraphs={p+'/'+c['id']:(p,c.get('speech_group')) for p,c in cue_rows(lesson) if c.get('speech_group')}
+        groups={paragraphs[key] for key in selected if key in paragraphs}
+        selected.update(key for key,group in paragraphs.items() if group in groups)
     changed=[key for key in order if key in selected]
     return {'changed':changed,'conventions':sorted(signs),'physics_steps':sorted(affected),
             'reasons':reasons,
@@ -241,5 +264,14 @@ def dispatch(args):
     baseline=read(project/'production-baseline.json')
     result=scope(lesson,baseline,args.cue,args.convention,project)
     result.update(target=fingerprint(project,lesson),previous_media=baseline.get('media'),previous_windows=baseline.get('windows',{}))
+    if lesson.get('classroom_workflow_version')==1:
+        from uuid import uuid4
+        from classroom_workflow import require_active
+        run=require_active(project,lesson)['run']
+        old=read(project/'revision-plan.json')
+        takes=old.get('takes',{}) if old.get('workflow_run')==run else {}
+        take=uuid4().hex
+        takes.update({key:take for key in result['changed']})
+        result.update(workflow_run=run,takes=takes)
     save(project/'revision-plan.json',result)
     return result

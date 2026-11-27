@@ -10,16 +10,50 @@ from types import SimpleNamespace
 import wave
 
 ROOT=Path(__file__).resolve().parents[1]
-SAMPLE=ROOT/'assets/starter-kit/incline'
+SAMPLE_PATH=Path('assets/starter-kit/incline')
+SAMPLE=ROOT/SAMPLE_PATH
+SHARED_HANZI=Path('assets/hanzi')
 
 
 def verify():
     manifest=json.loads((SAMPLE/'manifest.json').read_text())
-    for name,expected in manifest['files'].items():
-        path=SAMPLE/name
-        if not path.resolve().is_relative_to(SAMPLE.resolve()) or not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest()!=expected:
-            raise ValueError('Bundled example has changed: '+name+'. Copy it as a new lesson and use the review workflow.')
+    for folder, files in ((SAMPLE, manifest['files']),
+                          (ROOT/SHARED_HANZI, manifest.get('shared_hanzi', {}))):
+        for name,expected in files.items():
+            path=folder/name
+            if (not path.resolve().is_relative_to(folder.resolve()) or not path.is_file()
+                    or hashlib.sha256(path.read_bytes()).hexdigest()!=expected):
+                raise ValueError('Bundled example has changed: '+name+'. Copy it as a new lesson and use the review workflow.')
     return manifest
+
+
+def prune_legacy_sample(root):
+    """Remove only unchanged copies shipped by older versions of this sample."""
+    sample=root/SAMPLE_PATH
+    manifest_path=sample/'manifest.json'
+    if not manifest_path.is_file():
+        return 0
+    manifest=json.loads(manifest_path.read_text())
+    shared={}
+    for name, expected in manifest.get('shared_hanzi', {}).items():
+        if Path(name).name!=name:
+            raise ValueError('Invalid shared glyph filename: '+name)
+        glyph=root/SHARED_HANZI/name
+        if glyph.is_file() and hashlib.sha256(glyph.read_bytes()).hexdigest()==expected:
+            shared[name]=expected
+    groups=((sample/'hanzi', shared),
+            (sample, manifest.get('retired_outputs', {})))
+    removed=0
+    for folder, files in groups:
+        for name, expected in files.items():
+            if Path(name).name!=name:
+                raise ValueError('Invalid legacy sample filename: '+name)
+            path=folder/name
+            if (path.resolve().is_relative_to(root.resolve()) and not path.is_symlink() and path.is_file()
+                    and hashlib.sha256(path.read_bytes()).hexdigest()==expected):
+                path.unlink()
+                removed+=1
+    return removed
 
 
 def render(output,engine='notebook',width=1280):
@@ -62,7 +96,9 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('command',choices=['verify','render'])
     parser.add_argument('output',type=Path,nargs='?');parser.add_argument('--renderer',choices=['notebook','motion-canvas','manim'],default='notebook');parser.add_argument('--width',type=int,default=1280)
     args=parser.parse_args()
-    if args.command=='verify':print(json.dumps({'ok':True,'files':len(verify()['files'])}));return
+    if args.command=='verify':
+        manifest=verify()
+        print(json.dumps({'ok':True,'files':len(manifest['files'])+len(manifest.get('shared_hanzi',{}))}));return
     if not args.output:parser.error('render needs an empty output directory')
     print(json.dumps(render(args.output,args.renderer,args.width),ensure_ascii=False))
 

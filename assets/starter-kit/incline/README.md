@@ -10,6 +10,8 @@
 6. `demo.mp4`、`board-preview.png`、`preview.html`：已经渲染的样例、方格笔记本板书和浏览器预览。
 7. `student.pdf`、`student.tex`：一页学生讲义；题设图和受力图放在相应的推导位置。
 
+样例与正课共用 `assets/hanzi/` 中的笔画数据，本目录的 `hanzi/` 补充样例专用字形。重放时重新生成时间轴和检查报告。
+
 运行 `python3 SKILL/scripts/sample_kit.py render /ABS/EMPTY/demo` 可从随包音频重放一次。脚本只接受指纹相符的固定样例，输出 `demo-replay.json`，不冒充新课的人审记录或正式交付清单。改题后复制工程，用正常 `course.py review-plan` 流程制作。
 
 模型按匀加速关系计算位移，方块底边始终贴在斜面。题面先出现，再指图讲解。声音是 Kokoro 公开合成音色，并非作者个人音色；音频来源有明确记录，听感仍由实际试听判断。示例的词锚点按整句时间安排，制作自己课程时继续检查口播与落笔。

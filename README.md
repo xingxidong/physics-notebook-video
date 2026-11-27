@@ -1,6 +1,8 @@
 # 物理逐笔板书视频技能
 
-当前版本 0.27.9。给它一道物理题或一节课的主题，可以制作带中文配音的逐笔板书视频，也能导出学生讲义和可编辑的 TikZ 配图。使用时需要支持 Agent Skills 和本地命令的宿主。
+当前版本 0.27.14。给它一道物理题或一节课的主题，可以制作带中文配音的逐笔板书视频，也能导出学生讲义和可编辑的 TikZ 配图。使用时需要支持 Agent Skills 和本地命令的宿主。
+
+0.27.14 按[八步流程](references/production-workflow.md)制作，附读音卡包、目标音色包、自我成长包和五组可编辑材料。斜面样例共用通用字形，重放时再生成时间轴与检查报告。
 
 0.27.9 内置 Academic Humanizer。备新授课或习题课时，可以按[课堂文案改稿说明](references/classroom-language-editing.md)修改讲稿。重写[两份长课模板](assets/starter-kit/long-lessons/README.md)，各段均附试讲。符合条件的 Apple Silicon Mac 安装技能时会同时下载[本地 Qwen 配音](references/platform-install.md#随技能安装本地配音)。
 
@@ -8,7 +10,7 @@
 
 ## 教案审阅与交付
 
-先用 `review-plan` 生成完整讲稿、重难点和板书预览。审阅者同意这一版后，用 `approve-plan` 记录，再开始制作视频。[审阅教案的步骤](references/review-workflow.md)最终交付视频、学生讲义和可编辑配图。片头可按课程指定作者信息，或从本机作者配置读取。
+先扫自我成长包，再按课型备课。把完整讲稿、教案、板书、动画预览、学生讲义和实录试音一起交给授课人。确认后用 `approve-plan` 记录，再开始正式配音。成片逐句核对口播与落笔，交付视频、学生讲义 PDF 和可编辑的 LaTeX、TikZ 源码。[审阅教案的步骤](references/review-workflow.md)片头可按课程指定作者信息，或从本机作者配置读取。
 
 两个课型都可用 `estimate-duration` [估算课长](references/duration-planning.md)，教案并列显示教学预算与按讲稿推算的时长。配音检查分开提醒句内疑似卡壳和段与段之间的空档，`voice-check --listen CUE_ID --context` 导出相邻语句供连续回听。
 
@@ -37,8 +39,6 @@ python3 scripts/course.py init concept-demo --kind concept
 项目仓库：[xingxidong/physics-notebook-video](https://github.com/xingxidong/physics-notebook-video)。
 
 下载：[最新版本](https://github.com/xingxidong/physics-notebook-video/releases/latest)。
-
-[课程成片合集](https://github.com/xingxidong/physics-notebook-video/releases/tag/course-videos-2026-11-11) 收录已完成的习题课和新授课 MP4。
 
 ## 平台支持
 
@@ -73,11 +73,10 @@ python3 scripts/platform_install.py install --target codex --scope project --pro
 python3 scripts/platform_install.py install --target claude --scope project --project /path/to/project
 ```
 
-生成通用上传包和豆包专用检查包：
+生成通用上传包。通过豆包平台上传时，按其独立的容量要求检查。[平台限制](references/platform-install.md#zip-文件数限制)
 
 ```sh
 python3 scripts/platform_install.py package --target universal --output physics-notebook-video.zip
-python3 scripts/platform_install.py package --target doubao --output physics-notebook-video-doubao.zip
 ```
 
 安装完成后开启新会话。Codex 使用 `$physics-notebook-video`，Claude Code 可使用 `/physics-notebook-video`，也可以让宿主按 `description` 自动触发。已安装同名技能时，显式使用 `--update`；更新保留 `.env` 和 `runtime-local.json`。
@@ -128,7 +127,7 @@ MINIMAX_API_HOST=https://api.minimax.cn
 然后生成正式视频：
 
 ```sh
-# 先生成教案，等审阅者明确确认后记录 approve-plan。
+# 依照教案审阅流程准备全套材料与试音，完成确认后再运行 build。
 .venv/bin/python "$PHYSICS_SKILL/scripts/course.py" review-plan lesson-demo
 .venv/bin/python "$PHYSICS_SKILL/scripts/course.py" build lesson-demo --video --renderer motion-canvas --width 1920
 .venv/bin/python "$PHYSICS_SKILL/scripts/captions.py" lesson-demo --burn

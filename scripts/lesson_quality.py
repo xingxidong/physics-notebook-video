@@ -168,6 +168,16 @@ def run(project,stage='plan',prepared=None,video_file=None):
         if stage=='plan' and native_preview(project,lesson)=='':
             add('animation',[{'code':'preview-missing','message':'当前原生动画尚无对应预览，生成后查看接触、轨迹、方向和标注。'}])
         if stage=='final':
+            if lesson.get('speech_review_version')==1:
+                from trial_review import require_target_voice
+                try:
+                    _, approved = require_target_voice(project,timeline['speech'])
+                    measured = timeline.get('target_voice',{})
+                    if any(measured.get(k)!=v for k,v in approved.items()) or not measured.get('matched_takes'):
+                        raise ValueError('当前时间轴缺少各语段与已审听目标音色一致的记录，请用正式配音入口重新导出。')
+                    coverage['target_voice'] = measured
+                except (ValueError, OSError, KeyError) as exc:
+                    add('voice',[dict(code='target-voice-unverified',message=str(exc))],'error')
             from voice_quality import audit as voice_audit,strict_findings,export_term_reel
             sound=voice_audit(project,timeline)
             add('voice',strict_findings(sound))
@@ -182,6 +192,18 @@ def run(project,stage='plan',prepared=None,video_file=None):
             if not video.is_file():
                 add('video',[{'code':'video-missing','message':f'找不到待检查的成片 {video.name}。'}],'error')
             else:
+                from speech_continuity import inspect as check_continuity
+                try:
+                    continuity = check_continuity(video, timeline)
+                    write_json(project/'final-speech-continuity.json', continuity)
+                    coverage['speech_continuity'] = dict(cues=continuity['spoken_cues'],
+                        aligned_cues=continuity['aligned_cues'], candidates=len(continuity['candidates']))
+                    manual.append('从本版 MP4 正常速度连听开头、相邻公式句和改过的整句前后，逐项确认词内、句间及板书衔接。')
+                    for row in continuity['candidates']:
+                        manual.append(f"成片 {row['start']:.2f} 秒，连听前后两句，记录停顿或接缝。原句为「{row['text']}」。")
+                except (ValueError, OSError, subprocess.SubprocessError) as exc:
+                    write_json(project/'final-speech-continuity.json', dict(status='unavailable',error=str(exc)))
+                    manual.append('从本版 MP4 逐句听语流和音画衔接，记录具体时间、原句与判断。')
                 from term_flow import inspect as check_term_flow, refresh_manifest
                 flow = None
                 try:
@@ -211,6 +233,8 @@ def run(project,stage='plan',prepared=None,video_file=None):
                 try:
                     context = review_course(project, timeline, video, lesson)
                     coverage['speech_context'] = dict(total=len(context['items']), remaining=context['remaining'])
+                    coverage['formula_listening'] = sum(target['kind']=='formula'
+                         for row in context['items'] for target in row['targets'])
                     if context['remaining']:
                         add('voice',[dict(code='speech-context-pending',message=
                             f"还有 {context['remaining']} 句需对听字母、接缝或核对板书，见 final-speech-context.json。")],'error')

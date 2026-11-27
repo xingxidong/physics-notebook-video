@@ -12,9 +12,6 @@
       "1659b8780fa2d8bf5db7ea264d843c5ec49af1b1a7b53957b9fb15a4786287ea",
       "b80e795c07b18d77a600bd1e958e010c442fd17f2241acb4f4e30283db99c525"
     ],
-    "references/classroom-reference-index.md": [
-      "66137dc9dec6443e070d833b1b94e713a4b32254802faed4ca8c779e57a2e828"
-    ],
     "references/components.md": [
       "bbd0cb55e3c48f190e01fa0dd6154a70eafbabe405efda9d4ef5c3096fbb178d"
     ],
@@ -25,7 +22,8 @@
       "841737cb63f78005817c518477d8bd0d526d50fce6c6931a669007e4ca8eebf4"
     ],
     "references/duration-planning.md": [
-      "985249aabcd28fddb18ca9429ac09b106318ca45220ff9aa2a734c042bb214c1"
+      "985249aabcd28fddb18ca9429ac09b106318ca45220ff9aa2a734c042bb214c1",
+      "fe8564a73305a43957b815264725221d805db4d454c4ebaa800d32d3eefea37e"
     ],
     "references/handouts.md": [
       "5c4706542c0a580523863e10116b68f77f0bdcfbf8722d0d55fe6875f8a77bb7",
@@ -45,14 +43,17 @@
     ],
     "references/platform-install.md": [
       "300bab4eeff80ce5d0b73ed6dcfda1cd08c2e193da90adec6f49c2b122438d98",
-      "25c7ccd7d05aab5e778e2a65e6cf1340780d5c8bf0dbedd71e65abc4f3fb74cf"
+      "25c7ccd7d05aab5e778e2a65e6cf1340780d5c8bf0dbedd71e65abc4f3fb74cf",
+      "c71646cacd1310d5c89c83a7fc0fde481c717088dc93424cea169152d867e272",
+      "7ebc135985ed50b67df3e840fd43176540658585b618c58ff3249bb0f52baa17"
     ],
     "references/problem-workflow.md": [
       "743e788942d3282d5f101fc599606d9744396691c895976b5229c05c9816ef0a"
     ],
     "references/production-workflow.md": [
       "a81301f997f4da182583685b8e32b738676651b2161dcfecc149e229c9f93e40",
-      "6d5313850b1c19c17fe6b6f4c8732b0e2965734042bd3e3b3e2b5d554bdf622c"
+      "6d5313850b1c19c17fe6b6f4c8732b0e2965734042bd3e3b3e2b5d554bdf622c",
+      "83056a19958d907654ac23f1c45ad2d54688efbfed5e98a1208a313e015132c9"
     ],
     "references/quality-workflow.md": [
       "b9f60d9c81d939409939dd6ce943f7ca6573f40187431301e0ce7e3ecb9eec65"
@@ -66,7 +67,8 @@
     "references/review-workflow.md": [
       "f48b9c1725a471b73c3f1b7c6abf625e5a86519bb36270235eba3eceb5dccac0",
       "d66f37cb27ad6365ab9384832ea90821a6a7ecf0ef6a371467a962d5e27c639b",
-      "42f46d2a17b57a63a98a758a51c5e117e5560e1c2be8fa8fe6cd02d34db11fcd"
+      "42f46d2a17b57a63a98a758a51c5e117e5560e1c2be8fa8fe6cd02d34db11fcd",
+      "6890d8b1cf239e7c14afbb14fd8480d2e633d98994fb8f1e74b8795370a8f8e4"
     ],
     "references/scenario-animation.md": [
       "a3e9da1476ce3b369c9cad5012841f068abb1583940a59c476f65abc2a0d818a"
@@ -80,7 +82,8 @@
     "references/term-flow.md": [
       "76c57931ce4fffc9f4d3855ea1e3a06ff42164cf2f0074200af5412086b0c55c",
       "9281207b7234f89a97be3b0a84b8aee0b802b3ac49acc7b8c587c8e023d6f6dd",
-      "52b8acec2400b7496a389de50e40b1b937904d9ec5d1dd574282d3adc54facbd"
+      "52b8acec2400b7496a389de50e40b1b937904d9ec5d1dd574282d3adc54facbd",
+      "884f92eb1829478ce25083912951db57d49f144253f1bc84722733faf81aeb79"
     ],
     "references/term-glossaries/课堂易错词.md": [
       "fc7c402c2ec288e2175b52b116be17ef865fc5da3a107310d866f158f4a0ae24",
@@ -93,13 +96,15 @@
       "9a8b7d21f8209c81a90da6132f043d79fe6f932ed8e291bbb9aa542bb8887b54",
       "746750c71d4b853a6247d8a6176da31bf3094b270974c940b7aaa9dfbadc4971",
       "5808002249bf904e512868e3ca71c279ea180042bb907e425c92b767112f17bf",
-      "916e7c18545ce45f7362b94e7d27fcbf46e4d24e9165a868cc1156fd58eb8c37"
+      "916e7c18545ce45f7362b94e7d27fcbf46e4d24e9165a868cc1156fd58eb8c37",
+      "1ede5f4fe59e6f496a209b1a0f18b1c81bafc5ba0c8d11386f11f3c73b4f6715"
     ],
     "references/voice.md": [
       "3912a8190cf8e800dab0744fe338372ef9f82996a7b11e87cc94e0808f1faf29",
       "d2067d8d84b519081b9281628037085906f8f93814e43d4994b1ea4ecce8fd11",
       "c0603f7532a1f405dd671dd2fa7f9fb2e999043fd9b8df7316eca809864139be",
-      "b13881548a8671baf35e10ad5ec3d9330717f3f15b198e875fbd4934b327b3c9"
+      "b13881548a8671baf35e10ad5ec3d9330717f3f15b198e875fbd4934b327b3c9",
+      "afaf581e7dabec23dfaaf4f396fb5bf2079e176e880ac2c8172fbc109e4d5574"
     ],
     "references/ying-xiaolv-01.md": [
       "6a6a1b110cf07104d50ba2456ccd4de8553b35590045d1df6bc56e1fa5c61cc7"
@@ -350,7 +355,155 @@
       "0f8772d2aeb2527952833e166bf624117ec9d3c1417c255c4149ab0b059b10d1"
     ],
     "references/classroom-language-editing.md": [
-      "3a7f1132d49b28814a29b343010a890607e75e3f43b68e2ccf9fd70d638292eb"
+      "3a7f1132d49b28814a29b343010a890607e75e3f43b68e2ccf9fd70d638292eb",
+      "eff9cd9831ae708afe89f5bbf0a5beb050dc4b7b219da3d1b209f379fba26013"
+    ],
+    "references/first-round-energy-conservation.md": [
+      "c895dd4731cc2042c3e24944165e720fcd4fbf873986300f05aa459a2c558e1a"
+    ],
+    "references/first-round-magnetostatic-three.md": [
+      "5fa262b9309a416bbb704b652519fcf03a330f6809298f7f94f408636318f908"
+    ],
+    "references/first-round-newton-two.md": [
+      "a73842b8546d846e86daac451fea367e19374001286f7449a3961b3cbec69cae"
+    ],
+    "references/first-round-kinematics-circular.md": [
+      "982318202272e0aeb11582ce38ac61030b269b76b8e13c112340ce2420fa3a45"
+    ],
+    "references/first-round-kinematics-constant-acceleration.md": [
+      "d52937969b8f443e340a5a09135c55449e80135385e75373d051851933bb9575"
+    ],
+    "references/first-round-celestial-motion-review.md": [
+      "d09296148dfe5d1dce3567f76322122d11e0d04f236e934709cc1517d227cc4e"
+    ],
+    "references/first-round-induction-one.md": [
+      "d9ba5a5b2f0a0826c2abc7857bdbf138bc7609c05748ade502b93c3c230fedf8"
+    ],
+    "references/first-round-waves.md": [
+      "5af8404bc7dcefe8936b0fd016bb7889e3c87155451361843cedc1bcf57ae59c"
+    ],
+    "references/first-round-work-kinetic-energy.md": [
+      "b519149c8d39bf45bebe78474fdb6f34da9146b16c4fee38dacc256172b82d4a"
+    ],
+    "references/first-round-kinematics-related-motion.md": [
+      "b8266dd5e99b4eb89f58d017f60c8f3b0b5b883aa8c813e7d0167dcc98a71588"
+    ],
+    "references/first-round-statics-two.md": [
+      "4dc33895941db1a4cbc496774b2592cb02973c4cbf1fc5732761aeefbb5ba8bb"
+    ],
+    "references/first-round-statics-one.md": [
+      "1c1c9ce84dae2dfcd1fbd958da08a59bf487a1de70c40dbf72d8067ba4680551"
+    ],
+    "references/first-round-internal-energy.md": [
+      "747a041ac54f79d66db6b455395814a3df9a922d9713ddcf71e2fde21e0bba21"
+    ],
+    "references/first-round-calculus-application-two.md": [
+      "99d2de1f6faa474f040dc43858b67ead8f9526bbdcd590ad5fed47b47452484e"
+    ],
+    "references/first-round-induction-two.md": [
+      "5148e1f59053b38ef2da3ad4f28dbb342eaaf23ed5dbeab866ee97db39ff1bed"
+    ],
+    "references/first-round-momentum-theorem.md": [
+      "f7849fbced44b10dbb6a75bebe04f7b0bb81201c119a819b8e4d626a41845197"
+    ],
+    "references/speech-continuity.md": [
+      "0ca99afa0b1e651c5e9495ee275464d2b224eedbbf8c97a4991f9850390cc149"
+    ],
+    "references/first-round-calculus-application.md": [
+      "46049df24a0dd3b05bcc629d12cf2954226ab5ccdf5a3a43aba78a31a0fcc42e"
+    ],
+    "references/first-round-newton-one.md": [
+      "1937180247e9874b4d949400ea074599f9b3a942381d1791e67cb3bfd423d16a"
+    ],
+    "references/first-round-calculus.md": [
+      "182b4a6ae6c7919057a3b20467651edf790a4042e11a6cd6ef5a6f8ca7a896f5"
+    ],
+    "references/first-round-momentum-conservation.md": [
+      "34d8b4b77dd16106847f52c525583747aac8e70babfe59de2d69ce28b2e22613"
+    ],
+    "references/first-round-angular-momentum.md": [
+      "5803fa3dc423d0c5a36ecf34a878393892e0f81f22ea6506b39641153ca174b4"
+    ],
+    "references/first-round-magnetostatic-four.md": [
+      "85042fa5723c1ea92aa925c5598ce177f1bbc9a363ee7f91ae748c9be459c67a"
+    ],
+    "references/first-round-statics-three.md": [
+      "81191a1b6645cb44b68513be8d240e4cd61ebf7108b3b451044eb8aed0f5cef0"
+    ],
+    "references/first-round-newton-three.md": [
+      "e9ae4e469f2431e7c5bc434e84d7d9fcb77a4cc1f2bac1813fbc25d15600c7e2"
+    ],
+    "references/first-round-magnetostatic-two.md": [
+      "5734bce1277787568cb5b91ce4016f45d246fc4549997332d5ab931b3709dabc"
+    ],
+    "references/first-round-celestial-orbits.md": [
+      "0750a28024ae16dce6b578e6007985278d8d9d92b0bf345229140d5866734fd6"
+    ],
+    "references/first-round-universal-gravitation.md": [
+      "d182f38128ff7fd54b4dc8ed123dc986328bd9efea2efb8bab48ecec80ad6144"
+    ],
+    "references/first-round-kinematics-synthesis.md": [
+      "4b148cc2efeed0c89ad70bd779fd7a12b7763082b6f9000885452daa89c4cfaf"
+    ],
+    "references/first-round-induction-three.md": [
+      "531f4c614669c76f1797b787cc6d94461d542b724c2b4eb451dfda2879696a3f"
+    ],
+    "references/first-round-statics-four.md": [
+      "9d3bf6b007fe72200ea0ed79b4f3c646d8a2505eb009969b49fdd231bc44b755"
+    ],
+    "references/first-round-relativity-one.md": [
+      "c796357be4df77dffffc8bb0e105f0f64eb66641b1f7fc53195a6556779ec4cb"
+    ],
+    "references/first-round-simple-harmonic.md": [
+      "03f18fb452caae7a7433d32049195775045726a1bb8464b4d9044d040e035491"
+    ],
+    "references/first-round-gravitation-supplement.md": [
+      "5f31886a9f11197d4390049e980e074c6a07666794eb2b7bd18821455bb11cb6"
+    ],
+    "references/first-round-rigid-body-dynamics.md": [
+      "e74003b12018c4016043ea1636bc17e5d513cd722e6bbf6f1f253e50379e8db2"
+    ],
+    "references/first-round-phase-transition.md": [
+      "5db54be03427bfb8e4de7da71fe3aa246b4a1067f06b3ee0468fca704977877f"
+    ],
+    "references/first-round-kinematics-fundamentals.md": [
+      "737dde70d2e771cdd410ac52f2ef0e413362c65873c9604325294f8d72004c85"
+    ],
+    "references/first-round-kinematics-horizontal-projectile.md": [
+      "4f5e52240321dbfb9424fee8755179102abd9500e554a34b7e5a3a04b1a5f304"
+    ],
+    "references/first-round-induction-five.md": [
+      "8f7549db42770592d6f2f4f0156699dc7c388e80fd1b4889c12e90b5e69009d5"
+    ],
+    "references/first-round-relativity-two.md": [
+      "c72b9162416190a204e18ac1c57e74acf4c144836a2714af81a5b1ee74bf0bd2"
+    ],
+    "references/first-round-physical-optics.md": [
+      "29380ad66589c7a4b705bc20291ed8f3a40bdfa431c034a3f21055d7cd15fc66"
+    ],
+    "references/first-round-fields.md": [
+      "d30bfb9392f6eb198cd7a74def4822fc022dc06cd163de05f54c5d773a44c2d1"
+    ],
+    "references/first-round-modern-physics.md": [
+      "f905f9ca5e425a2a6a89ea1417115ff25e33f74fcd44e96fb113becb7ee14513"
+    ],
+    "references/first-round-limits-derivatives.md": [
+      "ee0e1e944dae7b514557d6db88f218278b53336e4411b57a49092cafb96107c9"
+    ],
+    "references/first-round-thermodynamics.md": [
+      "19ffa7cd4a901ecd8871499bc9a60a607ee63f0a29166fb58586654662e7b11d"
+    ],
+    "references/first-round-thermal-properties.md": [
+      "e90041b87a41c79c46518584d7df72cbddb369b28c8c8906b110119cfab27abb"
+    ],
+    "references/first-round-vibration.md": [
+      "ac4a814885f1c9282bc0f5042721dcd4002482be334907c9d9ea05454fcbf9de"
+    ],
+    "references/first-round-newton-four.md": [
+      "233c124c0c93a11499c078c1851750e4c8e7f3b957ddbc9ed9310433cae6c683"
+    ],
+    "references/first-round-induction-four.md": [
+      "7792275d98bce945b3de0f01296ef56d52b729d9e1bb4608001cda450952b6f6"
     ]
   }
 }

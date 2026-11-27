@@ -57,6 +57,8 @@ def synth(project,speech,cue):
                'tts':text,'source_text':cue.get('tts',''),'rate_multiplier':1,
                'seed':chosen.get('seed',281762),'temperature':chosen.get('temperature',.53),
                'letter_style':chosen.get('letter_style','names')}
+    if cfg.get('_classroom_take'):
+        signature['classroom_take']=cfg['_classroom_take']
     key=hashlib.sha256(json.dumps(signature,sort_keys=True,ensure_ascii=False).encode()).hexdigest()[:24]
     cache=project/'cache/audio';cache.mkdir(parents=True,exist_ok=True)
     wav=cache/(key+'.wav');meta=cache/(key+'.json')

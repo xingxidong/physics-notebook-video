@@ -2,7 +2,7 @@
 from collections import defaultdict
 import re
 
-from classroom_terms import learning_cards, letter_card, practice
+from classroom_terms import learning_cards, letter_card, practice, reference_examples
 from pronunciation import local_tts_text, matched_pronunciations, term_pattern
 from term_flow import identify
 from term_inventory import script_text, sentence_key
@@ -148,7 +148,32 @@ def contextual_targets(data, lesson=None):
     return groups
 
 
-def lesson_inputs(lesson, occurrences=None):
+def formula_examples(cue, text):
+    """Use exact expressions first, then examples that explain the same operation."""
+    actions = cue.get('resolved_actions', cue.get('actions', []))
+    formulas = {re.sub(r'\s+', '', action['latex']) for action in actions if action.get('latex')}
+    commands = {r'\frac', r'\sqrt', r'\sin', r'\cos', r'\tan', r'\arctan', r'\exp',
+                r'\log', r'\ln', r'\int', r'\sum', r'\lim', r'\dot', r'\ddot'}
+    result = []
+    for kind in ('physics_formula', 'math_formula', 'math_function', 'greek'):
+        candidates = []
+        for example in reference_examples():
+            if example['kind'] != kind:
+                continue
+            expression = re.sub(r'\s+', '', example['formula'])
+            exact = expression in formulas
+            nearby = sum(len(word) for word in example['keywords'] if word in text)
+            similar = any(cmd in expression and any(cmd in formula for formula in formulas) for cmd in commands)
+            score = 500 * exact + 40 * similar + nearby
+            if score and (exact or similar or nearby >= 3):
+                candidates.append((score, example))
+        if candidates:
+            _, example = max(candidates, key=lambda pair: pair[0])
+            result.append({key: example[key] for key in ('kind', 'formula', 'text', 'flow')})
+    return result
+
+
+def lesson_inputs(lesson, occurrences=None, *, include_references=False):
     rows = identify(lesson) if occurrences is None else occurrences
     cards = learning_cards(rows)
     groups = defaultdict(list)
@@ -160,7 +185,11 @@ def lesson_inputs(lesson, occurrences=None):
         for ci,cue in enumerate(page.get('cues',page.get('beats',[])),1):
             cid = str(cue.get('id',ci))
             exclusions = lesson.get('_term_inventory',{}).get(sentence_key(pid,cid),{}).get('exclude',[])
-            results[pid,cid] = cue_input(script_text(cue), groups[pid,cid], cards, lesson.get('speech',{}), cue, exclusions)
+            text = script_text(cue)
+            planned = cue_input(text, groups[pid,cid], cards, lesson.get('speech',{}), cue, exclusions)
+            if include_references:
+                planned['formula_examples'] = formula_examples(cue, text)
+            results[pid,cid] = planned
     return results
 
 

@@ -19,6 +19,7 @@ from terminology_review import _clean, _word_windows
 
 RATE = 16000
 _FLOW = {'电压差', '桥接'}
+_FORMULA_RELATION = re.compile(r'[=<>≤≥≈≠∝]|\\(?:approx|equiv|leq?|geq?|ne|propto|sim)\b')
 
 
 def probe_python():
@@ -43,8 +44,14 @@ def inventory(timeline, lesson=None, *, priority=()):
     """Return one row per cue, preserving the displayed symbols and repeated offsets."""
     from card_speech import contextual_targets, symbols_in_order
     choices = contextual_targets(timeline,lesson)
+    formal_formula_checks = (lesson or {}).get('speech_review_version') == 1
     boards = {}
+    formulas = defaultdict(list)
     for page in (lesson or timeline)['pages']:
+        if formal_formula_checks:
+            for step in page.get('derivation_steps', []):
+                if step.get('action_id'):
+                    formulas[page.get('id'),step.get('cue_id')].append(step['action_id'])
         for cue in page.get('cues', page.get('beats', [])):
             boards[page.get('id'), cue.get('id')] = [dict(id=a.get('id'), latex=a['latex'])
                 for a in cue.get('actions', []) if a.get('type') == 'math' and a.get('latex')]
@@ -72,6 +79,14 @@ def inventory(timeline, lesson=None, *, priority=()):
                 if (spans and not (lo and windows[lo-1] == spans[0])
                         and not (hi < len(windows) and windows[hi] == spans[-1])):
                     row['window'] = [start + spans[0][0], start + spans[-1][1]]
+                    if kind == 'symbol':
+                        # Include unassigned sound before the next spoken token.
+                        # A separately authored letter keeps its own occurrence.
+                        a, b = spans[0][0], spans[-1][1]
+                        before = windows[lo-1][1] if lo else 0.
+                        after = windows[hi][0] if hi < len(windows) else cue['end']-cue['start']
+                        row['repeat_window'] = [start + max(a-.32, min(a, before)),
+                                                start + min(b+.32, max(b, after))]
                 items.append(row)
             # Mask subscript syntax only for lexical detection. Offset and print case stay intact.
             for symbol in symbols_in_order(text):
@@ -101,6 +116,17 @@ def inventory(timeline, lesson=None, *, priority=()):
                             items[-1]['accepted_surface'] = soft
             for item in items:
                 item['id'] = f"{item['kind']}@{item['offset']}"
+            for index, action in enumerate(boards.get((page.get('id'),cid), []), 1):
+                if formal_formula_checks and ((lesson or {}).get('classroom_workflow_version')==1
+                        or action['id'] in formulas[page.get('id'),cid]
+                        or _FORMULA_RELATION.search(action['latex'])):
+                    ident=action['id'] or str(index)
+                    items.append(dict(id=f'formula@{ident}', kind='formula', offset=len(text),
+                        text=action['latex'], expected='对照该条板书，核对实际读出的字母、上下标、运算顺序和落笔。'))
+            if (lesson or {}).get('classroom_workflow_version')==1:
+                from term_inventory import script_text
+                items.append(dict(id='complete', kind='complete', offset=len(text), text=script_text(cue),
+                                  expected='按完整讲稿听本句每一部分，核对漏读、多读、重复和段间连贯。'))
             rows.append(dict(id=f'{pi}.{ci}', page=page.get('id',str(pi)), cue=cid, text=text,
                              start=start, end=page.get('start',0)+cue.get('end',0),
                              targets=sorted(items,key=lambda t:t['offset']),

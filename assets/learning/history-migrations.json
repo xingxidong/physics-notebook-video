@@ -8,7 +8,7 @@
       "bank": "issues",
       "key": "formula-symbol-pause",
       "recorded": true,
-      "database": "assets/learning/feedback.sqlite3"
+      "database": "feedback.sqlite3"
     },
     "takeaway": "公式中的字母、下标和幂次连贯朗读，停顿放在完整运算或分组之后；按本课每一次出现的位置听整句。",
     "applies_to": "new concept and problem lessons"
@@ -22,7 +22,7 @@
       "bank": "issues",
       "key": "formula-symbol-pause",
       "recorded": true,
-      "database": "assets/learning/feedback.sqlite3"
+      "database": "feedback.sqlite3"
     },
     "takeaway": "公式中的字母、下标和幂次连贯朗读，停顿放在完整运算或分组之后；按本课每一次出现的位置听整句。",
     "applies_to": "new concept and problem lessons"
@@ -36,7 +36,7 @@
       "bank": "issues",
       "key": "formula-symbol-pause",
       "recorded": true,
-      "database": "assets/learning/feedback.sqlite3"
+      "database": "feedback.sqlite3"
     },
     "takeaway": "公式中的字母、下标和幂次连贯朗读，停顿放在完整运算或分组之后；按本课每一次出现的位置听整句。",
     "applies_to": "new concept and problem lessons"
@@ -50,7 +50,7 @@
       "bank": "issues",
       "key": "formula-symbol-pause",
       "recorded": true,
-      "database": "assets/learning/feedback.sqlite3"
+      "database": "feedback.sqlite3"
     },
     "takeaway": "公式中的字母、下标和幂次连贯朗读，停顿放在完整运算或分组之后；按本课每一次出现的位置听整句。",
     "applies_to": "new concept and problem lessons"
@@ -64,7 +64,7 @@
       "bank": "issues",
       "key": "gpt-sovits-v2proplus-mandarin-listening",
       "recorded": true,
-      "database": "assets/learning/feedback.sqlite3"
+      "database": "feedback.sqlite3"
     },
     "takeaway": "更换语音模型前，用同一教师参考音色、含物理术语和字母的完整课堂句比较；记录所选版本和实际听感。",
     "applies_to": "new concept and problem lessons"
@@ -78,7 +78,7 @@
       "bank": "issues",
       "key": "split-physics-word",
       "recorded": true,
-      "database": "assets/learning/feedback.sqlite3"
+      "database": "feedback.sqlite3"
     },
     "takeaway": "把物理术语作为完整词组朗读；重配后听该词所在整句和相邻句，检查词内停顿、重复起音与突兀接缝。",
     "applies_to": "new concept and problem lessons"
@@ -92,7 +92,7 @@
       "bank": "letters",
       "key": "A",
       "recorded": true,
-      "database": "assets/learning/feedback.sqlite3"
+      "database": "feedback.sqlite3"
     },
     "takeaway": "在完整课堂句中检查字母 A 的英语字母名及两侧中文，连读下标和幂次，重录后复听整句与接缝。",
     "applies_to": "new concept and problem lessons"
@@ -106,7 +106,7 @@
       "bank": "letters",
       "key": "E",
       "recorded": true,
-      "database": "assets/learning/feedback.sqlite3"
+      "database": "feedback.sqlite3"
     },
     "takeaway": "在完整课堂句中检查字母 E 的英语字母名及两侧中文，连读下标和幂次，重录后复听整句与接缝。",
     "applies_to": "new concept and problem lessons"
@@ -120,7 +120,7 @@
       "bank": "letters",
       "key": "F",
       "recorded": true,
-      "database": "assets/learning/feedback.sqlite3"
+      "database": "feedback.sqlite3"
     },
     "takeaway": "在完整课堂句中检查字母 F 的英语字母名及两侧中文，连读下标和幂次，重录后复听整句与接缝。",
     "applies_to": "new concept and problem lessons"
@@ -134,7 +134,7 @@
       "bank": "letters",
       "key": "Q",
       "recorded": true,
-      "database": "assets/learning/feedback.sqlite3"
+      "database": "feedback.sqlite3"
     },
     "takeaway": "在完整课堂句中检查字母 Q 的英语字母名及两侧中文，连读下标和幂次，重录后复听整句与接缝。确认没有额外冒出的 U 音。",
     "applies_to": "new concept and problem lessons"
@@ -148,7 +148,7 @@
       "bank": "letters",
       "key": "R",
       "recorded": true,
-      "database": "assets/learning/feedback.sqlite3"
+      "database": "feedback.sqlite3"
     },
     "takeaway": "在完整课堂句中检查字母 R 的英语字母名及两侧中文，连读下标和幂次，重录后复听整句与接缝。",
     "applies_to": "new concept and problem lessons"
@@ -162,7 +162,7 @@
       "bank": "letters",
       "key": "U",
       "recorded": true,
-      "database": "assets/learning/feedback.sqlite3"
+      "database": "feedback.sqlite3"
     },
     "takeaway": "在完整课堂句中检查字母 U 的英语字母名及两侧中文，连读下标和幂次，重录后复听整句与接缝。",
     "applies_to": "new concept and problem lessons"
@@ -176,7 +176,7 @@
       "bank": "polyphones",
       "key": "位置矢量",
       "recorded": true,
-      "database": "assets/learning/feedback.sqlite3"
+      "database": "feedback.sqlite3"
     },
     "takeaway": "位置矢量整词连读，矢读第三声、量读第四声；在新课中逐次检查实际音轨。",
     "applies_to": "new concept and problem lessons"

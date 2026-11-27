@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Install, package, and verify physics-notebook-video across Agent Skills hosts."""
 import argparse,json,os,shutil,sys,tempfile,zipfile
-from learning_bundle import DB_REL, merge, snapshot, sync_cards, sync_references, write_reference_history, verify_contents
+from learning_bundle import DB_REL, RETIRED_REFERENCE, merge, snapshot, sync_cards, sync_references, write_reference_history, verify_contents
 from pathlib import Path,PurePosixPath
+from speech_packages import CARDS, CONTEXT, OLD_CARDS, OLD_TARGET, TARGET, available, merge_practice
 
 ROOT=Path(__file__).resolve().parents[1]
 NAME='physics-notebook-video'
@@ -20,6 +21,8 @@ def source_files(*, distribution=False):
                        not (distribution and Path(folder)==ROOT and d=='tests'))
         for name in dirs+sorted(names):
             path=Path(folder)/name; rel=path.relative_to(ROOT)
+            if rel==RETIRED_REFERENCE or rel in (OLD_CARDS, OLD_TARGET):
+                continue
             if path.is_symlink():raise ValueError(f'Symlinks are not packaged: {rel}')
             if path.name.startswith('.learning-') or path.name in {DB_REL.name+s for s in ('-wal','-shm','-journal')}:
                 continue
@@ -58,6 +61,11 @@ def copy_install(dest,update):
     dest.mkdir(parents=True,exist_ok=True)
     sync_references(ROOT,dest)
     copied=0
+    if (dest/OLD_CARDS).is_file():
+        sync_cards(dest/OLD_CARDS,dest/CARDS,prefer_incoming=False)
+    if (dest/OLD_TARGET).is_file() and not (dest/TARGET).is_file():
+        from speech_packages import migrate_practice
+        migrate_practice(dest)
     for src,rel in source_files():
         out=dest/rel
         if (rel.parts[0]=='references' and rel.suffix=='.md') or rel.as_posix() in (
@@ -65,12 +73,17 @@ def copy_install(dest,update):
             continue
         if rel==DB_REL:
             merge(src,out)
-        elif rel==Path('assets/classroom-cards.json') and out.is_file():
+        elif rel==CARDS and out.is_file():
             sync_cards(src,out)
+        elif rel in (CONTEXT,TARGET):
+            merge_practice(src,out)
         else:
             out.parent.mkdir(parents=True,exist_ok=True)
             shutil.copy2(src,out)
         copied+=1
+    if update:
+        from sample_kit import prune_legacy_sample
+        prune_legacy_sample(dest)
     return copied,preserved
 
 def install(args):
@@ -88,9 +101,11 @@ def package(args):
     installed=destination('codex','user',None,None)
     if (ROOT/'.git').is_dir() and installed.resolve()!=ROOT.resolve():
         merge(installed/DB_REL,ROOT/DB_REL)
-        cards=Path('assets/classroom-cards.json')
-        if (installed/cards).is_file():
-            sync_cards(installed/cards,ROOT/cards,prefer_incoming=False)
+        cards=available(installed,CARDS,OLD_CARDS)
+        if cards.is_file():
+            sync_cards(cards,ROOT/CARDS,prefer_incoming=False)
+        for rel in (CONTEXT,TARGET):
+            merge_practice(installed/rel,ROOT/rel,prefer_incoming=False)
         sync_references(installed,ROOT,prefer_incoming=False)
     write_reference_history(ROOT)
     report=inspect(args.target)

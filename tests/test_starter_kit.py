@@ -1,7 +1,9 @@
+from hashlib import sha256
 import json
 import math
 from pathlib import Path
 import sys
+from tempfile import TemporaryDirectory
 import unittest
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -10,9 +12,42 @@ from animation_examples import calculate
 from incline_motion import setup,state
 from course_outline import validate
 from classroom_language import review_narration
+from sample_kit import SAMPLE_PATH, SHARED_HANZI, prune_legacy_sample, verify
 
 
 class StarterKit(unittest.TestCase):
+    def test_replay_resolves_shared_glyphs_with_single_copies(self):
+        manifest=verify()
+        sample=ROOT/SAMPLE_PATH
+        self.assertTrue(manifest['shared_hanzi'])
+        self.assertEqual({p.name for p in (sample/'hanzi').glob('*.json')},
+                         {Path(name).name for name in manifest['files'] if name.startswith('hanzi/')})
+        self.assertTrue(all(not (sample/'hanzi'/name).exists() for name in manifest['shared_hanzi']))
+        self.assertTrue(all(not (sample/name).exists() for name in manifest['retired_outputs']))
+
+    def test_upgrade_prunes_only_original_outputs_and_duplicate_glyphs(self):
+        with TemporaryDirectory() as work:
+            root=Path(work)
+            sample=root/SAMPLE_PATH
+            (sample/'hanzi').mkdir(parents=True)
+            (root/SHARED_HANZI).mkdir(parents=True)
+            original=b'original'
+            expected=sha256(original).hexdigest()
+            (sample/'manifest.json').write_text(json.dumps({
+                'shared_hanzi':{'一.json':expected,'位.json':expected},
+                'retired_outputs':{'timeline.json':expected,'demo-replay.json':expected},
+            }),encoding='utf-8')
+            (root/SHARED_HANZI/'一.json').write_bytes(original)
+            (sample/'hanzi/一.json').write_bytes(original)
+            (sample/'hanzi/位.json').write_bytes(original)
+            (sample/'demo-replay.json').write_bytes(original)
+            (sample/'timeline.json').write_bytes(b'modified by installation owner')
+            self.assertEqual(prune_legacy_sample(root),2)
+            self.assertTrue((sample/'timeline.json').is_file())
+            self.assertTrue((sample/'hanzi/位.json').is_file())
+            self.assertFalse((sample/'hanzi/一.json').exists())
+            self.assertFalse((sample/'demo-replay.json').exists())
+
     def test_collision_conserves_momentum_and_energy(self):
         p=json.loads((ROOT/'assets/starter-kit/animations/parameters.json').read_text())
         for m1,m2,u1,u2 in ((1,2,3,0),(3,1,1,-2),(.5,4,2,1)):

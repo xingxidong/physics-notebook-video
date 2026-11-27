@@ -86,9 +86,14 @@ def init(project,plan_file):
     lesson.update(deepcopy({k:v for k,v in course.items() if k not in
                           ('target_minutes','minimum_minutes','speech','sections')}))
     if lesson.get('kind') in ('concept','problem'):
+        from classroom_workflow import start
+        if not (project/'classroom-start.json').is_file():
+            start(project,lesson['kind'],lesson.get('source_type'))
+        lesson['classroom_workflow_version']=1
         lesson['review_required']=True
         lesson['workflow_version']=1
         lesson['term_inventory_version']=2
+        lesson['speech_review_version']=1
         lesson.setdefault('handout','学生讲义.tex')
         lesson.setdefault('handout_source','学生讲义.tex')
     if outline:lesson['course_outline']=outline

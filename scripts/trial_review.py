@@ -47,6 +47,54 @@ def review_status(row):
     return 'passed' if statuses and all(x == 'ok' for x in statuses) else 'pending'
 
 
+def voice_profile(signature):
+    backend = signature.get('backend')
+    fields = ('model', 'reference_sha256') if backend == 'qwen' else ('voice', 'model')
+    return {'backend': backend, **{key: signature.get(key) or '' for key in fields}}
+
+
+def require_target_voice(project, speech):
+    """Use the actual accepted trial as the speaking voice for a new course."""
+    folder = Path(project) / 'voice-trial'
+    path = folder / 'trial-results.json'
+    if not path.is_file():
+        raise ValueError('正式配音前请在 voice-trial 生成目标音色试音，并登记实际审听。')
+    run = json.loads(path.read_text())
+    rows = run.get('items', [])
+    if run.get('schema') != 2 or not rows:
+        raise ValueError('目标音色需要当前项目的实际试音文件。')
+    source_project = run.get('source_plan',{}).get('project')
+    if not source_project or Path(source_project).resolve()!=Path(project).resolve():
+        raise ValueError('请用当前项目的试音计划录制并登记目标音色。')
+    if not any(row.get('origin')=='lesson' for row in rows):
+        raise ValueError('试音需包含本课的一段真实口播。')
+    if any(review_status(row) != 'passed' or
+           row.get('listening', {}).get('checks', {}).get('voice', {}).get('status') != 'ok'
+           for row in rows):
+        raise ValueError('目标音色试音仍有未审听或待修项目，请使用 voice_trials.py review。')
+    validate_run(folder, run)
+    target = voice_profile(rows[0].get('synthesis_signature', {}))
+    if any(voice_profile(row.get('synthesis_signature', {})) != target for row in rows):
+        raise ValueError('当前试音包含多个音色，请保留选定的音色试音。')
+    backend = speech.get('backend', 'glm')
+    if backend == 'qwen':
+        from qwen_voice import config, sha
+        source = config(project, speech)
+        expected = dict(backend=backend, model=source['model'], reference_sha256=sha(source['reference_audio']))
+    else:
+        from voice import DEFAULTS, environment
+        env = environment(project)
+        expected = dict(backend=backend,
+                        voice=speech.get('voice') or env.get(backend.upper()+'_VOICE') or DEFAULTS[backend],
+                        model=speech.get('model') or (env.get('MINIMAX_MODEL','speech-2.8-hd') if backend=='minimax' else ''))
+    if target != expected:
+        raise ValueError('本次配音配置与已听过的目标音色不符，请恢复同一模型及音色参考或重新试音。')
+    evidence = {'profile_sha256': fingerprint(target),
+                'trial_sha256': fingerprint([row['review_token'] for row in rows]),
+                'reviewed_samples': len(rows)}
+    return target, evidence
+
+
 def validate_run(folder, run, ids=None):
     from trial_materials import lesson_stamp
     source = run.get('source_plan', {})
@@ -144,10 +192,12 @@ def import_review(folder, judgments):
                 record('issues', 'term-flow-' + target['term'], note, match=target['term'],
                        example=row['text'], lesson='固定及扩展试音', at=row['id'])
             else:
+                next_check = {'continuity':'接句与连贯性。','delivery':'语速和讲课口吻。',
+                              'voice':'所选教师声音和上下句音色一致性。'}.get(check['axis'],'当前词的读音和连读。')
                 record('issues', 'speech-trial-' + check['axis'] + '-' + fingerprint(row['text'])[:12],
                        note, match=row['text'], example=row['text'],
                        lesson='固定及扩展试音', at=row['id'],
-                       takeaway='在新课整句中检查' + ('接句与连贯性。' if check['axis'] == 'continuity' else '语速和讲课口吻。'))
+                       takeaway='在新课整句中检查' + next_check)
     current = run_status(folder, run)
     run['status'] = current['status']
     save_report(folder / 'trial-results.json', run)

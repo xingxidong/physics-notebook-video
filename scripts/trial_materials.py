@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 
 from card_speech import lesson_inputs
-from classroom_terms import ARCHIVE, learning_cards, letter_card, practice, saved_cards
+from classroom_terms import ARCHIVE, learning_cards, letter_card, practice, reference_examples, saved_cards
 from feedback_bank import catalog, history, save_report
 from term_inventory import script_text
 
@@ -55,7 +55,8 @@ def make_case(ident, text, origin, *, context=None, flow='', fallback=(), source
         term, offset = row['term'], row['offset']
         if not text.startswith(term, offset):
             raise ValueError(f'{ident}: 术语位置与原句不符：{term}')
-        card = cards.get(term, {})
+        card = {key: value for key, value in cards.get(term, {}).items()
+                if key != 'course_examples'}
         expected = row.get('expected', '')
         if (term, offset) not in known:
             readings = [r for r in card.get('readings', []) if r]
@@ -71,6 +72,7 @@ def make_case(ident, text, origin, *, context=None, flow='', fallback=(), source
                         'observed': card.get('feedback', '')})
     for symbol in plan['symbols']:
         card = letter_card(symbol['symbol']) or {}
+        card.pop('reference_examples', None)
         key = symbol['symbol'].upper()
         targets.append({'id': f"letter@{symbol['offset']}:{symbol['expression']}", 'kind': 'letter',
                         'term': symbol['symbol'], 'expression': symbol['expression'],
@@ -82,7 +84,7 @@ def make_case(ident, text, origin, *, context=None, flow='', fallback=(), source
     targets.sort(key=lambda x: (x['offset'], x['id']))
     checks = [{'id': axis + ':' + row['id'], 'target': row['id'], 'axis': axis}
               for row in targets for axis in ('pronunciation', 'flow')]
-    checks.extend([{'id': 'continuity', 'axis': 'continuity'}, {'id': 'delivery', 'axis': 'delivery'}])
+    checks.extend({'id': axis, 'axis': axis} for axis in ('voice', 'continuity', 'delivery'))
     result = dict(id=ident, text=text, origin=origin, sources=list(sources), flow=flow,
                   targets=targets, checks=checks, context=context, fallback=list(fallback),
                   planned_input=plan, review_status='pending')
@@ -106,7 +108,7 @@ def load_lesson(project):
 
 def lesson_stamp(project):
     return {name: hashlib.sha256((Path(project) / name).read_bytes()).hexdigest()
-            for name in ('lesson.json', 'speech-plan.json', 'term-inventory.json')
+            for name in ('classroom-start.json', 'lesson.json', 'speech-plan.json', 'term-inventory.json')
             if (Path(project) / name).is_file()}
 
 
@@ -141,6 +143,7 @@ def build_plan(project=None, *, lesson=None, max_extra=16, rotation=0):
             pool.append((3, recent.get((bank, key), -1), row))
     lesson = load_lesson(project) if project else lesson
     occurrences = []
+    spoken_lines = []
     if lesson:
         lesson = copy.deepcopy(lesson)
         for pi, page in enumerate(lesson.get('pages', []), 1):
@@ -152,10 +155,11 @@ def build_plan(project=None, *, lesson=None, max_extra=16, rotation=0):
         for page in lesson.get('pages', []):
             for cue in page.get('cues', []):
                 text = script_text(cue)
+                spoken_lines.append(text)
                 ident = 'lesson-' + fingerprint([page['id'], cue['id'], text])[:14]
                 row = make_case(ident, text, 'lesson', context=case_context(lesson, page, cue),
                                 sources=[{'page': page['id'], 'cue': cue['id']}])
-                if row['targets']:
+                if row['targets'] or lesson.get('classroom_workflow_version')==1:
                     pool.append((4 if any(x['feedback_keys'] for x in row['targets']) else 2, 0, row))
         semantic_pending = [dict(page=r['page'], cue=r['cue']) for r in script_inventory(lesson, occurrences)
                             if not r['reviewed']] if lesson.get('term_inventory_version', 1) >= 2 else []
@@ -171,6 +175,21 @@ def build_plan(project=None, *, lesson=None, max_extra=16, rotation=0):
     for index, (term, text) in enumerate(library_candidates):
         row = make_case('card-' + fingerprint([term, text])[:14], text, 'card', sources=[{'card': term}])
         pool.append((1, -index, row))
+    lecture_text = '\n'.join(spoken_lines)
+    reference_rows = list(reference_examples())
+    if reference_rows:
+        start = (rotation * max(1, max_extra)) % len(reference_rows)
+        reference_rows = reference_rows[start:] + reference_rows[:start]
+    if lesson:
+        ranked = [(sum(len(word) for word in row['keywords'] if word in lecture_text), row)
+                  for row in reference_rows]
+        reference_rows = [row for score, row in sorted(ranked, key=lambda item: -item[0]) if score]
+    for index, example in enumerate(reference_rows[:max_extra]):
+        reference = {key: example[key] for key in ('source', 'kind', 'evidence', 'formula')}
+        ident = 'reference-' + fingerprint([reference, example['text']])[:14]
+        row = make_case(ident, example['text'], 'card', flow=example['flow'], sources=[reference])
+        if row['targets']:
+            pool.append((2, -index, row))
     seen = {fingerprint([x['text'], x['planned_input']]): x for x in cases}
     candidates, deferred = [], []
     for priority, rank, row in sorted(pool, key=lambda item: (-item[0], -item[1], item[2]['id'])):

@@ -31,6 +31,11 @@ def run(config,output,ids=None,plan_file=None,project=None,max_extra=16):
         speech['qwen']=qwen_config(output,speech)
     material=json.loads(plan_file.read_text()) if plan_file else build_plan(project,max_extra=max_extra)
     check_plan(material)
+    if material.get('project'):
+        from production_workflow import read
+        started=read(Path(material['project'])/'classroom-start.json')
+        if started and not started.get('first_take',True):
+            speech['_classroom_take']=started['run']
     source=material['items']
     wanted=set(ids or (x['id'] for x in source))
     missing=wanted-{x['id'] for x in source}

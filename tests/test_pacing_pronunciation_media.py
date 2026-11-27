@@ -24,6 +24,32 @@ from voice_quality import export_term_reel
 
 
 class TeachingMediaTests(unittest.TestCase):
+    @unittest.skipUnless(shutil.which('ffmpeg'), 'ffmpeg is required for actual audio checks')
+    def test_continuity_checks_embedded_audio_and_respects_punctuation(self):
+        from speech_continuity import inspect
+        with tempfile.TemporaryDirectory() as d:
+            path=Path(d)
+            rate=8000
+            audio=array.array('h')
+            for duration,value in ((.30,3800),(.38,0),(.44,3800),(.03,0),(.50,3800)):
+                audio.extend(array.array('h',[value]*8+[-value]*8)*(round(rate*duration)//16))
+            with wave.open(str(path/'test.wav'),'wb') as out:
+                out.setparams((1,2,rate,0,'NONE','not compressed'))
+                out.writeframes(audio.tobytes())
+            video=path/'test.mp4'
+            subprocess.run(['ffmpeg','-v','error','-i',str(path/'test.wav'),'-c:a','aac',str(video)],check=True)
+            first={'id':'first','tts':'宽高比。','start':0,'end':1.12,'words':[
+                {'text':'宽','start':.02,'end':.30},{'text':'高','start':.68,'end':.87},
+                {'text':'比','start':.87,'end':1.1}]}
+            second={'id':'second','tts':'继续。','start':1.15,'end':1.63}
+            timeline={'pages':[{'id':'page','cues':[first,second]}]}
+            report=inspect(video,timeline)
+            self.assertEqual(report['aligned_cues'],1)
+            self.assertEqual([r['kind'] for r in report['candidates']],['split-phrase','tight-join'])
+            first['tts']='宽，高比。'
+            first['pause_reason']='observe_motion'
+            self.assertEqual(inspect(video,timeline)['candidates'],[])
+
     def test_extended_edition_compares_only_matching_material(self):
         subjects = [{'title': '径向方程', 'pages': ['p'], 'mode': 'derive', 'reason': '列式', 'spoken_chars': 160},
                     {'title': '单位矢量', 'pages': ['q'], 'mode': 'explain', 'reason': '由图求导', 'spoken_chars': 120,

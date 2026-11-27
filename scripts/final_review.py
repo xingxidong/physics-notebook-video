@@ -114,6 +114,9 @@ def dispatch(args):
     project=Path(args.project).resolve();lesson=effective(project)
     if args.command=='review-final':
         return record(project,lesson,args.task,args.token,args.reviewer,args.evidence)
+    from classroom_workflow import before_finalize, enabled
+    if enabled(lesson):
+        before_finalize(project,lesson,args.video_file)
     export_delivery(project,lesson,video_file=args.video_file)
     from lesson_quality import run
     run(project,'final',video_file=args.video_file)

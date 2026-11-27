@@ -65,6 +65,12 @@ DeepSeek 模型 API 支持工具调用，并提供 OpenAI Responses / Anthropic 
 python3 scripts/platform_install.py install --target agents --dest /absolute/capability/path/physics-notebook-video
 ```
 
+## ZIP 文件数限制
+
+OpenAI Responses API 的上传入口对每个技能版本限制 500 个文件。安装器的 `universal` 和 `claude` 打包选项都按这个文件数检查，便于复用同一份 ZIP。[OpenAI 技能上传限制](https://developers.openai.com/api/docs/guides/tools-skills#limits-and-validation)
+
+豆包开放平台的发布入口允许最多 1,024 个条目，ZIP 和解压总量分别限 16 MB，单文件解压后限 2 MB。[豆包开放平台技能接入指南](https://open.doubao.com/document/doubao-developer-guide/skill-integration-guide)
+
 ## 凭据和包内容
 
 公开包只包含指令、程序、模板与开源资源。以下内容在安装和打包时排除：

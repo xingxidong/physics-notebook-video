@@ -236,11 +236,41 @@ def prepare(project,lesson,pages,args):
         cfg['backend']=args.backend
     if args.voice:cfg['voice']=args.voice
     cfg.setdefault('audio_mastering',True)
+    voice_evidence=None
+    packet=None
+    if not args.draft and lesson.get('speech_review_version')==1:
+        if lesson.get('term_inventory_version',0)<2:
+            raise ValueError('正式配音前须逐句盘点物理术语，并应用本课读音卡。')
+        from trial_review import require_target_voice,voice_profile
+        target_voice,voice_evidence=require_target_voice(project,cfg)
+    if not args.draft and lesson.get('classroom_workflow_version')==1:
+        from classroom_workflow import require_active, retake_plan
+        from lesson_review import require as require_review
+        from speech_packages import fingerprints
+        state=require_active(project,lesson)
+        packet=require_review(project,lesson)
+        package_fingerprints=fingerprints()
+        if not state['first_take']:
+            cfg['_classroom_take']=state['run']
+        retake=retake_plan(project,packet)
+    else:
+        retake={}
+
+    def synth_take(cue, addresses):
+        from final_review import token
+        stamps=[retake[key] for key in addresses if key in retake]
+        take=token(stamps) if stamps else None
+        audio=synth(project,{**cfg,'_classroom_take':take} if take else cfg,cue)
+        if voice_evidence and voice_profile(audio.get('signature',{}))!=target_voice:
+            raise ValueError(f'语段 {cue["id"]} 的实录音色与审听通过的试音不符。')
+        return audio
+
     fps=args.fps;global_t=0;all_pcm=bytearray();timeline=[];voice_hits=voice_new=0
     from board_flow import initial_strokes
     from lesson_review import opening, opening_image
     from lesson_duration import page_paces
     pacing=page_paces(project,lesson) if args.draft else {}
+    pilot=getattr(args,'pilot_pace',None)
     profile=opening(lesson)
     if profile:
         frames=round(3*fps)
@@ -251,15 +281,20 @@ def prepare(project,lesson,pages,args):
                          'start':0.,'end':global_t,'duration':global_t,'frames':frames,'cues':[],
                          'strokes':[],'camera':'static','audio_sha256':digest(silence),
                          'image':opening_image(profile,font_path(lesson,project))})
-    if not args.draft and cfg.get('backend') in ('minimax','qwen'):
+    if not args.draft and (packet or cfg.get('backend') in ('minimax','qwen')):
         from card_speech import lesson_inputs, merged_provider, restore_script_words
-        card_inputs=lesson_inputs({**lesson,'pages':pages})
+        card_inputs=lesson_inputs({**lesson,'pages':pages}, include_references=bool(packet))
+        if packet:
+            from production_workflow import save
+            save(project/'classroom-pronunciation-plan.json',
+                 {'run':packet['run'],'packet':packet['packet_sha256'],'packages':package_fingerprints,
+                  'cues':[{'page':page,'cue':cue,**item} for (page,cue),item in card_inputs.items()]})
     for p in pages:
         local=.35;pcm=bytearray(b'\0'*round(local*SR)*2);events=initial_strokes(p,fps);cues=[];focuses=[]
         records=[]
         if args.draft:
             for cue in p['cues']:
-                pace=pacing.get(p['id'])
+                pace=pilot or pacing.get(p['id'])
                 spoken = cue.get('spoken_tts', cue['tts'])
                 seconds=(sum(ch.isalnum() for ch in spoken)/(pace*cue.get('speed',1))
                          if pace else len(spoken)/4.2)
@@ -289,7 +324,7 @@ def prepare(project,lesson,pages,args):
                         grouped['_card_provider']=merged_provider([card_inputs[p['id'],m['id']] for m in members])
                     elif cfg.get('backend') == 'qwen':
                         grouped['_qwen_input']=' '.join(card_inputs[p['id'],m['id']]['local_text'] for m in members)
-                    audio=synth(project,cfg,grouped);voice_hits+=bool(audio['cache_hit']);voice_new+=not audio['cache_hit']
+                    audio=synth_take(grouped,[p['id']+'/'+m['id'] for m in members]);voice_hits+=bool(audio['cache_hit']);voice_new+=not audio['cache_hit']
                     with wave.open(audio['file']) as w:clip=w.readframes(w.getnframes())
                     edge_report=None
                     if cfg.get('trim_edges',False):
@@ -312,7 +347,7 @@ def prepare(project,lesson,pages,args):
                     request['_card_provider']=merged_provider([card_inputs[p['id'],cue['id']]])
                 elif cfg.get('backend') == 'qwen':
                     request['_qwen_input']=card_inputs[p['id'],cue['id']]['local_text']
-                audio=synth(project,cfg,request);voice_hits+=bool(audio['cache_hit']);voice_new+=not audio['cache_hit']
+                audio=synth_take(request,[p['id']+'/'+cue['id']]);voice_hits+=bool(audio['cache_hit']);voice_new+=not audio['cache_hit']
                 with wave.open(audio['file']) as w:clip=w.readframes(w.getnframes())
                 edge_report=None
                 if cfg.get('trim_edges',False):
@@ -358,7 +393,19 @@ def prepare(project,lesson,pages,args):
             import models
             prepared['demonstration']=models.bind_cues(p['demonstration'],cues)
         timeline.append(prepared);all_pcm.extend(pcm);global_t+=seconds
-    return {'title':lesson['title'],'width':W,'height':H,'fps':fps,'duration':global_t,'draft':args.draft,'speech':cfg,'speech_plan_source':lesson.get('_speech_plan_meta',{}).get('source','lesson.json'),'pages':timeline},all_pcm,{'speech_new':voice_new,'speech_reused':voice_hits}
+    data={'title':lesson['title'],'width':W,'height':H,'fps':fps,'duration':global_t,'draft':args.draft,'speech':cfg,'speech_plan_source':lesson.get('_speech_plan_meta',{}).get('source','lesson.json'),'pages':timeline}
+    if voice_evidence:
+        data['target_voice']={**voice_evidence,'matched_takes':voice_hits+voice_new}
+    if packet:
+        from final_review import token
+        from handout_bundle import digest as file_hash
+        if fingerprints()!=package_fingerprints:
+            raise ValueError('制作期间读音包有更新，请重新扫描，再生成正式时间轴。')
+        data.update(classroom_run=packet['run'],classroom_packet=packet['packet_sha256'],
+                    pronunciation_packages=package_fingerprints,
+                    retake_sha256=token(retake),
+                    pronunciation_plan_sha256=file_hash(project/'classroom-pronunciation-plan.json'))
+    return data,all_pcm,{'speech_new':voice_new,'speech_reused':voice_hits}
 
 def portion(points,fraction):
     remaining=sum(math.dist(a,b) for a,b in zip(points,points[1:]))*min(1,max(0,fraction));out=[points[0]]
@@ -487,7 +534,12 @@ def run_build(project,args):
         invalidate(project)
     from teaching import audit as audit_teaching
     from lesson_review import require as require_review
-    renderer=args.renderer or lesson.get('renderer','motion-canvas' if lesson.get('kind')=='problem' else 'notebook')
+    reviewed_renderer=None
+    if not args.draft and lesson.get('classroom_workflow_version')==1:
+        from production_workflow import read
+        reviewed_renderer=read(project/'draft-preview-report.json').get('renderer')
+    renderer=(args.renderer or lesson.get('renderer') or reviewed_renderer
+              or ('motion-canvas' if lesson.get('kind')=='problem' else 'notebook'))
     if not args.draft:
         require_review(project,lesson,renderer)
     teaching_report=audit_teaching(project,lesson,pages);write_json(project/'teaching-report.json',teaching_report)
@@ -605,7 +657,11 @@ def main():
     register(subs)
     from final_review import register as register_final, dispatch as dispatch_final
     register_final(subs)
+    from classroom_workflow import register as register_classroom, dispatch as dispatch_classroom
+    register_classroom(subs)
     args=parser.parse_args()
+    if args.command in ('start-workflow','review-language','review-packet'):
+        print(json.dumps(dispatch_classroom(args),ensure_ascii=False,indent=2));return
     if args.command in ('review-final','finalize'):
         print(json.dumps(dispatch_final(args),ensure_ascii=False,indent=2));return
     if args.command=='term-inventory':
@@ -671,6 +727,9 @@ def main():
         from teaching import audit as audit_teaching
         from lesson_review import fingerprint,require_unchanged
         project=Path(args.project).resolve();lesson,pages=compile_lesson(project)
+        if lesson.get('classroom_workflow_version')==1:
+            from classroom_workflow import require_active
+            state=require_active(project,lesson)
         source_revision=fingerprint(project,lesson)
         if lesson.get('review_required'):
             missing=[p['id'] for p in pages if p.get('native_scenes') and args.renderer not in p['native_scenes']]
@@ -687,8 +746,11 @@ def main():
         require_unchanged(project,source_revision)
         result.update(draft=True,teaching_status=report['status'],teaching_errors=report['errors'])
         if lesson.get('review_required') and result.get('video_file'):
+            from handout_bundle import digest as file_hash
             result.update(review_sha256=source_revision,
-                          video_sha256=hashlib.sha256(Path(result['video_file']).read_bytes()).hexdigest())
+                          video_sha256=file_hash(Path(result['video_file'])))
+        if lesson.get('classroom_workflow_version')==1:
+            result['workflow_run']=state['run']
         write_json(project/'draft-preview-report.json',result);print(json.dumps(result,ensure_ascii=False));return
     if args.command=='doctor':
         from engine_render import doctor
@@ -720,6 +782,11 @@ def main():
             return
         draft=argparse.Namespace(draft=True,fps=24,backend=None,voice=None,video=False,
                                  renderer=None,width=1280,runtime=None)
+        if args.command=='review-plan' and lesson.get('classroom_workflow_version')==1:
+            from classroom_workflow import pilot_pace
+            draft.pilot_pace, pilot_sha=pilot_pace(project)
+        else:
+            pilot_sha=None
         data,_,_=prepare(project,lesson,pages,draft)
         report=check_board(lesson,pages,data)
         write_json(project/'board-review-report.json',report)
@@ -745,7 +812,7 @@ def main():
             from lesson_quality import run as check_quality
             quality=check_quality(project,'plan',prepared=(lesson,pages,data))
             prepare_review(project,lesson,pages,report,audit_lesson(pages),teaching,
-                           duration=duration,language=language,quality=quality)
+                           duration=duration,language=language,quality=quality,pilot_sha=pilot_sha)
             print(project/'教案.md')
         else:
             print(json.dumps(report,ensure_ascii=False))
@@ -781,6 +848,9 @@ def main():
             require_review(project,reviewed,args.renderer)
             if data.get('draft') or data.get('review_sha256')!=current_review(project,reviewed)['fingerprint']:
                 raise ValueError('请按当前已确认教案重新构建正式时间轴。')
+            if reviewed.get('classroom_workflow_version')==1:
+                from classroom_workflow import verify_timeline
+                verify_timeline(project,reviewed,data)
         if lesson.get('kind') in ('problem','concept'):
             from teaching import audit as audit_teaching
             current,pages=compile_lesson(project);report=audit_teaching(project,current,pages);write_json(project/'teaching-report.json',report)
@@ -835,6 +905,12 @@ def main():
         data.setdefault('show_titles',False);data.setdefault('camera','static')
         data['review_required']=True
         data['term_inventory_version']=2
+        data['speech_review_version']=1
+        if data.get('kind') in ('concept','problem'):
+            from classroom_workflow import start
+            if not (p/'classroom-start.json').is_file():
+                start(p,data['kind'],data.get('source_type'))
+            data['classroom_workflow_version']=1
         backend=args.backend or ('qwen' if managed_config() else 'glm')
         local_speech=(local_config().get('speech_defaults') or {}).get(backend,{})
         data['speech']={'backend':backend,'voice':local_speech.get('voice',DEFAULTS[backend]),'speed':1.0,'audio_mastering':True,'delivery_profile':'classroom','trim_edges':True}

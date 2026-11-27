@@ -194,6 +194,14 @@ def preparation(project,lesson):
     for issue in issues:
         for note in dict.fromkeys([issue.get('expected') or issue['observed'], *issue.get('takeaways',[])]):
             lines.append('- '+note)
+    for bank, label in (('polyphones','以前读错的词'),('letters','以前读错的字母')):
+        entries = [(key, row) for key, row in rules[bank].items()
+                   if row.get('scope','all') in ('all',lesson.get('kind'))]
+        if entries:
+            lines.extend(['', '## '+label, ''])
+        for key, row in entries:
+            reading = row.get('expected') or '结合整句确定读法'
+            lines.append(f"- {key} · {reading} · {row['observed']}")
     lines.extend(['','## 配音前','',
                   '写完讲稿后运行 feedback-check。按每个词和字母在本课的位置安排读法；正式音轨合成后听对应整句。',''])
     (project/'备课提醒.md').write_text('\n'.join(lines),encoding='utf-8')

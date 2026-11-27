@@ -94,7 +94,7 @@ def dependency_hashes(project,lesson):
     assets=lesson.get('review_assets',[])
     if not isinstance(assets,list) or any(not isinstance(name,str) for name in assets):
         raise ValueError('review_assets 须列出项目内的素材路径。')
-    from handout_bundle import source_files
+    from handout_bundle import digest, source_files
     names=set(assets) | {str(p.relative_to(project)) for p in source_files(project,lesson)}
     for key in ('course_outline','duration_plan','handout','input_manifest','article_coverage'):
 
@@ -119,7 +119,7 @@ def dependency_hashes(project,lesson):
                 names.add(cue['audio'])
             if cue.get('alignment'):
                 names.add(cue['alignment'])
-    files={name:hashlib.sha256(local_file(project,name).read_bytes()).hexdigest()
+    files={name:digest(local_file(project,name))
            for name in sorted(names)}
     return files
 
@@ -142,15 +142,20 @@ def require_unchanged(project,expected):
 
 
 def native_preview(project,lesson):
-    if not any(p.get('native_scenes') for p in lesson['pages']):
+    if not lesson.get('classroom_workflow_version') and not any(p.get('native_scenes') for p in lesson['pages']):
         return None
     manifest=project/'draft-preview-report.json'
+    from handout_bundle import digest
     if manifest.is_file():
         record=json.loads(manifest.read_text())
+        if lesson.get('classroom_workflow_version')==1:
+            from production_workflow import read
+            if record.get('workflow_run')!=read(project/'classroom-start.json').get('run'):
+                return ''
         if record.get('review_sha256')==fingerprint(project,lesson) and record.get('video_file'):
             name=Path(record['video_file']).name
             path=project/name
-            if path.is_file() and record.get('video_sha256')==hashlib.sha256(path.read_bytes()).hexdigest():
+            if path.is_file() and record.get('video_sha256')==digest(path):
                 return name
     return ''
 
@@ -259,7 +264,9 @@ def plan_text(project,lesson,pages,timing,layout,teaching,*,duration=None,langua
     return '\n'.join(lines)+'\n'
 
 
-def prepare_review(project,lesson,pages,timing,layout,teaching,*,duration=None,language=None,quality=None):
+def prepare_review(project,lesson,pages,timing,layout,teaching,*,duration=None,language=None,quality=None,pilot_sha=None):
+    from classroom_workflow import enabled, require_active, write_drafts
+    started=require_active(project,lesson) if enabled(lesson) else None
     path=project/'教案.md'
     path.write_text(plan_text(project,lesson,pages,timing,layout,teaching,duration=duration,language=language,quality=quality))
     state={'fingerprint':fingerprint(project,lesson),
@@ -268,6 +275,10 @@ def prepare_review(project,lesson,pages,timing,layout,teaching,*,duration=None,l
            'warnings':len(layout['warnings'])+len(timing['warnings']),
            'teaching_errors':len(teaching['errors']),
            'quality_errors':sum(row['severity']=='error' for row in quality.get('findings',[])) if quality else 0}
+    if started:
+        write_drafts(project,pages)
+        state.update(workflow_run=started['run'],estimated_seconds=(duration or {}).get('timeline_seconds'),
+                     pilot_sha256=pilot_sha)
     write_json(project/'review-plan.json',state)
     return state
 
@@ -293,11 +304,19 @@ def approve(project,lesson,feedback):
         raise ValueError('请先生成当前版本的原生动画预览并重新提交教案。')
     if plan['teaching_errors'] or plan['warnings'] or plan.get('quality_errors'):
         raise ValueError('先处理教案中的教学与排版检查项，再提交确认。')
+    from classroom_workflow import enabled, require_active, require_packet
+    if enabled(lesson):
+        require_active(project,lesson)
+        plan={**plan,'classroom_packet':require_packet(project,lesson,plan)['packet_sha256']}
     write_json(project/'review-approval.json',{**plan,'feedback':feedback.strip(),
                                                'approved_at':datetime.now(timezone.utc).isoformat()})
 
 
 def require(project,lesson,renderer=None):
+    from classroom_workflow import enabled, require_active, require_packet
+    strict=enabled(lesson)
+    if strict:
+        require_active(project,lesson)
     if not lesson.get('review_required'):
         return
     plan=current_review(project,lesson)
@@ -310,17 +329,26 @@ def require(project,lesson,renderer=None):
         raise ValueError('当前教案需要重新确认。')
     if not result.get('feedback'):
         raise ValueError('确认记录需保留审阅者的确认内容。')
-    if plan.get('native_preview')!=native_preview(project,lesson):
+    packet=None
+    if strict:
+        packet=require_packet(project,lesson,plan)
+        if result.get('classroom_packet')!=packet['packet_sha256']:
+            raise ValueError('当前整套教案、板书、讲义、讲稿、动画及试音须重新确认。')
+    animation=packet['files']['动画预览']['file'] if packet else native_preview(project,lesson)
+    if plan.get('native_preview')!=animation:
         raise ValueError('原生动画预览已变动，请重新审阅。')
     if renderer and plan.get('native_preview'):
         recorded=json.loads((project/'draft-preview-report.json').read_text())['renderer']
         if renderer!=recorded:
             raise ValueError('正式动画应使用教案中已确认的原生预览引擎。')
+    return packet
 
 
 def export_delivery(project,lesson,*,publish=False,video_file='video.mp4'):
     import zipfile
     from final_review import invalidate
+    from classroom_workflow import before_finalize, enabled
+    workflow=before_finalize(project,lesson,video_file) if publish and enabled(lesson) else None
     invalidate(project)
 
     document=handout(project,lesson)
@@ -372,5 +400,7 @@ def export_delivery(project,lesson,*,publish=False,video_file='video.mp4'):
         for name in ('video','handout','boards','tikz'):
             local_file(project,record[name])
         record.update(status='reviewed',review_binding=reviewed['review_binding'])
+        if workflow:
+            record['classroom_workflow']=workflow
         write_json(project/'delivery-files.json',record)
     return record
