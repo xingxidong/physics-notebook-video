@@ -5,23 +5,23 @@
 | 步骤 | 运行或提交 |
 |---|---|
 | 1. 自我强化 | 用 `start-workflow PROJECT --kind problem` 或 `--kind concept` 扫描自我成长包。开工先读《备课提醒》。文章课另加 `--source-type article`。初始化课程范例时自动扫一次。 |
-| 2. 备课 | 按课型写课程源、逐笔板书、教案、学生讲义主 TeX 和每句最终要讲的完整讲稿。填写分段用时和动画。准备普通讲解与关键读式的试音，从本课真实句子选材。 |
+| 2. 备课 | 按课型写课程源、逐笔板书、教案、学生讲义主 TeX 和每句最终要讲的完整讲稿。填写分段用时、动画、逐笔板书和图中标记的出场顺序。准备普通讲解与关键读式的试音，从本课真实句子选材。 |
 | 3. 降低 AI 味 | 使用[随包的文案技能](classroom-language-editing.md)改四份材料。用 `review-plan` 生成完整讲稿、板书文字草稿和讲义 PDF。再用 `review-language PROJECT --lesson-plan … --board … --handout … --script …` 分别登记编辑观察。 |
-| 4. 审教案 | 用 `preview PROJECT --renderer manim` 或 `motion-canvas` 导出动画。按[试音说明](../assets/starter-kit/voice-trial/README.md)在项目的 `voice-trial` 目录录制并登记制作端审听。如试音在改稿后更新，先重跑 `review-plan` 和 `review-language`，把实际试音语速反映在送审预计时长里。用 `review-packet` 打包整套材料给用户。等待用户确认，再以 `approve-plan --feedback` 登记实际确认原话。 |
-| 5. 正式配音 | `build PROJECT --video` 读[读音卡包](../assets/pronunciation-cards/README.md)和[目标音色包](../assets/target-voice/README.md)。逐次看词义、拼音与连读，对应字母、希腊字母、公式、函数和分组。读音计划保存于 `classroom-pronunciation-plan.json`。支持指定读法的配音后端使用逐句匹配，其他后端也要从实音确认全部要求。 |
-| 6. 合成 | 用通过本课试音的教师音色完整录制。用 `speech_group` 把因落笔拆成多条 cue 的连续语段合起来录。用实录时间定位落笔和动画。 |
-| 7. 审成片 | 逐处检查最终 MP4，不遗漏任何一句口播。听术语、公式中具体的运算和字母、上下标、字母实际出现次数和语流，看片中相应落笔。发现错音，扩到讲清同一意思的整段重录，再从新 MP4 检查。 |
+| 4. 制作全课无配音视频并审教案 | 制作全课动画和逐笔板书，包括用同一套笔迹写出的图中文字、字母、数字和下标。同一时刻只写一处，标记写完后随对应对象移动。先按[试音说明](../assets/starter-kit/voice-trial/README.md)录制并登记本课试音，再用 `preview PROJECT --renderer manim` 或 `--renderer motion-canvas` 按试音节奏渲染全课无音轨 MP4。用 `review-plan` 更新教案链接和预计时长，用 `review-language` 登记本次四份材料检查，再用 `review-packet` 把无配音视频和单独的试音一并提交。等待整套材料确认后，以 `approve-plan --feedback` 登记实际确认原话。 |
+| 5. 正式配音 | `build PROJECT --video` 读[读音卡包](../assets/pronunciation-cards/README.md)和[目标音色包](../assets/target-voice/README.md)。逐次看词义、拼音与连读，对应字母、希腊字母、公式、函数和分组。读音计划保存于 `classroom-pronunciation-plan.json`。支持指定读法的配音后端使用逐句匹配，其他后端也要从实音确认全部要求。用 `speech_group` 把因落笔拆成多条 cue 的连续语段合起来录。 |
+| 6. 按实录时间合成 | 沿用已审的画面与引擎。按第 5 步正式录音的实测时间重新对齐动画、逐笔板书、图中标记及字幕。 |
+| 7. 审成片 | 逐处检查最终 MP4，不遗漏任何一句口播。听术语、公式中具体的运算和字母、上下标、字母实际出现次数和语流，检查画面对应的落笔、图中标记和字幕，同时检查动画中的遮挡与穿模。发现错音，扩到讲清同一意思的整段重录，再从新 MP4 检查。 |
 | 8. 核查流程并交付 | `finalize` 检查前七步和选定 MP4 是否对应。发现漏步时提示用 `start-workflow` 从头重做。完成后交付 MP4、讲义 PDF、可编辑的 LaTeX 和 TikZ 源码。 |
 
 `init --kind` 新建项目自动启用 `classroom_workflow_version:1`。手工建立的新课和习题课也设置这个字段，并设置 `review_required:true`、`speech_review_version:1` 和 `term_inventory_version:2`。复查已有历史 MP4 时，可沿用该课的审查入口。
 
 ## 五组材料在哪一步用
 
-首次安装或换电脑时，可在正式备课前用斜面样例跑一遍。第 2 步按需拿长课模板编排、用参数动画搭模型、选配音配置和试音材料。第 4 步提交本课的实录试音和改好的动画。第 5 步沿用确认的配音配置，第 6 步按实录时间把动画和板书排进成片。各组材料的用法见[随包材料表](../assets/starter-kit/README.md)。
+首次安装或换电脑时，可在正式备课前用斜面样例跑一遍。第 2 步按需拿长课模板编排、用参数动画搭模型、选配音配置和试音材料。第 4 步提交独立的实录试音和全课无音轨 MP4。第 5 步沿用确认的配音配置，第 6 步按实录时间把动画、板书和字幕排进成片。各组材料的用法见[随包材料表](../assets/starter-kit/README.md)。
 
 试音先由制作者审听，再交用户确认整套材料。稿件修改后，以新版完整讲稿录制和送审。正式录音逐句使用批准的讲稿，排版或音素提示服务于原句的完整朗读。教案给出全课预计值。终审比较选定 MP4 的实测时长与送审预计值，差距超过预计值的 8% 或 15 秒中的较大者时，调整课的内容或编排并再次送审。需要延长时补先修、推导或变式，保持正常语速与落笔速度。
 
-第 7 步查到错音属于成片修订。用 `revise --cue` 圈定完整语段，同一个 `speech_group` 整组重录。改了已批准的讲稿、板书、动画或讲义时重新提交整套材料。发现实际漏过一个阶段时，用 `start-workflow` 开新一轮。旧的批准、试音记录、动画预览和正式时间轴不能通过新一轮的流程审查。
+第 7 步查到错音属于成片修订。用 `revise --cue` 圈定完整语段，同一个 `speech_group` 整组重录。改了已批准的讲稿、板书、动画或讲义时重新提交整套材料。发现实际漏过一个阶段时，用 `start-workflow` 开新一轮。旧的批准、试音记录、全课无配音视频和正式时间轴不能通过新一轮的流程审查。
 
 ## 最终交付
 
@@ -44,7 +44,7 @@ python3 SKILL/scripts/course.py finalize PROJECT --video-file video.mp4
 
 | 现在要做什么 | 入口 | 审阅依据 |
 |---|---|---|
-| 准备一节课 | 先 `start-workflow`，按课型填写课程源，再走整套送审 | 教案、完整讲稿、静音预览、学生讲义、预计时长 |
+| 准备一节课 | 先 `start-workflow`，按课型填写课程源，再走整套送审 | 教案、完整讲稿、板书、全课无配音 MP4、学生讲义、实录试音、预计时长 |
 | 继续制作 | `status PROJECT` | 课程源、教案签名、实际时间轴、导出记录、最终检查报告 |
 | 正式制作 | 作者确认整套材料及试听后用 `approve-plan`，再 `build PROJECT --video` | 使用当前已确认讲稿和实际配音时长落笔 |
 | 只做审查 | `quality-check PROJECT --stage final` | 当前 MP4、术语逐处清单、字母与上下标、画面、讲义 |

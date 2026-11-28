@@ -10,7 +10,7 @@
 
 ## 教案审阅与交付
 
-先扫自我成长包，再按课型备课。把完整讲稿、教案、板书、动画预览、学生讲义和实录试音一起交给授课人。确认后用 `approve-plan` 记录，再开始正式配音。成片逐句核对口播与落笔，交付视频、学生讲义 PDF 和可编辑的 LaTeX、TikZ 源码。[审阅教案的步骤](references/review-workflow.md)片头可按课程指定作者信息，或从本机作者配置读取。
+先扫自我成长包，再按课型备课。先渲染从片头到总结的全课无配音 MP4，包含动画、逐笔板书、公式和图中字母等标记。把这份视频、完整讲稿、教案、板书、学生讲义和单独的实录试音交给授课人。确认后用 `approve-plan` 记录，再开始正式配音，并按实录时间合成。逐句核对成片后交付视频、学生讲义 PDF 和可编辑的 LaTeX、TikZ 源码。片头可按课程指定作者信息，或从本机作者配置读取。[审阅教案的步骤](references/review-workflow.md)
 
 两个课型都可用 `estimate-duration` [估算课长](references/duration-planning.md)，教案并列显示教学预算与按讲稿推算的时长。配音检查分开提醒句内疑似卡壳和段与段之间的空档，`voice-check --listen CUE_ID --context` 导出相邻语句供连续回听。
 
@@ -79,24 +79,24 @@ python3 scripts/platform_install.py install --target claude --scope project --pr
 python3 scripts/platform_install.py package --target universal --output physics-notebook-video.zip
 ```
 
+安装器复制技能后自动配置并检查 Manim 和 Motion Canvas。通过宿主界面导入 ZIP 或手动复制目录后，从技能目录运行 `python3 scripts/platform_install.py animation-engines`。见[安装动画引擎](references/platform-install.md#安装动画引擎)。
+
 安装完成后开启新会话。Codex 使用 `$physics-notebook-video`，Claude Code 可使用 `/physics-notebook-video`，也可以让宿主按 `description` 自动触发。已安装同名技能时，显式使用 `--update`；更新保留 `.env` 和 `runtime-local.json`。
 
 ## 准备运行环境
 
-需要 Python 3.11 或更新版本、FFmpeg/ffprobe、中文字体。题面排版需要 XeLaTeX、xeCJK、amsmath 和 PyMuPDF。Motion Canvas 还需要 Node.js 20 或更新版本与 Chrome/Chromium。原生 Manim 的 MathTex 需要 TeX 和 dvisvgm。
+需要 Python 3.11 或更新版本、FFmpeg/ffprobe、中文字体。题面排版需要 XeLaTeX、xeCJK、amsmath 和 PyMuPDF。Motion Canvas 还需要 Node.js 20 或更新版本、npm 和 Chromium 系浏览器。原生 Manim 的 MathTex 需要 TeX 和 dvisvgm。
 
-让当前 Agent 检查已有依赖并补齐缺项，或在工作目录中运行以下 macOS 命令。将 `PHYSICS_SKILL` 改成实际安装目录：
+在工作目录为课程脚本安装 Python 依赖。将 `PHYSICS_SKILL` 改成实际安装目录：
 
 ```sh
 PHYSICS_SKILL="$HOME/.codex/skills/physics-notebook-video"
 python3 -m venv .venv
 .venv/bin/python -m pip install -r "$PHYSICS_SKILL/assets/requirements.txt"
-.venv/bin/python -m pip install -r "$PHYSICS_SKILL/assets/requirements-manim.txt"
-.venv/bin/python "$PHYSICS_SKILL/scripts/course.py" setup-renderers --runtime "$PWD/.runtime/motion-canvas"
 .venv/bin/python "$PHYSICS_SKILL/scripts/course.py" doctor
 ```
 
-`setup-renderers` 安装锁定版本的 Motion Canvas 依赖，并生成这台机器自己的 `runtime-local.json`，记录运行环境位置。此文件保留在本机，更新或发布技能时沿用本机配置。
+动画引擎安装后写入本机的 `runtime-local.json`，其中记录引擎环境与浏览器的位置。更新技能时保留这个配置。
 
 具体引擎设置与原生三维场景见 [引擎说明](references/renderers.md)。
 

@@ -643,7 +643,7 @@ def main():
     render_cmd=subs.add_parser('render',help='Render an existing measured timeline without synthesizing speech')
     render_cmd.add_argument('project');render_cmd.add_argument('--renderer',choices=['notebook','motion-canvas','manim'],required=True);render_cmd.add_argument('--runtime');render_cmd.add_argument('--width',type=int,choices=[1280,1920],default=1920)
     setup_cmd=subs.add_parser('setup-renderers');setup_cmd.add_argument('--runtime',required=True)
-    preview=subs.add_parser('preview',help='Render silent native preview without changing final audio, timeline or video')
+    preview=subs.add_parser('preview',help='Render the complete lesson for review as an MP4 without an audio track')
     preview.add_argument('project');preview.add_argument('--renderer',choices=['manim','motion-canvas'],default='manim');preview.add_argument('--runtime');preview.add_argument('--width',type=int,choices=[1280,1920],default=1280);preview.add_argument('--fps',type=int,choices=[12,24,30],default=24)
     pronunciation=subs.add_parser('pronunciation-check',help='逐词列出课堂口播中要审听的字和读法')
     source=pronunciation.add_mutually_exclusive_group(required=True)
@@ -727,9 +727,11 @@ def main():
         from teaching import audit as audit_teaching
         from lesson_review import fingerprint,require_unchanged
         project=Path(args.project).resolve();lesson,pages=compile_lesson(project)
-        if lesson.get('classroom_workflow_version')==1:
-            from classroom_workflow import require_active
+        strict=lesson.get('classroom_workflow_version')==1
+        if strict:
+            from classroom_workflow import pilot_pace,require_active
             state=require_active(project,lesson)
+            args.pilot_pace,pilot_sha=pilot_pace(project)
         source_revision=fingerprint(project,lesson)
         if lesson.get('review_required'):
             missing=[p['id'] for p in pages if p.get('native_scenes') and args.renderer not in p['native_scenes']]
@@ -737,20 +739,18 @@ def main():
                 raise ValueError(f'选择与原生场景相符的预览引擎，待核对页面：{", ".join(missing)}。')
         report=audit_teaching(project,lesson,pages);write_json(project/'draft-preview-teaching-report.json',report)
         args.draft=True;args.backend=None;args.voice=None
-        data,pcm,_=prepare(project,lesson,pages,args)
+        data,_,_=prepare(project,lesson,pages,args)
         for page in data['pages']:page['draft_preview']=True
         write_json(project/'draft-preview-timeline.json',data)
-        audio=project/'cache/preview-audio.wav'
-        with wave.open(str(audio),'wb') as w:w.setnchannels(1);w.setsampwidth(2);w.setframerate(SR);w.writeframes(pcm)
-        result=render(project,data,font_path(lesson,project),args.width,args.renderer,args.runtime,preview=True,audio_file=audio)
+        result=render(project,data,font_path(lesson,project),args.width,args.renderer,args.runtime,preview=True)
         require_unchanged(project,source_revision)
         result.update(draft=True,teaching_status=report['status'],teaching_errors=report['errors'])
         if lesson.get('review_required') and result.get('video_file'):
             from handout_bundle import digest as file_hash
             result.update(review_sha256=source_revision,
                           video_sha256=file_hash(Path(result['video_file'])))
-        if lesson.get('classroom_workflow_version')==1:
-            result['workflow_run']=state['run']
+        if strict:
+            result.update(workflow_run=state['run'],pilot_sha256=pilot_sha)
         write_json(project/'draft-preview-report.json',result);print(json.dumps(result,ensure_ascii=False));return
     if args.command=='doctor':
         from engine_render import doctor

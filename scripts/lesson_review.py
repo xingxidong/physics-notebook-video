@@ -150,7 +150,12 @@ def native_preview(project,lesson):
         record=json.loads(manifest.read_text())
         if lesson.get('classroom_workflow_version')==1:
             from production_workflow import read
-            if record.get('workflow_run')!=read(project/'classroom-start.json').get('run'):
+            expected_pages=['opening-card'] if opening(lesson) else []
+            expected_pages.extend(page.get('id',f'p{i:02d}') for i,page in enumerate(lesson['pages'],1))
+            if (record.get('workflow_run')!=read(project/'classroom-start.json').get('run')
+                    or record.get('preview_kind')!='full-silent-lesson'
+                    or record.get('pages')!=expected_pages or not record.get('video_frames')
+                    or record.get('audio_tracks')!=0):
                 return ''
         if record.get('review_sha256')==fingerprint(project,lesson) and record.get('video_file'):
             name=Path(record['video_file']).name
@@ -249,9 +254,9 @@ def plan_text(project,lesson,pages,timing,layout,teaching,*,duration=None,langua
                   '[横屏尺寸板书检查图](review-preview/contact-sheet.png) · [无配音板书预览](review-preview/preview.html)',''])
     preview=native_preview(project,lesson)
     if preview:
-        lines.extend([f'[原生动画预览]({preview})',''])
+        lines.extend([f'[全课无配音视频 MP4]({preview})',''])
     elif preview=='':
-        lines.extend(['运行 preview 生成当前版本的无配音原生动画，检查接触和标注后重新出教案。',''])
+        lines.extend(['运行 preview 生成全课无配音 MP4。看完动画、逐笔板书和图上标记后重新出教案。',''])
     for finding in [*teaching.get('errors',[]),*layout.get('warnings',[]),*timing.get('warnings',[])]:
         lines.append('- '+finding['message'])
     linked=lesson.get('handout','讲义.md')
@@ -301,7 +306,7 @@ def approve(project,lesson,feedback):
     plan=current_review(project,lesson)
     handout(project,lesson)
     if plan.get('native_preview')=='' or plan.get('native_preview')!=native_preview(project,lesson):
-        raise ValueError('请先生成当前版本的原生动画预览并重新提交教案。')
+        raise ValueError('请先生成当前版本的全课无配音 MP4 并重新提交教案。')
     if plan['teaching_errors'] or plan['warnings'] or plan.get('quality_errors'):
         raise ValueError('先处理教案中的教学与排版检查项，再提交确认。')
     from classroom_workflow import enabled, require_active, require_packet
@@ -333,14 +338,14 @@ def require(project,lesson,renderer=None):
     if strict:
         packet=require_packet(project,lesson,plan)
         if result.get('classroom_packet')!=packet['packet_sha256']:
-            raise ValueError('当前整套教案、板书、讲义、讲稿、动画及试音须重新确认。')
-    animation=packet['files']['动画预览']['file'] if packet else native_preview(project,lesson)
+            raise ValueError('当前整套教案、板书、讲义、讲稿、全课无配音视频及试音须重新确认。')
+    animation=packet['files']['全课无配音视频']['file'] if packet else native_preview(project,lesson)
     if plan.get('native_preview')!=animation:
-        raise ValueError('原生动画预览已变动，请重新审阅。')
+        raise ValueError('全课无配音视频已变动，请重新审阅。')
     if renderer and plan.get('native_preview'):
         recorded=json.loads((project/'draft-preview-report.json').read_text())['renderer']
         if renderer!=recorded:
-            raise ValueError('正式动画应使用教案中已确认的原生预览引擎。')
+            raise ValueError('正式合成应使用全课无配音视频中已确认的渲染引擎。')
     return packet
 
 

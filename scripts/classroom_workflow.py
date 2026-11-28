@@ -143,19 +143,22 @@ def materials_for_review(project, lesson, plan):
     if (edited.get('run') != started['run'] or edited.get('source') != plan['fingerprint']
             or edited.get('files') != files or set(edited.get('audit', {})) != set(EDIT_ROLES)):
         raise ValueError('先用内置文案技能处理四份材料，再用 review-language 登记本轮改稿。')
-    animation = native_preview(project, lesson)
-    if not animation:
-        raise ValueError('需附当前版本可播放的动画预览。请先运行 preview。')
+    silent_video = native_preview(project, lesson)
+    if not silent_video or plan.get('native_preview') != silent_video:
+        raise ValueError('先运行 preview 生成全课无配音 MP4，再运行 review-plan 将该视频列入教案。')
     if not verified(project, lesson):
         raise ValueError('送审前请用当前 LaTeX/TikZ 源码编译学生讲义。')
     _, voice = require_target_voice(project, lesson.get('speech', {}))
     pace, trial_sha = pilot_pace(project)
     if not pace or plan.get('pilot_sha256') != trial_sha:
         raise ValueError('请用这次本课实录试音运行 review-plan，更新送审的预计时长。')
+    preview = read(project / 'draft-preview-report.json')
+    if preview.get('pilot_sha256') != trial_sha:
+        raise ValueError('请先按当前实录试音的节奏重新运行 preview，再运行 review-plan。')
     trial = read(project / 'voice-trial/trial-results.json')
     sample_files = ['voice-trial/' + row['audio'] for row in trial['items']]
     reviewed = {'教案': '教案.md', '板书': 'review-preview/boards.pdf', '完整讲稿': '完整讲稿.md',
-                '动画预览': animation, '学生讲义': 'handout-delivery/学生讲义.pdf'}
+                '全课无配音视频': silent_video, '学生讲义': 'handout-delivery/学生讲义.pdf'}
     reviewed.update({f'试音 {i}': name for i, name in enumerate(sample_files, 1)})
     evidence = {label: {'file': name, 'sha256': digest(local_file(project, name))}
                 for label, name in reviewed.items()}
@@ -260,7 +263,7 @@ def register(subs):
     parser.add_argument('project')
     for role in EDIT_ROLES:
         parser.add_argument('--' + role.replace('_', '-'), required=True)
-    parser = subs.add_parser('review-packet', help='Bind the review materials, animation and real voice samples')
+    parser = subs.add_parser('review-packet', help='Bind the review materials, full silent video and separate voice samples')
     parser.add_argument('project')
 
 

@@ -88,13 +88,21 @@ def copy_install(dest,update):
 
 def install(args):
     dest=destination(args.target,args.scope,args.project,args.dest);copied,preserved=copy_install(dest,args.update)
+    animation={'ok':True,'status':'skipped'}
+    if not args.skip_animation_engines:
+        from renderer_setup import configure
+        print(f'技能已复制至 {dest}。正在配置 Manim 和 Motion Canvas。',file=sys.stderr,flush=True)
+        animation=configure(dest)
     from qwen_setup import install as install_voice, supported
     voice={'status':'skipped' if args.skip_local_voice else 'unsupported'}
     if not args.skip_local_voice and supported():
         print(f'技能已复制至 {dest}。正在安装本地千问配音。',file=sys.stderr,flush=True)
         voice=install_voice()
-    report={'ok':True,'target':args.target,'scope':args.scope,'destination':str(dest),'files_copied':copied,'version':version(),'preserved':preserved,'local_voice':voice}
+    report={'ok':animation['ok'],'target':args.target,'scope':args.scope,'destination':str(dest),
+            'files_copied':copied,'version':version(),'preserved':preserved,
+            'animation_engines':animation,'local_voice':voice}
     print(json.dumps(report,ensure_ascii=False,indent=2))
+    return report['ok']
 
 def package(args):
     # When authoring in a checkout, also pick up corrections recorded by the installed skill.
@@ -167,7 +175,10 @@ def main():
     sub.add_parser('info')
     p=sub.add_parser('check');p.add_argument('--target',choices=LIMITS,default='universal')
     p=sub.add_parser('install');p.add_argument('--target',choices=['codex','claude','agents'],required=True);p.add_argument('--scope',choices=['user','project'],default='user');p.add_argument('--project');p.add_argument('--dest');p.add_argument('--update',action='store_true')
-    p.add_argument('--skip-local-voice',action='store_true',help='Install only the skill files')
+    p.add_argument('--skip-local-voice',action='store_true',help='Skip local Qwen setup')
+    p.add_argument('--skip-animation-engines',action='store_true',help='Skip Manim and Motion Canvas setup')
+    p=sub.add_parser('animation-engines',help='Configure or verify the installed animation engines')
+    p.add_argument('--runtime-dir',help='Use a specific directory for managed animation environments')
     sub.add_parser('local-voice',help='Install or resume the local Qwen runtime and model')
     p=sub.add_parser('package');p.add_argument('--target',choices=LIMITS,default='universal');p.add_argument('--output',required=True)
     p=sub.add_parser('verify');p.add_argument('zip');p.add_argument('--target',choices=LIMITS,default='universal')
@@ -175,7 +186,13 @@ def main():
     if args.command=='info':info()
     elif args.command=='check':
         report=inspect(args.target);print(json.dumps(report,ensure_ascii=False,indent=2));sys.exit(0 if report['ok'] else 1)
-    elif args.command=='install':install(args)
+    elif args.command=='install':
+        sys.exit(0 if install(args) else 1)
+    elif args.command=='animation-engines':
+        from renderer_setup import configure
+        report=configure(ROOT,args.runtime_dir)
+        print(json.dumps(report,ensure_ascii=False,indent=2))
+        sys.exit(0 if report['ok'] else 1)
     elif args.command=='local-voice':
         from qwen_setup import install as install_voice
         print(json.dumps(install_voice(),ensure_ascii=False,indent=2))

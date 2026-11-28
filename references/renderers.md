@@ -6,15 +6,14 @@ v0.8 的题目框与源图裁切进入共用背景。追逐模型的位置、轨
 
 ## 安装与选择
 
-Python 环境安装原有 Pillow、所用语音后端，以及 `manim==0.22.1`。Motion Canvas 运行时安装在用户指定的工作区目录，使用本机 Chrome/Chromium。
+平台安装器复制技能后自动配置两套引擎。通过宿主界面导入 ZIP 或手动复制目录后，在已安装的技能目录运行：
 
 ```sh
-python -m pip install manim==0.22.1
-python SKILL/scripts/course.py setup-renderers --runtime WORK/animation-engines/motion-canvas
-python SKILL/scripts/course.py doctor
+python3 scripts/platform_install.py animation-engines
+python3 scripts/course.py doctor
 ```
 
-`setup-renderers` 安装锁定的 Node 依赖，并在技能目录写入本机专用 `runtime-local.json`，记录 Node 运行目录与当前 Python 路径。发布技能时排除这个文件，另一台机器运行 setup 即可生成自己的配置。
+配置命令优先复用可用环境，必要时安装 Manim、锁定版本的 Motion Canvas 和浏览器。成功的环境路径写入本机的 `runtime-local.json`。可用 `animation-engines --runtime-dir /path/to/runtime` 指定新环境的存放位置。[安装说明](platform-install.md#安装动画引擎)
 
 Motion Canvas 采用 3.17.2，配套 Vite 5.4.21 与 Playwright Core 1.65.0；依赖由 `scripts/motion_canvas/package-lock.json` 固定。可用环境变量 `PHYSICS_ANIMATION_RUNTIME`、`PHYSICS_MANIM_PYTHON`、`CHROME_PATH` 覆盖对应路径。
 
@@ -46,6 +45,12 @@ Motion Canvas 通过真实的 `Renderer`、`Scene2D`、`Line`、`Circle` 与信�
 Manim 通过 `MovingCameraScene`、`VMobject` 与更新器绘制同一组笔画，按实测时间逐笔出现。动态模型的解析坐标由同一模块逐帧提供，两个引擎读取相同的数据。普通课程的中心线笔画渲染使用已编译路径，无需每次调用 LaTeX。v0.7 默认 `camera:"static"`，Motion Canvas、Manim、Notebook 和 HTML 都保持画面大小与位置一致。显式使用 `camera:"focus"` 时，才按共用的 `focus` 事件控制镜头。
 
 页面缓存包括引擎源码、引擎版本、页面内容、分辨率、帧率、字体、音频与本地时间轴。不同引擎的缓存目录独立，完整导出且帧数正确后才写入缓存。换引擎、改图和重编码复用已有配音。
+
+## 动画中的手写标注
+
+模型几何可以预绘，物体与轨迹由动画引擎更新。图内变量、上下标、数值及文字说明使用与讲解板书相同的笔迹。普通文本用 `ink.text_strokes`，LaTeX 标注用 `ink.math_strokes`，将笔画路径交给 Manim 的 VMobject 或 Motion Canvas 的路径组件。给每条标注记录对应的口播词和落笔区间，沿用板书的单支笔时序。移动标注使用物理对象的当前坐标加固定偏移，完整写出后持续跟随。同一份笔迹用于静止和运动时的标注。
+
+成片查看每个新标注在落笔前、书写中以及对象移动后的画面。对比同字母在图中和公式中的笔形，并核对箭尾、角度、下标和辅助线的归属。字幕沿实际音轨同步显示。
 
 ## 原生 Manim 三维场景
 
